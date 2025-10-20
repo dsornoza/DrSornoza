@@ -1,641 +1,625 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2575.6">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dr. Diego Sornoza Parrales | Academic Consultation</title>
+    <!-- Tailwind CSS CDN --><script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN --><script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Custom Colors & Shadows to match Lovable.dev/Shadcn UI aesthetic */
+        :root {
+            --primary: #06B6D4; /* A vibrant teal/cyan as accent (like in Lovable.dev's output) */
+            --primary-foreground: #FFFFFF; /* White for text on primary background */
+            --muted: #F1F5F9; /* Light gray for muted backgrounds */
+            --muted-foreground: #64748B; /* Darker gray for muted text */
+            --card: #FFFFFF; /* White for card backgrounds */
+            --card-foreground: #1E293B; /* Dark gray for text on cards */
+            --border: #E2E8F0; /* Light border color */
+            --input: #E2E8F0; /* Input border color */
+            --background: #FFFFFF; /* Main background */
+            --foreground: #0F172A; /* Main text color */
+            --shadow-elevated: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Stronger shadow */
+            --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Lighter shadow */
+        }
+
+        .bg-primary { background-color: var(--primary); }
+        .text-primary { color: var(--primary); }
+        .hover\:bg-primary-dark:hover { background-color: #0E7490; /* A darker shade for hover */ }
+        .bg-primary-foreground { background-color: var(--primary-foreground); }
+        .text-primary-foreground { color: var(--primary-foreground); }
+        .bg-muted { background-color: var(--muted); }
+        .text-muted-foreground { color: var(--muted-foreground); }
+        .bg-card { background-color: var(--card); }
+        .text-card-foreground { color: var(--card-foreground); }
+        .border { border-color: var(--border); }
+        .border-primary\/20 { border-color: rgba(6, 182, 212, 0.2); } /* primary with 20% opacity */
+        .shadow-elevated { box-shadow: var(--shadow-elevated); }
+        .shadow-soft { box-shadow: var(--shadow-soft); }
+        .focus\:ring-primary:focus { --tw-ring-color: var(--primary); }
+        .focus\:border-primary:focus { border-color: var(--primary); }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--foreground);
+            background-color: var(--background);
+        }
+        .scroll-mt-24 { scroll-margin-top: 6rem; } /* For fixed header links */
+        html { scroll-behavior: smooth; } /* Smooth scrolling for nav links */
+    </style>
 </head>
-<body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="en"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;Dr. Diego Sornoza Parrales | Academic Consultation&lt;/title&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Tailwind CSS CDN --&gt;&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Lucide Icons CDN --&gt;&lt;script src="https://unpkg.com/lucide@latest"&gt;&lt;/script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>/* Custom Colors &amp; Shadows to match Lovable.dev/Shadcn UI aesthetic */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>:root {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--primary: #06B6D4; /* A vibrant teal/cyan as accent (like in Lovable.dev's output) */</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--primary-foreground: #FFFFFF; /* White for text on primary background */</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--muted: #F1F5F9; /* Light gray for muted backgrounds */</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--muted-foreground: #64748B; /* Darker gray for muted text */</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--card: #FFFFFF; /* White for card backgrounds */</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--card-foreground: #1E293B; /* Dark gray for text on cards */</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--border: #E2E8F0; /* Light border color */</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--input: #E2E8F0; /* Input border color */</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--background: #FFFFFF; /* Main background */</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--foreground: #0F172A; /* Main text color */</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--shadow-elevated: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Stronger shadow */</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Lighter shadow */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.bg-primary { background-color: var(--primary); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.text-primary { color: var(--primary); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.hover\:bg-primary-dark:hover { background-color: #0E7490; /* A darker shade for hover */ }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.bg-primary-foreground { background-color: var(--primary-foreground); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.text-primary-foreground { color: var(--primary-foreground); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.bg-muted { background-color: var(--muted); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.text-muted-foreground { color: var(--muted-foreground); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.bg-card { background-color: var(--card); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.text-card-foreground { color: var(--card-foreground); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.border { border-color: var(--border); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.border-primary\/20 { border-color: rgba(6, 182, 212, 0.2); } /* primary with 20% opacity */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.shadow-elevated { box-shadow: var(--shadow-elevated); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.shadow-soft { box-shadow: var(--shadow-soft); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.focus\:ring-primary:focus { --tw-ring-color: var(--primary); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.focus\:border-primary:focus { border-color: var(--primary); }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>body {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-family: 'Inter', sans-serif;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: var(--foreground);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-color: var(--background);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.scroll-mt-24 { scroll-margin-top: 6rem; } /* For fixed header links */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>html { scroll-behavior: smooth; } /* Smooth scrolling for nav links */</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body class="antialiased"&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Language Content Data (JSON structure) --&gt;&lt;script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const content = {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>en: {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Navigation</p>
-<p class="p1"><span class="Apple-converted-space">                </span>nav_title_full: "Dr. Diego Sornoza Parrales",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>nav_about: "About",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>nav_services: "Services",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>nav_credentials: "Credentials",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>nav_publications: "Publications",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>nav_contact: "Contact",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>cta_phrase: "Book a Consultation",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Hero</p>
-<p class="p1"><span class="Apple-converted-space">                </span>hero_headline: "Transform Your Research: From Idea to Publication, Powered by Modern Methods",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>hero_tagline: "Expert Guidance in Methods, Thesis, and Paper Writing, Enhanced by AI",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>hero_subtext: "Ph.D. from The University of Western Ontario, Canada.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>hero_cta: "Book a Thesis/Paper Consultation",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>// About</p>
-<p class="p1"><span class="Apple-converted-space">                </span>about_title: "About Dr. Sornoza Parrales",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>about_summary_p1: "With over 10 years of experience in higher education, Dr. Diego Sornoza Parrales brings a wealth of expertise in research, teaching, and academic management.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>about_summary_p2: "As an Accredited Investigator (SENESCYT: REG-INV-16-01687) and Associate Professor, he specializes in Critical Policy, Equity and Leadership Studies. His Ph.D. from The University of Western Ontario, Canada, combined with extensive experience directing postgraduate theses, positions him uniquely to guide researchers through every stage of their academic journey.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>about_summary_p3: "He is passionate about empowering researchers to achieve publication success through strategic, modern methods, including ethical AI integration.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Services</p>
-<p class="p1"><span class="Apple-converted-space">                </span>services_title: "Expertise &amp; Services",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>services_sub: "Comprehensive support for every stage of your academic journey.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>service1_title: "Research Methods Consultation",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>service1_description: "Expert guidance in research design and methodology, including Qualitative, Quantitative, Mixed Methods, Bibliometric Analysis, and Systematic Literature Review.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>service2_title: "Thesis &amp; Paper Writing Coaching",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>service2_description: "Professional support in structure, drafting, and academic formatting. Proficient with LaTeX and advanced reference managers (Mendeley, Zotero).",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>service3_title: "Data &amp; Statistical Analysis Support",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>service3_description: "Comprehensive help in interpreting and presenting research data using SPSS, NVivo, VOSviewer, and Bibliometrix.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>service4_title: "AI Integration for Academics",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>service4_description: "Ethical and effective use of modern AI tools in the research process, backed by specialized research in Educational Technology and Artificial Intelligence.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Credentials</p>
-<p class="p1"><span class="Apple-converted-space">                </span>credentials_title: "Proof of Impact &amp; Credentials",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>cred1_title: "Distinguished Investigator",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>cred1_description: "Recognized as 'Investigador destacado' (Level 1—maximum level) in 2024 by UNESUM for outstanding scientific productivity.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>cred2_title: "High-Impact Publications",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>cred2_description: "Authored/Co-authored 2 books and 20+ articles in arbitrated journals (SCOPUS and regional bases).",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Publications (New Section)</p>
-<p class="p1"><span class="Apple-converted-space">                </span>publications_title: "Recent Publications",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>pub1_title: "Educational Leadership and Technology Integration in Higher Education",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>pub1_abstract: "This research explores the intersection of educational leadership practices and technology adoption in Latin American universities, with a focus on equity and access.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>pub2_title: "AI-Enhanced Research Methodologies in Social Sciences",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>pub2_abstract: "A comprehensive study examining how artificial intelligence tools can ethically enhance qualitative and quantitative research processes while maintaining academic rigor.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>pub3_title: "Critical Policy Analysis in Educational Systems",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>pub3_abstract: "An examination of educational policy frameworks through a critical lens, analyzing their impact on equity, inclusion, and institutional transformation.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Resources</p>
-<p class="p1"><span class="Apple-converted-space">                </span>resources_title: "Academic Profile",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>googleScholar: "Google Scholar Profile",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>linkedin: "LinkedIn Profile",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Contact</p>
-<p class="p1"><span class="Apple-converted-space">                </span>contact_title: "Get in Touch",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>contact_description: "Ready to transform your research? Schedule a consultation today.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_name: "Name",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_namePlaceholder: "Your full name",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_email: "Email",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_emailPlaceholder: "your.email@example.com",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_projectType: "Project Type",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_projectTypePlaceholder: "Select project type",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_message: "Message",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_messagePlaceholder: "Tell me about your research project...",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_submit: "Send Message",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_option1: "Thesis / Dissertation",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_option2: "Journal Paper / Publication",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_option3: "Research Methods Only",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_success: "Thank you for your inquiry! Dr. Sornoza Parrales will be in touch shortly.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_sending: "Sending...",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>direct_email: "diego@sornoza.com",</p>
-<p class="p1"><span class="Apple-converted-space">            </span>},</p>
-<p class="p1"><span class="Apple-converted-space">            </span>es: {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Navigation</p>
-<p class="p1"><span class="Apple-converted-space">                </span>nav_title_full: "Dr. Diego Sornoza Parrales",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>nav_about: "Acerca de",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>nav_services: "Servicios",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>nav_credentials: "Credenciales",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>nav_publications: "Publicaciones",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>nav_contact: "Contacto",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>cta_phrase: "Agenda una Consulta",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Hero</p>
-<p class="p1"><span class="Apple-converted-space">                </span>hero_headline: "Transforma Tu Investigación: De la Idea a la Publicación, Impulsado por Métodos Modernos",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>hero_tagline: "Asesoría Experta en Métodos, Tesis y Escritura de Artículos, Potenciada por IA",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>hero_subtext: "Ph.D. de The University of Western Ontario, Canadá.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>hero_cta: "Agenda una Consulta de Tesis/Artículo",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>// About</p>
-<p class="p1"><span class="Apple-converted-space">                </span>about_title: "Acerca del Dr. Sornoza Parrales",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>about_summary_p1: "Con más de 10 años de experiencia en educación superior, el Dr. Diego Sornoza Parrales aporta una amplia experiencia en investigación, docencia y gestión académica.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>about_summary_p2: "Como Investigador Acreditado (SENESCYT: REG-INV-16-01687) y Profesor Asociado, se especializa en Políticas Críticas, Equidad y Estudios de Liderazgo. Su Ph.D. de The University of Western Ontario, Canadá, combinado con amplia experiencia dirigiendo tesis de posgrado, lo posiciona de manera única para guiar a los investigadores en cada etapa de su trayectoria académica.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>about_summary_p3: "Su pasión es empoderar a los investigadores para alcanzar el éxito en la publicación a través de métodos estratégicos y modernos, incluyendo la integración ética de la IA.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Services</p>
-<p class="p1"><span class="Apple-converted-space">                </span>services_title: "Experiencia y Servicios",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>services_sub: "Soporte integral para cada etapa de tu recorrido académico.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>service1_title: "Consultoría en Métodos de Investigación",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>service1_description: "Orientación experta en diseño de investigación y metodología, incluyendo Métodos Cualitativos, Cuantitativos, Mixtos, Análisis Bibliométrico y Revisión Sistemática de Literatura.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>service2_title: "Asesoría en Escritura de Tesis y Artículos",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>service2_description: "Apoyo profesional en estructura, redacción y formato académico. Dominio de LaTeX y gestores de referencias avanzados (Mendeley, Zotero).",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>service3_title: "Soporte en Análisis de Datos y Estadística",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>service3_description: "Ayuda integral en la interpretación y presentación de datos de investigación usando SPSS, NVivo, VOSviewer y Bibliometrix.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>service4_title: "Integración de IA para Académicos",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>service4_description: "Uso ético y efectivo de herramientas modernas de IA en el proceso de investigación, respaldado por investigación especializada en Tecnología Educativa e Inteligencia Artificial.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Credentials</p>
-<p class="p1"><span class="Apple-converted-space">                </span>credentials_title: "Prueba de Impacto y Credenciales",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>cred1_title: "Investigador Destacado",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>cred1_description: "Reconocido como 'Investigador destacado' (Nivel 1—nivel máximo) en 2024 por UNESUM por su sobresaliente productividad científica.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>cred2_title: "Publicaciones de Alto Impacto",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>cred2_description: "Autor/Coautor de 2 libros y más de 20 artículos en revistas arbitradas (SCOPUS y bases regionales).",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Publications (New Section)</p>
-<p class="p1"><span class="Apple-converted-space">                </span>publications_title: "Publicaciones Recientes",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>pub1_title: "Liderazgo Educativo e Integración de Tecnología en Educación Superior",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>pub1_abstract: "Esta investigación explora la intersección de las prácticas de liderazgo educativo y la adopción de tecnología en universidades latinoamericanas, con enfoque en equidad y acceso.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>pub2_title: "Metodologías de Investigación Potenciadas por IA en Ciencias Sociales",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>pub2_abstract: "Un estudio integral que examina cómo las herramientas de inteligencia artificial pueden mejorar éticamente los procesos de investigación cualitativa y cuantitativa manteniendo el rigor académico.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>pub3_title: "Análisis Crítico de Políticas en Sistemas Educativos",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>pub3_abstract: "Un examen de los marcos de políticas educativas desde una perspectiva crítica, analizando su impacto en la equidad, inclusión y transformación institucional.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Resources</p>
-<p class="p1"><span class="Apple-converted-space">                </span>resources_title: "Perfil Académico",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>googleScholar: "Perfil de Google Scholar",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>linkedin: "Perfil de LinkedIn",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Contact</p>
-<p class="p1"><span class="Apple-converted-space">                </span>contact_title: "Contáctame",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>contact_description: "¿Listo para transformar tu investigación? Agenda una consulta hoy.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_name: "Nombre",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_namePlaceholder: "Tu nombre completo",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_email: "Correo Electrónico",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_emailPlaceholder: "tu.correo@ejemplo.com",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_projectType: "Tipo de Proyecto",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_projectTypePlaceholder: "Selecciona el tipo de proyecto",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_message: "Mensaje",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_messagePlaceholder: "Cuéntame sobre tu proyecto de investigación...",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_submit: "Enviar Mensaje",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_option1: "Tesis / Disertación",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_option2: "Artículo de Revista / Publicación",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_option3: "Solo Métodos de Investigación",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_success: "¡Gracias por su consulta! El Dr. Sornoza Parrales se pondrá en contacto pronto.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>form_sending: "Enviando...",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>direct_email: "diego@sornoza.com",</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>let currentLang = 'en';</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Function to update all text elements based on the current language</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function updateContent() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const langData = content[currentLang];</p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Update Navigation</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#nav-title-full').textContent = langData.nav_title_full;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelectorAll('.nav-about').forEach(el =&gt; el.textContent = langData.nav_about);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelectorAll('.nav-services').forEach(el =&gt; el.textContent = langData.nav_services);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelectorAll('.nav-credentials').forEach(el =&gt; el.textContent = langData.nav_credentials);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelectorAll('.nav-publications').forEach(el =&gt; el.textContent = langData.nav_publications);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelectorAll('.nav-contact').forEach(el =&gt; el.textContent = langData.nav_contact);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelectorAll('.cta-btn').forEach(el =&gt; el.textContent = langData.cta_phrase);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelectorAll('.hero-cta-btn').forEach(el =&gt; el.textContent = langData.hero_cta);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Hero Section</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#hero-headline').textContent = langData.hero_headline;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#hero-tagline').textContent = langData.hero_tagline;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#hero-subtext').textContent = langData.hero_subtext;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// About Section</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#about-title').textContent = langData.about_title;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#about-p1').textContent = langData.about_summary_p1;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#about-p2').textContent = langData.about_summary_p2;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#about-p3').textContent = langData.about_summary_p3;</p>
-<p class="p2"><span class="Apple-converted-space">           </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Services Section</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#services-title').textContent = langData.services_title;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#services-sub').textContent = langData.services_sub;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#s1-title').textContent = langData.service1_title;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#s1-description').textContent = langData.service1_description;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#s2-title').textContent = langData.service2_title;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#s2-description').textContent = langData.service2_description;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#s3-title').textContent = langData.service3_title;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#s3-description').textContent = langData.service3_description;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#s4-title').textContent = langData.service4_title;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#s4-description').textContent = langData.service4_description;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Credentials Section</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#credentials-title').textContent = langData.credentials_title;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#cred1-title').textContent = langData.cred1_title;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#cred1-description').textContent = langData.cred1_description;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#cred2-title').textContent = langData.cred2_title;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#cred2-description').textContent = langData.cred2_description;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Publications Section</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#publications-title').textContent = langData.publications_title;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#pub1-title').textContent = langData.pub1_title;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#pub1-abstract').textContent = langData.pub1_abstract;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#pub2-title').textContent = langData.pub2_title;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#pub2-abstract').textContent = langData.pub2_abstract;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#pub3-title').textContent = langData.pub3_title;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#pub3-abstract').textContent = langData.pub3_abstract;</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Resources Section</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#resources-title').textContent = langData.resources_title;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#google-scholar-link').textContent = langData.googleScholar;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#linkedin-link').textContent = langData.linkedin;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Contact Section</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#contact-title').textContent = langData.contact_title;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#contact-description').textContent = langData.contact_description;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('label[for="name"]').textContent = langData.form_name;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#name').placeholder = langData.form_namePlaceholder;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('label[for="email"]').textContent = langData.form_email;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#email').placeholder = langData.form_emailPlaceholder;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('label[for="projectType"]').textContent = langData.form_projectType;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Select dropdown options update</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const selectPlaceholder = document.querySelector('option[value=""][disabled]');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (selectPlaceholder) selectPlaceholder.textContent = langData.form_projectTypePlaceholder;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('option[value="thesis"]').textContent = langData.form_option1;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('option[value="paper"]').textContent = langData.form_option2;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('option[value="methods"]').textContent = langData.form_option3;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('label[for="message"]').textContent = langData.form_message;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#message').placeholder = langData.form_messagePlaceholder;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#form-submit-btn').textContent = langData.form_submit;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#direct-email-link').textContent = langData.direct_email;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Footer update</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('#footer-rights').textContent = currentLang === 'en' ? 'All rights reserved.' : 'Todos los derechos reservados.';</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Update language selector active state</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const langBtnText = currentLang === 'en' ? 'ES' : 'EN';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelectorAll('.lang-btn-text').forEach(el =&gt; el.textContent = langBtnText);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelectorAll('.lang-btn').forEach(btn =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>btn.classList.remove('font-bold', 'text-primary');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (btn.dataset.lang === currentLang) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>btn.classList.add('font-bold', 'text-primary');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.documentElement.lang = currentLang;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Language Switcher Handler</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function switchLanguage(lang) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>currentLang = lang;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>updateContent();</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>document.addEventListener('DOMContentLoaded', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>updateContent(); // Initialize content</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Language button setup</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const langSwitcherButton = document.querySelector('#lang-switcher-button');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (langSwitcherButton) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>langSwitcherButton.addEventListener('click', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>switchLanguage(currentLang === 'en' ? 'es' : 'en');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>});</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Mobile menu toggle</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const mobileMenuBtn = document.getElementById('mobile-menu-btn');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const mobileMenu = document.getElementById('mobile-menu');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (mobileMenuBtn) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>mobileMenuBtn.addEventListener('click', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>mobileMenu.classList.toggle('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>});</p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Close mobile menu when a link is clicked</p>
-<p class="p1"><span class="Apple-converted-space">                </span>mobileMenu.querySelectorAll('a').forEach(link =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>link.addEventListener('click', () =&gt; mobileMenu.classList.add('hidden'));</p>
-<p class="p1"><span class="Apple-converted-space">                </span>});</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Contact Form Submission (Placeholder - replace with actual backend service if using)</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const contactForm = document.getElementById('contact-form');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (contactForm) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>contactForm.addEventListener('submit', function(event) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>event.preventDefault();</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const formMessageBox = document.getElementById('form-message-box');</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const submitBtn = document.getElementById('form-submit-btn');</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>formMessageBox.classList.add('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>submitBtn.textContent = content[currentLang].form_sending;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>submitBtn.disabled = true;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>// Simulate API call success/failure</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>setTimeout(() =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>formMessageBox.classList.remove('hidden', 'bg-red-100', 'text-red-800');</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>formMessageBox.classList.add('bg-green-100', 'text-green-800', 'p-3', 'rounded-lg', 'mt-4');</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>formMessageBox.textContent = content[currentLang].form_success;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>contactForm.reset();</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>submitBtn.textContent = content[currentLang].form_submit;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>submitBtn.disabled = false;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>}, 1500);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>});</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Initialize Lucide Icons</p>
-<p class="p1"><span class="Apple-converted-space">        </span>document.addEventListener('DOMContentLoaded', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>lucide.createIcons();</p>
-<p class="p1"><span class="Apple-converted-space">        </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Header / Navigation (Fixed) --&gt;&lt;header class="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="container mx-auto flex h-16 items-center justify-between px-4 md:px-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Logo/Name --&gt;&lt;div class="flex items-center gap-2"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;i data-lucide="graduation-cap" class="h-6 w-6 text-primary"&gt;&lt;/i&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;span class="text-lg font-semibold" id="nav-title-full"&gt;Dr. Diego Sornoza Parrales&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Navigation Links --&gt;&lt;nav class="hidden md:flex items-center gap-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;a href="#about" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors nav-about"&gt;About&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;a href="#services" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors nav-services"&gt;Services&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;a href="#credentials" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors nav-credentials"&gt;Credentials&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;a href="#publications" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors nav-publications"&gt;Publications&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;a href="#contact" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors nav-contact"&gt;Contact&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/nav&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- CTA Button &amp; Language Switcher --&gt;&lt;div class="flex items-center gap-4"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>id="lang-switcher-button"</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-foreground/70 hover:text-primary transition-colors rounded-md bg-muted/50 hover:bg-muted/70"</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;i data-lucide="languages" class="h-4 w-4"&gt;&lt;/i&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;span class="lang-btn-text"&gt;ES&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;a href="#contact" class="hidden sm:inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary-dark shadow-elevated cta-btn"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>Book a Consultation</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;!-- Mobile Menu Button (Hamburger) --&gt;&lt;button id="mobile-menu-btn" class="md:hidden flex items-center justify-center p-2 rounded-md text-foreground/80 hover:bg-muted/70"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;i data-lucide="menu" class="h-6 w-6"&gt;&lt;/i&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- Mobile Menu (Hidden by default) --&gt;&lt;div id="mobile-menu" class="hidden md:hidden bg-card border-t border-border"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;a href="#about" class="block py-3 px-4 text-foreground/80 hover:bg-muted/50 transition-colors nav-about"&gt;About&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;a href="#services" class="block py-3 px-4 text-foreground/80 hover:bg-muted/50 transition-colors nav-services"&gt;Services&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;a href="#credentials" class="block py-3 px-4 text-foreground/80 hover:bg-muted/50 transition-colors nav-credentials"&gt;Credentials&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;a href="#publications" class="block py-3 px-4 text-foreground/80 hover:bg-muted/50 transition-colors nav-publications"&gt;Publications&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;a href="#contact" class="block py-3 px-4 text-foreground/80 hover:bg-muted/50 transition-colors nav-contact"&gt;Contact&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;a href="#contact" class="block w-full text-center py-3 bg-primary text-primary-foreground font-semibold cta-btn"&gt;Book a Consultation&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/header&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;main&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- Hero Section --&gt;&lt;section id="hero" class="py-20 md:py-32 px-4 md:px-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="container mx-auto max-w-5xl"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="flex flex-col md:flex-row items-center gap-12"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="flex-1 text-center md:text-left"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;h1 class="text-4xl md:text-6xl font-bold tracking-tight mb-6 bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;span id="hero-headline"&gt;Transform Your Research: From Idea to Publication, Powered by Modern Methods.&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/h1&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p class="text-xl md:text-2xl text-muted-foreground mb-4"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;span id="hero-tagline"&gt;Expert Guidance in Methods, Thesis, and Paper Writing, Enhanced by AI.&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p class="text-sm md:text-base text-muted-foreground mb-8 font-light"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;span id="hero-subtext"&gt;Ph.D. from The University of Western Ontario, Canada.&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;a href="#contact" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-base font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-12 px-8 py-3 bg-primary text-primary-foreground hover:bg-primary-dark shadow-elevated hover:scale-105 transition-all hero-cta-btn"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>Book a Thesis/Paper Consultation</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="flex-shrink-0"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;!-- Dr. Sornoza Parrales Image (Name must match the uploaded file for GitHub Pages) --&gt;&lt;img<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                            </span>src="./Foto headshot small.jpg"<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                            </span>alt="Dr. Diego Sornoza Parrales"<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                            </span>onerror="this.onerror=null;this.src='https://placehold.co/320x320/06B6D4/FFFFFF?text=Dr. Sornoza';"</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>class="w-64 h-64 md:w-80 md:h-80 rounded-full object-cover shadow-elevated border-4 border-primary/20"</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/section&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- About Section --&gt;&lt;section id="about" class="scroll-mt-24 py-20 px-4 md:px-8 bg-muted/50"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="container mx-auto max-w-4xl"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;h2 class="text-3xl md:text-4xl font-bold mb-8 text-center" id="about-title"&gt;About Dr. Sornoza Parrales&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="space-y-6 text-lg leading-relaxed text-foreground/90"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p id="about-p1"&gt;With over **10 years of experience** in higher education, Dr. Diego Sornoza Parrales brings a wealth of expertise in research, teaching, and academic management.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p id="about-p2"&gt;As an **Accredited Investigator (SENESCYT: REG-INV-16-01687)** and Associate Professor, he specializes in Critical Policy, Equity and Leadership Studies. His **Ph.D. from The University of Western Ontario, Canada**, combined with extensive experience directing postgraduate theses, positions him uniquely to guide researchers through every stage of their academic journey.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p id="about-p3"&gt;He is passionate about empowering researchers to achieve publication success through strategic, modern methods, including ethical AI integration.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/section&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- Expertise &amp; Services Section --&gt;&lt;section id="services" class="scroll-mt-24 py-20 px-4 md:px-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="container mx-auto max-w-6xl"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;h2 class="text-3xl md:text-4xl font-bold mb-12 text-center" id="services-title"&gt;Expertise &amp; Services&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;p class="mt-4 text-xl text-muted-foreground text-center mb-12" id="services-sub"&gt;Comprehensive support for every stage of your academic journey.&lt;/p&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;!-- Service 1: Research Methods --&gt;&lt;div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;i data-lucide="book-open" class="h-10 w-10 text-primary mb-4"&gt;&lt;/i&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;h3 class="text-xl font-semibold text-card-foreground mb-3" id="s1-title"&gt;Research Methods Consultation&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p class="text-muted-foreground leading-relaxed" id="s1-description"&gt;Expert guidance in research design and methodology, including Qualitative, Quantitative, Mixed Methods, Bibliometric Analysis, and Systematic Literature Review.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
-<p class="p2"><span class="Apple-converted-space">                    </span></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;!-- Service 2: Thesis &amp; Paper Writing --&gt;&lt;div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;i data-lucide="brain" class="h-10 w-10 text-primary mb-4"&gt;&lt;/i&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;h3 class="text-xl font-semibold text-card-foreground mb-3" id="s2-title"&gt;Thesis &amp; Paper Writing Coaching&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p class="text-muted-foreground leading-relaxed" id="s2-description"&gt;Professional support in structure, drafting, and academic formatting. Proficient with LaTeX and advanced reference managers (Mendeley, Zotero).&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;!-- Service 3: Data Analysis --&gt;&lt;div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;i data-lucide="bar-chart-3" class="h-10 w-10 text-primary mb-4"&gt;&lt;/i&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;h3 class="text-xl font-semibold text-card-foreground mb-3" id="s3-title"&gt;Data &amp; Statistical Analysis Support&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p class="text-muted-foreground leading-relaxed" id="s3-description"&gt;Comprehensive help in interpreting and presenting research data using SPSS, NVivo, VOSviewer, and Bibliometrix.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;!-- Service 4: AI Integration --&gt;&lt;div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;i data-lucide="sparkles" class="h-10 w-10 text-primary mb-4"&gt;&lt;/i&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;h3 class="text-xl font-semibold text-card-foreground mb-3" id="s4-title"&gt;AI Integration for Academics&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p class="text-muted-foreground leading-relaxed" id="s4-description"&gt;Ethical and effective use of modern AI tools in the research process, backed by specialized research in Educational Technology and Artificial Intelligence.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/section&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- Credentials Section --&gt;&lt;section id="credentials" class="scroll-mt-24 py-20 px-4 md:px-8 bg-muted/50"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="container mx-auto max-w-4xl"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;h2 class="text-3xl md:text-4xl font-bold mb-12 text-center" id="credentials-title"&gt;Proof of Impact &amp; Credentials&lt;/h2&gt;</p>
-<p class="p2"><span class="Apple-converted-space">                </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="grid md:grid-cols-2 gap-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;!-- Credential 1: Recognition --&gt;&lt;div class="bg-card p-8 text-center rounded-xl shadow-soft border border-primary/20 hover:shadow-elevated transition-all duration-300"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;i data-lucide="award" class="h-12 w-12 text-primary mx-auto mb-4"&gt;&lt;/i&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;h3 class="text-xl font-semibold text-card-foreground mb-2" id="cred1-title"&gt;Distinguished Investigator&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p class="text-muted-foreground" id="cred1-description"&gt;Recognized as 'Investigador destacado' (Level 1—maximum level) in 2024 by UNESUM for outstanding scientific productivity.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;!-- Credential 2: Publications --&gt;&lt;div class="bg-card p-8 text-center rounded-xl shadow-soft border border-primary/20 hover:shadow-elevated transition-all duration-300"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;i data-lucide="book-open" class="h-12 w-12 text-primary mx-auto mb-4"&gt;&lt;/i&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;h3 class="text-xl font-semibold text-card-foreground mb-2" id="cred2-title"&gt;High-Impact Publications&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p class="text-muted-foreground" id="cred2-description"&gt;Authored/Co-authored 2 books and 20+ articles in arbitrated journals (SCOPUS and regional bases).&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;!-- Academic Profile (Resources) --&gt;&lt;div class="mt-12 text-center"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h3 class="text-2xl font-semibold text-card-foreground mb-6" id="resources-title"&gt;Academic Profile&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="flex flex-wrap justify-center gap-4"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;a href="https://scholar.google.com/citations?user=K8lYCIAAAAJ&amp;hl=es" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 border border-input bg-background hover:bg-muted hover:text-foreground gap-2"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;span id="google-scholar-link"&gt;Google Scholar Profile&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;i data-lucide="external-link" class="h-4 w-4"&gt;&lt;/i&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;a href="https://www.linkedin.com/in/dsornoza/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 border border-input bg-background hover:bg-muted hover:text-foreground gap-2"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;span id="linkedin-link"&gt;LinkedIn Profile&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;i data-lucide="external-link" class="h-4 w-4"&gt;&lt;/i&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/section&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- Publications Section (New based on Lovable.dev code) --&gt;&lt;section id="publications" class="scroll-mt-24 py-20 px-4 md:px-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="container mx-auto max-w-5xl"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;h2 class="text-3xl md:text-4xl font-bold mb-12 text-center" id="publications-title"&gt;Recent Publications&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="space-y-6"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;!-- Publication 1 --&gt;&lt;div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="flex gap-4"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;i data-lucide="file-text" class="h-6 w-6 text-primary flex-shrink-0 mt-1"&gt;&lt;/i&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>&lt;h3 class="text-xl font-semibold text-card-foreground mb-3" id="pub1-title"&gt;Educational Leadership and Technology Integration in Higher Education&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>&lt;p class="text-muted-foreground leading-relaxed" id="pub1-abstract"&gt;This research explores the intersection of educational leadership practices and technology adoption in Latin American universities, with a focus on equity and access.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;!-- Publication 2 --&gt;&lt;div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="flex gap-4"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;i data-lucide="file-text" class="h-6 w-6 text-primary flex-shrink-0 mt-1"&gt;&lt;/i&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>&lt;h3 class="text-xl font-semibold text-card-foreground mb-3" id="pub2-title"&gt;AI-Enhanced Research Methodologies in Social Sciences&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>&lt;p class="text-muted-foreground leading-relaxed" id="pub2-abstract"&gt;A comprehensive study examining how artificial intelligence tools can ethically enhance qualitative and quantitative research processes while maintaining academic rigor.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;!-- Publication 3 --&gt;&lt;div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="flex gap-4"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;i data-lucide="file-text" class="h-6 w-6 text-primary flex-shrink-0 mt-1"&gt;&lt;/i&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>&lt;h3 class="text-xl font-semibold text-card-foreground mb-3" id="pub3-title"&gt;Critical Policy Analysis in Educational Systems&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>&lt;p class="text-muted-foreground leading-relaxed" id="pub3-abstract"&gt;An examination of educational policy frameworks through a critical lens, analyzing their impact on equity, inclusion, and institutional transformation.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/section&gt;</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- Contact Section --&gt;&lt;section id="contact" class="scroll-mt-24 py-20 px-4 md:px-8 bg-muted/50"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="container mx-auto max-w-2xl"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;h2 class="text-3xl md:text-4xl font-bold mb-4 text-center" id="contact-title"&gt;Get in Touch&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;p class="text-center text-muted-foreground mb-12 text-lg" id="contact-description"&gt;Ready to transform your research? Schedule a consultation today.&lt;/p&gt;</p>
-<p class="p2"><span class="Apple-converted-space">                </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="bg-card p-8 rounded-xl shadow-soft border border-border"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;form id="contact-form" class="space-y-6"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;label for="name" class="block text-sm font-medium mb-2"&gt;Name&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;input</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>type="text"</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>id="name"</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>name="name"</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>required</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>placeholder="Your full name"</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>class="w-full p-3 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-background text-foreground"</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p2"><span class="Apple-converted-space">                        </span></p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;label for="email" class="block text-sm font-medium mb-2"&gt;Email&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;input</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>type="email"</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>id="email"</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>name="email"</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>required</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>placeholder="your.email@example.com"</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>class="w-full p-3 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-background text-foreground"</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p2"><span class="Apple-converted-space">                        </span></p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;label for="projectType" class="block text-sm font-medium mb-2"&gt;Project Type&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;select</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>id="projectType"</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>name="projectType"</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>required</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>class="w-full p-3 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-background text-foreground appearance-none pr-8"</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%20viewBox%3D%220%200%20292.4%20292.4%22%3E%3Cpath%20fill%3D%22%2364748B%22%20d%3D%22M287%20197.8L154.9%2065.6c-4.4-4.4-11.4-4.4-15.8%200L5.4%20197.8c-4.4%204.4-4.4%2011.4%200%2015.8l15.8%2015.8c4.4%204.4%2011.4%204.4%2015.8%200l105.7-105.7c4.4-4.4%2011.4-4.4%2015.8%200l105.7%20105.7c4.4%204.4%2011.4%204.4%2015.8%200l15.8-15.8c4.4-4.4%204.4-11.4%200-15.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 0.7em top 50%; background-size: 0.65em auto;"</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>&lt;option value="" disabled selected&gt;Select project type&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>&lt;option value="thesis" id="option1"&gt;Thesis / Dissertation&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>&lt;option value="paper" id="option2"&gt;Journal Paper / Publication&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>&lt;option value="methods" id="option3"&gt;Research Methods Only&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/select&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p2"><span class="Apple-converted-space">                        </span></p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;label for="message" class="block text-sm font-medium mb-2"&gt;Message&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;textarea</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>id="message"</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>name="message"</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>rows="5"</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>required</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>placeholder="Tell me about your research project..."</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>class="w-full p-3 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-background text-foreground resize-none"</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&gt;&lt;/textarea&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p2"><span class="Apple-converted-space">                        </span></p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div id="form-message-box" class="hidden text-center text-sm font-medium"&gt;&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button type="submit" id="form-submit-btn" class="w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-base font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-12 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary-dark shadow-elevated"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>Send Message</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/form&gt;</p>
-<p class="p2"><span class="Apple-converted-space">                    </span></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="mt-8 pt-8 border-t border-border text-center"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="flex items-center justify-center gap-2 text-muted-foreground"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;i data-lucide="mail" class="h-4 w-4"&gt;&lt;/i&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;a href="mailto:diego@sornoza.com" class="hover:text-primary transition-colors" id="direct-email-link"&gt;diego@sornoza.com&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p2"><span class="Apple-converted-space">                </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="mt-12 text-center"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;a href="#contact" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-base font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-12 px-8 py-3 bg-primary text-primary-foreground hover:bg-primary-dark shadow-elevated cta-btn"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>Book a Consultation</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/section&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/main&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Footer --&gt;&lt;footer class="py-8 px-4 md:px-8 border-t bg-muted/30"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="container mx-auto text-center text-sm text-muted-foreground"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p&gt;&amp;copy; 2025 Dr. Diego Sornoza Parrales. &lt;span id="footer-rights"&gt;All rights reserved.&lt;/span&gt;&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/footer&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+<body class="antialiased">
+
+    <!-- Language Content Data (JSON structure) --><script>
+        const content = {
+            en: {
+                // Navigation
+                nav_title_full: "Dr. Diego Sornoza Parrales",
+                nav_about: "About",
+                nav_services: "Services",
+                nav_credentials: "Credentials",
+                nav_publications: "Publications",
+                nav_contact: "Contact",
+                cta_phrase: "Book a Consultation",
+                // Hero
+                hero_headline: "Transform Your Research: From Idea to Publication, Powered by Modern Methods",
+                hero_tagline: "Expert Guidance in Methods, Thesis, and Paper Writing, Enhanced by AI",
+                hero_subtext: "Ph.D. from The University of Western Ontario, Canada.",
+                hero_cta: "Book a Thesis/Paper Consultation",
+                // About
+                about_title: "About Dr. Sornoza Parrales",
+                about_summary_p1: "With over 10 years of experience in higher education, Dr. Diego Sornoza Parrales brings a wealth of expertise in research, teaching, and academic management.",
+                about_summary_p2: "As an Accredited Investigator (SENESCYT: REG-INV-16-01687) and Associate Professor, he specializes in Critical Policy, Equity and Leadership Studies. His Ph.D. from The University of Western Ontario, Canada, combined with extensive experience directing postgraduate theses, positions him uniquely to guide researchers through every stage of their academic journey.",
+                about_summary_p3: "He is passionate about empowering researchers to achieve publication success through strategic, modern methods, including ethical AI integration.",
+                // Services
+                services_title: "Expertise & Services",
+                services_sub: "Comprehensive support for every stage of your academic journey.",
+                service1_title: "Research Methods Consultation",
+                service1_description: "Expert guidance in research design and methodology, including Qualitative, Quantitative, Mixed Methods, Bibliometric Analysis, and Systematic Literature Review.",
+                service2_title: "Thesis & Paper Writing Coaching",
+                service2_description: "Professional support in structure, drafting, and academic formatting. Proficient with LaTeX and advanced reference managers (Mendeley, Zotero).",
+                service3_title: "Data & Statistical Analysis Support",
+                service3_description: "Comprehensive help in interpreting and presenting research data using SPSS, NVivo, VOSviewer, and Bibliometrix.",
+                service4_title: "AI Integration for Academics",
+                service4_description: "Ethical and effective use of modern AI tools in the research process, backed by specialized research in Educational Technology and Artificial Intelligence.",
+                // Credentials
+                credentials_title: "Proof of Impact & Credentials",
+                cred1_title: "Distinguished Investigator",
+                cred1_description: "Recognized as 'Investigador destacado' (Level 1—maximum level) in 2024 by UNESUM for outstanding scientific productivity.",
+                cred2_title: "High-Impact Publications",
+                cred2_description: "Authored/Co-authored 2 books and 20+ articles in arbitrated journals (SCOPUS and regional bases).",
+                // Publications (New Section)
+                publications_title: "Recent Publications",
+                pub1_title: "Educational Leadership and Technology Integration in Higher Education",
+                pub1_abstract: "This research explores the intersection of educational leadership practices and technology adoption in Latin American universities, with a focus on equity and access.",
+                pub2_title: "AI-Enhanced Research Methodologies in Social Sciences",
+                pub2_abstract: "A comprehensive study examining how artificial intelligence tools can ethically enhance qualitative and quantitative research processes while maintaining academic rigor.",
+                pub3_title: "Critical Policy Analysis in Educational Systems",
+                pub3_abstract: "An examination of educational policy frameworks through a critical lens, analyzing their impact on equity, inclusion, and institutional transformation.",
+                // Resources
+                resources_title: "Academic Profile",
+                googleScholar: "Google Scholar Profile",
+                linkedin: "LinkedIn Profile",
+                // Contact
+                contact_title: "Get in Touch",
+                contact_description: "Ready to transform your research? Schedule a consultation today.",
+                form_name: "Name",
+                form_namePlaceholder: "Your full name",
+                form_email: "Email",
+                form_emailPlaceholder: "your.email@example.com",
+                form_projectType: "Project Type",
+                form_projectTypePlaceholder: "Select project type",
+                form_message: "Message",
+                form_messagePlaceholder: "Tell me about your research project...",
+                form_submit: "Send Message",
+                form_option1: "Thesis / Dissertation",
+                form_option2: "Journal Paper / Publication",
+                form_option3: "Research Methods Only",
+                form_success: "Thank you for your inquiry! Dr. Sornoza Parrales will be in touch shortly.",
+                form_sending: "Sending...",
+                direct_email: "diego@sornoza.com",
+            },
+            es: {
+                // Navigation
+                nav_title_full: "Dr. Diego Sornoza Parrales",
+                nav_about: "Acerca de",
+                nav_services: "Servicios",
+                nav_credentials: "Credenciales",
+                nav_publications: "Publicaciones",
+                nav_contact: "Contacto",
+                cta_phrase: "Agenda una Consulta",
+                // Hero
+                hero_headline: "Transforma Tu Investigación: De la Idea a la Publicación, Impulsado por Métodos Modernos",
+                hero_tagline: "Asesoría Experta en Métodos, Tesis y Escritura de Artículos, Potenciada por IA",
+                hero_subtext: "Ph.D. de The University of Western Ontario, Canadá.",
+                hero_cta: "Agenda una Consulta de Tesis/Artículo",
+                // About
+                about_title: "Acerca del Dr. Sornoza Parrales",
+                about_summary_p1: "Con más de 10 años de experiencia en educación superior, el Dr. Diego Sornoza Parrales aporta una amplia experiencia en investigación, docencia y gestión académica.",
+                about_summary_p2: "Como Investigador Acreditado (SENESCYT: REG-INV-16-01687) y Profesor Asociado, se especializa en Políticas Críticas, Equidad y Estudios de Liderazgo. Su Ph.D. de The University of Western Ontario, Canadá, combinado con amplia experiencia dirigiendo tesis de posgrado, lo posiciona de manera única para guiar a los investigadores en cada etapa de su trayectoria académica.",
+                about_summary_p3: "Su pasión es empoderar a los investigadores para alcanzar el éxito en la publicación a través de métodos estratégicos y modernos, incluyendo la integración ética de la IA.",
+                // Services
+                services_title: "Experiencia y Servicios",
+                services_sub: "Soporte integral para cada etapa de tu recorrido académico.",
+                service1_title: "Consultoría en Métodos de Investigación",
+                service1_description: "Orientación experta en diseño de investigación y metodología, incluyendo Métodos Cualitativos, Cuantitativos, Mixtos, Análisis Bibliométrico y Revisión Sistemática de Literatura.",
+                service2_title: "Asesoría en Escritura de Tesis y Artículos",
+                service2_description: "Apoyo profesional en estructura, redacción y formato académico. Dominio de LaTeX y gestores de referencias avanzados (Mendeley, Zotero).",
+                service3_title: "Soporte en Análisis de Datos y Estadística",
+                service3_description: "Ayuda integral en la interpretación y presentación de datos de investigación usando SPSS, NVivo, VOSviewer y Bibliometrix.",
+                service4_title: "Integración de IA para Académicos",
+                service4_description: "Uso ético y efectivo de herramientas modernas de IA en el proceso de investigación, respaldado por investigación especializada en Tecnología Educativa e Inteligencia Artificial.",
+                // Credentials
+                credentials_title: "Prueba de Impacto y Credenciales",
+                cred1_title: "Investigador Destacado",
+                cred1_description: "Reconocido como 'Investigador destacado' (Nivel 1—nivel máximo) en 2024 por UNESUM por su sobresaliente productividad científica.",
+                cred2_title: "Publicaciones de Alto Impacto",
+                cred2_description: "Autor/Coautor de 2 libros y más de 20 artículos en revistas arbitradas (SCOPUS y bases regionales).",
+                // Publications (New Section)
+                publications_title: "Publicaciones Recientes",
+                pub1_title: "Liderazgo Educativo e Integración de Tecnología en Educación Superior",
+                pub1_abstract: "Esta investigación explora la intersección de las prácticas de liderazgo educativo y la adopción de tecnología en universidades latinoamericanas, con enfoque en equidad y acceso.",
+                pub2_title: "Metodologías de Investigación Potenciadas por IA en Ciencias Sociales",
+                pub2_abstract: "Un estudio integral que examina cómo las herramientas de inteligencia artificial pueden mejorar éticamente los procesos de investigación cualitativa y cuantitativa manteniendo el rigor académico.",
+                pub3_title: "Análisis Crítico de Políticas en Sistemas Educativos",
+                pub3_abstract: "Un examen de los marcos de políticas educativas desde una perspectiva crítica, analizando su impacto en la equidad, inclusión y transformación institucional.",
+                // Resources
+                resources_title: "Perfil Académico",
+                googleScholar: "Perfil de Google Scholar",
+                linkedin: "Perfil de LinkedIn",
+                // Contact
+                contact_title: "Contáctame",
+                contact_description: "¿Listo para transformar tu investigación? Agenda una consulta hoy.",
+                form_name: "Nombre",
+                form_namePlaceholder: "Tu nombre completo",
+                form_email: "Correo Electrónico",
+                form_emailPlaceholder: "tu.correo@ejemplo.com",
+                form_projectType: "Tipo de Proyecto",
+                form_projectTypePlaceholder: "Selecciona el tipo de proyecto",
+                form_message: "Mensaje",
+                form_messagePlaceholder: "Cuéntame sobre tu proyecto de investigación...",
+                form_submit: "Enviar Mensaje",
+                form_option1: "Tesis / Disertación",
+                form_option2: "Artículo de Revista / Publicación",
+                form_option3: "Solo Métodos de Investigación",
+                form_success: "¡Gracias por su consulta! El Dr. Sornoza Parrales se pondrá en contacto pronto.",
+                form_sending: "Enviando...",
+                direct_email: "diego@sornoza.com",
+            }
+        };
+
+        let currentLang = 'en';
+
+        // Function to update all text elements based on the current language
+        function updateContent() {
+            const langData = content[currentLang];
+            // Update Navigation
+            document.querySelector('#nav-title-full').textContent = langData.nav_title_full;
+            document.querySelectorAll('.nav-about').forEach(el => el.textContent = langData.nav_about);
+            document.querySelectorAll('.nav-services').forEach(el => el.textContent = langData.nav_services);
+            document.querySelectorAll('.nav-credentials').forEach(el => el.textContent = langData.nav_credentials);
+            document.querySelectorAll('.nav-publications').forEach(el => el.textContent = langData.nav_publications);
+            document.querySelectorAll('.nav-contact').forEach(el => el.textContent = langData.nav_contact);
+            document.querySelectorAll('.cta-btn').forEach(el => el.textContent = langData.cta_phrase);
+            document.querySelectorAll('.hero-cta-btn').forEach(el => el.textContent = langData.hero_cta);
+
+            // Hero Section
+            document.querySelector('#hero-headline').textContent = langData.hero_headline;
+            document.querySelector('#hero-tagline').textContent = langData.hero_tagline;
+            document.querySelector('#hero-subtext').textContent = langData.hero_subtext;
+
+            // About Section
+            document.querySelector('#about-title').textContent = langData.about_title;
+            document.querySelector('#about-p1').textContent = langData.about_summary_p1;
+            document.querySelector('#about-p2').textContent = langData.about_summary_p2;
+            document.querySelector('#about-p3').textContent = langData.about_summary_p3;
+           
+            // Services Section
+            document.querySelector('#services-title').textContent = langData.services_title;
+            document.querySelector('#services-sub').textContent = langData.services_sub;
+            document.querySelector('#s1-title').textContent = langData.service1_title;
+            document.querySelector('#s1-description').textContent = langData.service1_description;
+            document.querySelector('#s2-title').textContent = langData.service2_title;
+            document.querySelector('#s2-description').textContent = langData.service2_description;
+            document.querySelector('#s3-title').textContent = langData.service3_title;
+            document.querySelector('#s3-description').textContent = langData.service3_description;
+            document.querySelector('#s4-title').textContent = langData.service4_title;
+            document.querySelector('#s4-description').textContent = langData.service4_description;
+
+            // Credentials Section
+            document.querySelector('#credentials-title').textContent = langData.credentials_title;
+            document.querySelector('#cred1-title').textContent = langData.cred1_title;
+            document.querySelector('#cred1-description').textContent = langData.cred1_description;
+            document.querySelector('#cred2-title').textContent = langData.cred2_title;
+            document.querySelector('#cred2-description').textContent = langData.cred2_description;
+
+            // Publications Section
+            document.querySelector('#publications-title').textContent = langData.publications_title;
+            document.querySelector('#pub1-title').textContent = langData.pub1_title;
+            document.querySelector('#pub1-abstract').textContent = langData.pub1_abstract;
+            document.querySelector('#pub2-title').textContent = langData.pub2_title;
+            document.querySelector('#pub2-abstract').textContent = langData.pub2_abstract;
+            document.querySelector('#pub3-title').textContent = langData.pub3_title;
+            document.querySelector('#pub3-abstract').textContent = langData.pub3_abstract;
+
+
+            // Resources Section
+            document.querySelector('#resources-title').textContent = langData.resources_title;
+            document.querySelector('#google-scholar-link').textContent = langData.googleScholar;
+            document.querySelector('#linkedin-link').textContent = langData.linkedin;
+
+            // Contact Section
+            document.querySelector('#contact-title').textContent = langData.contact_title;
+            document.querySelector('#contact-description').textContent = langData.contact_description;
+            document.querySelector('label[for="name"]').textContent = langData.form_name;
+            document.querySelector('#name').placeholder = langData.form_namePlaceholder;
+            document.querySelector('label[for="email"]').textContent = langData.form_email;
+            document.querySelector('#email').placeholder = langData.form_emailPlaceholder;
+            document.querySelector('label[for="projectType"]').textContent = langData.form_projectType;
+            // Select dropdown options update
+            const selectPlaceholder = document.querySelector('option[value=""][disabled]');
+            if (selectPlaceholder) selectPlaceholder.textContent = langData.form_projectTypePlaceholder;
+            document.querySelector('option[value="thesis"]').textContent = langData.form_option1;
+            document.querySelector('option[value="paper"]').textContent = langData.form_option2;
+            document.querySelector('option[value="methods"]').textContent = langData.form_option3;
+            
+            document.querySelector('label[for="message"]').textContent = langData.form_message;
+            document.querySelector('#message').placeholder = langData.form_messagePlaceholder;
+            document.querySelector('#form-submit-btn').textContent = langData.form_submit;
+            document.querySelector('#direct-email-link').textContent = langData.direct_email;
+            
+            // Footer update
+            document.querySelector('#footer-rights').textContent = currentLang === 'en' ? 'All rights reserved.' : 'Todos los derechos reservados.';
+
+
+            // Update language selector active state
+            const langBtnText = currentLang === 'en' ? 'ES' : 'EN';
+            document.querySelectorAll('.lang-btn-text').forEach(el => el.textContent = langBtnText);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('font-bold', 'text-primary');
+                if (btn.dataset.lang === currentLang) {
+                    btn.classList.add('font-bold', 'text-primary');
+                }
+            });
+            document.documentElement.lang = currentLang;
+        }
+
+        // Language Switcher Handler
+        function switchLanguage(lang) {
+            currentLang = lang;
+            updateContent();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateContent(); // Initialize content
+
+            // Language button setup
+            const langSwitcherButton = document.querySelector('#lang-switcher-button');
+            if (langSwitcherButton) {
+                langSwitcherButton.addEventListener('click', () => {
+                    switchLanguage(currentLang === 'en' ? 'es' : 'en');
+                });
+            }
+
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenuBtn) {
+                mobileMenuBtn.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+                // Close mobile menu when a link is clicked
+                mobileMenu.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+                });
+            }
+
+
+            // Contact Form Submission (Placeholder - replace with actual backend service if using)
+            const contactForm = document.getElementById('contact-form');
+            if (contactForm) {
+                contactForm.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    const formMessageBox = document.getElementById('form-message-box');
+                    const submitBtn = document.getElementById('form-submit-btn');
+
+                    formMessageBox.classList.add('hidden');
+                    submitBtn.textContent = content[currentLang].form_sending;
+                    submitBtn.disabled = true;
+
+                    // Simulate API call success/failure
+                    setTimeout(() => {
+                        formMessageBox.classList.remove('hidden', 'bg-red-100', 'text-red-800');
+                        formMessageBox.classList.add('bg-green-100', 'text-green-800', 'p-3', 'rounded-lg', 'mt-4');
+                        formMessageBox.textContent = content[currentLang].form_success;
+                        contactForm.reset();
+                        submitBtn.textContent = content[currentLang].form_submit;
+                        submitBtn.disabled = false;
+                    }, 1500);
+                });
+            }
+        });
+
+        // Initialize Lucide Icons
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+    </script>
+
+    <!-- Header / Navigation (Fixed) --><header class="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
+        <div class="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
+            <!-- Logo/Name --><div class="flex items-center gap-2">
+                <i data-lucide="graduation-cap" class="h-6 w-6 text-primary"></i>
+                <span class="text-lg font-semibold" id="nav-title-full">Dr. Diego Sornoza Parrales</span>
+            </div>
+            
+            <!-- Navigation Links --><nav class="hidden md:flex items-center gap-8">
+                <a href="#about" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors nav-about">About</a>
+                <a href="#services" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors nav-services">Services</a>
+                <a href="#credentials" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors nav-credentials">Credentials</a>
+                <a href="#publications" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors nav-publications">Publications</a>
+                <a href="#contact" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors nav-contact">Contact</a>
+            </nav>
+
+            <!-- CTA Button & Language Switcher --><div class="flex items-center gap-4">
+                <button
+                    id="lang-switcher-button"
+                    class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-foreground/70 hover:text-primary transition-colors rounded-md bg-muted/50 hover:bg-muted/70"
+                >
+                    <i data-lucide="languages" class="h-4 w-4"></i>
+                    <span class="lang-btn-text">ES</span>
+                </button>
+                <a href="#contact" class="hidden sm:inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary-dark shadow-elevated cta-btn">
+                    Book a Consultation
+                </a>
+                <!-- Mobile Menu Button (Hamburger) --><button id="mobile-menu-btn" class="md:hidden flex items-center justify-center p-2 rounded-md text-foreground/80 hover:bg-muted/70">
+                    <i data-lucide="menu" class="h-6 w-6"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu (Hidden by default) --><div id="mobile-menu" class="hidden md:hidden bg-card border-t border-border">
+            <a href="#about" class="block py-3 px-4 text-foreground/80 hover:bg-muted/50 transition-colors nav-about">About</a>
+            <a href="#services" class="block py-3 px-4 text-foreground/80 hover:bg-muted/50 transition-colors nav-services">Services</a>
+            <a href="#credentials" class="block py-3 px-4 text-foreground/80 hover:bg-muted/50 transition-colors nav-credentials">Credentials</a>
+            <a href="#publications" class="block py-3 px-4 text-foreground/80 hover:bg-muted/50 transition-colors nav-publications">Publications</a>
+            <a href="#contact" class="block py-3 px-4 text-foreground/80 hover:bg-muted/50 transition-colors nav-contact">Contact</a>
+            <a href="#contact" class="block w-full text-center py-3 bg-primary text-primary-foreground font-semibold cta-btn">Book a Consultation</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section --><section id="hero" class="py-20 md:py-32 px-4 md:px-8">
+            <div class="container mx-auto max-w-5xl">
+                <div class="flex flex-col md:flex-row items-center gap-12">
+                    <div class="flex-1 text-center md:text-left">
+                        <h1 class="text-4xl md:text-6xl font-bold tracking-tight mb-6 bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">
+                            <span id="hero-headline">Transform Your Research: From Idea to Publication, Powered by Modern Methods.</span>
+                        </h1>
+                        <p class="text-xl md:text-2xl text-muted-foreground mb-4">
+                            <span id="hero-tagline">Expert Guidance in Methods, Thesis, and Paper Writing, Enhanced by AI.</span>
+                        </p>
+                        <p class="text-sm md:text-base text-muted-foreground mb-8 font-light">
+                            <span id="hero-subtext">Ph.D. from The University of Western Ontario, Canada.</span>
+                        </p>
+                        <a href="#contact" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-base font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-12 px-8 py-3 bg-primary text-primary-foreground hover:bg-primary-dark shadow-elevated hover:scale-105 transition-all hero-cta-btn">
+                            Book a Thesis/Paper Consultation
+                        </a>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <!-- Dr. Sornoza Parrales Image (Name must match the uploaded file for GitHub Pages) --><img 
+                            src="./Foto headshot small.jpg" 
+                            alt="Dr. Diego Sornoza Parrales" 
+                            onerror="this.onerror=null;this.src='https://placehold.co/320x320/06B6D4/FFFFFF?text=Dr. Sornoza';"
+                            class="w-64 h-64 md:w-80 md:h-80 rounded-full object-cover shadow-elevated border-4 border-primary/20"
+                        />
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section --><section id="about" class="scroll-mt-24 py-20 px-4 md:px-8 bg-muted/50">
+            <div class="container mx-auto max-w-4xl">
+                <h2 class="text-3xl md:text-4xl font-bold mb-8 text-center" id="about-title">About Dr. Sornoza Parrales</h2>
+                <div class="space-y-6 text-lg leading-relaxed text-foreground/90">
+                    <p id="about-p1">With over **10 years of experience** in higher education, Dr. Diego Sornoza Parrales brings a wealth of expertise in research, teaching, and academic management.</p>
+                    <p id="about-p2">As an **Accredited Investigator (SENESCYT: REG-INV-16-01687)** and Associate Professor, he specializes in Critical Policy, Equity and Leadership Studies. His **Ph.D. from The University of Western Ontario, Canada**, combined with extensive experience directing postgraduate theses, positions him uniquely to guide researchers through every stage of their academic journey.</p>
+                    <p id="about-p3">He is passionate about empowering researchers to achieve publication success through strategic, modern methods, including ethical AI integration.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Expertise & Services Section --><section id="services" class="scroll-mt-24 py-20 px-4 md:px-8">
+            <div class="container mx-auto max-w-6xl">
+                <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center" id="services-title">Expertise & Services</h2>
+                <p class="mt-4 text-xl text-muted-foreground text-center mb-12" id="services-sub">Comprehensive support for every stage of your academic journey.</p>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Service 1: Research Methods --><div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300">
+                        <i data-lucide="book-open" class="h-10 w-10 text-primary mb-4"></i>
+                        <h3 class="text-xl font-semibold text-card-foreground mb-3" id="s1-title">Research Methods Consultation</h3>
+                        <p class="text-muted-foreground leading-relaxed" id="s1-description">Expert guidance in research design and methodology, including Qualitative, Quantitative, Mixed Methods, Bibliometric Analysis, and Systematic Literature Review.</p>
+                    </div>
+                    
+                    <!-- Service 2: Thesis & Paper Writing --><div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300">
+                        <i data-lucide="brain" class="h-10 w-10 text-primary mb-4"></i>
+                        <h3 class="text-xl font-semibold text-card-foreground mb-3" id="s2-title">Thesis & Paper Writing Coaching</h3>
+                        <p class="text-muted-foreground leading-relaxed" id="s2-description">Professional support in structure, drafting, and academic formatting. Proficient with LaTeX and advanced reference managers (Mendeley, Zotero).</p>
+                    </div>
+
+                    <!-- Service 3: Data Analysis --><div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300">
+                        <i data-lucide="bar-chart-3" class="h-10 w-10 text-primary mb-4"></i>
+                        <h3 class="text-xl font-semibold text-card-foreground mb-3" id="s3-title">Data & Statistical Analysis Support</h3>
+                        <p class="text-muted-foreground leading-relaxed" id="s3-description">Comprehensive help in interpreting and presenting research data using SPSS, NVivo, VOSviewer, and Bibliometrix.</p>
+                    </div>
+
+                    <!-- Service 4: AI Integration --><div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300">
+                        <i data-lucide="sparkles" class="h-10 w-10 text-primary mb-4"></i>
+                        <h3 class="text-xl font-semibold text-card-foreground mb-3" id="s4-title">AI Integration for Academics</h3>
+                        <p class="text-muted-foreground leading-relaxed" id="s4-description">Ethical and effective use of modern AI tools in the research process, backed by specialized research in Educational Technology and Artificial Intelligence.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Credentials Section --><section id="credentials" class="scroll-mt-24 py-20 px-4 md:px-8 bg-muted/50">
+            <div class="container mx-auto max-w-4xl">
+                <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center" id="credentials-title">Proof of Impact & Credentials</h2>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Credential 1: Recognition --><div class="bg-card p-8 text-center rounded-xl shadow-soft border border-primary/20 hover:shadow-elevated transition-all duration-300">
+                        <i data-lucide="award" class="h-12 w-12 text-primary mx-auto mb-4"></i>
+                        <h3 class="text-xl font-semibold text-card-foreground mb-2" id="cred1-title">Distinguished Investigator</h3>
+                        <p class="text-muted-foreground" id="cred1-description">Recognized as 'Investigador destacado' (Level 1—maximum level) in 2024 by UNESUM for outstanding scientific productivity.</p>
+                    </div>
+
+                    <!-- Credential 2: Publications --><div class="bg-card p-8 text-center rounded-xl shadow-soft border border-primary/20 hover:shadow-elevated transition-all duration-300">
+                        <i data-lucide="book-open" class="h-12 w-12 text-primary mx-auto mb-4"></i>
+                        <h3 class="text-xl font-semibold text-card-foreground mb-2" id="cred2-title">High-Impact Publications</h3>
+                        <p class="text-muted-foreground" id="cred2-description">Authored/Co-authored 2 books and 20+ articles in arbitrated journals (SCOPUS and regional bases).</p>
+                    </div>
+                </div>
+
+                <!-- Academic Profile (Resources) --><div class="mt-12 text-center">
+                    <h3 class="text-2xl font-semibold text-card-foreground mb-6" id="resources-title">Academic Profile</h3>
+                    <div class="flex flex-wrap justify-center gap-4">
+                        <a href="https://scholar.google.com/citations?user=K8lYCIAAAAJ&hl=es" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 border border-input bg-background hover:bg-muted hover:text-foreground gap-2">
+                            <span id="google-scholar-link">Google Scholar Profile</span>
+                            <i data-lucide="external-link" class="h-4 w-4"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/in/dsornoza/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 border border-input bg-background hover:bg-muted hover:text-foreground gap-2">
+                            <span id="linkedin-link">LinkedIn Profile</span>
+                            <i data-lucide="external-link" class="h-4 w-4"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Publications Section (New based on Lovable.dev code) --><section id="publications" class="scroll-mt-24 py-20 px-4 md:px-8">
+            <div class="container mx-auto max-w-5xl">
+                <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center" id="publications-title">Recent Publications</h2>
+                <div class="space-y-6">
+                    <!-- Publication 1 --><div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300">
+                        <div class="flex gap-4">
+                            <i data-lucide="file-text" class="h-6 w-6 text-primary flex-shrink-0 mt-1"></i>
+                            <div>
+                                <h3 class="text-xl font-semibold text-card-foreground mb-3" id="pub1-title">Educational Leadership and Technology Integration in Higher Education</h3>
+                                <p class="text-muted-foreground leading-relaxed" id="pub1-abstract">This research explores the intersection of educational leadership practices and technology adoption in Latin American universities, with a focus on equity and access.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Publication 2 --><div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300">
+                        <div class="flex gap-4">
+                            <i data-lucide="file-text" class="h-6 w-6 text-primary flex-shrink-0 mt-1"></i>
+                            <div>
+                                <h3 class="text-xl font-semibold text-card-foreground mb-3" id="pub2-title">AI-Enhanced Research Methodologies in Social Sciences</h3>
+                                <p class="text-muted-foreground leading-relaxed" id="pub2-abstract">A comprehensive study examining how artificial intelligence tools can ethically enhance qualitative and quantitative research processes while maintaining academic rigor.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Publication 3 --><div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300">
+                        <div class="flex gap-4">
+                            <i data-lucide="file-text" class="h-6 w-6 text-primary flex-shrink-0 mt-1"></i>
+                            <div>
+                                <h3 class="text-xl font-semibold text-card-foreground mb-3" id="pub3-title">Critical Policy Analysis in Educational Systems</h3>
+                                <p class="text-muted-foreground leading-relaxed" id="pub3-abstract">An examination of educational policy frameworks through a critical lens, analyzing their impact on equity, inclusion, and institutional transformation.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Contact Section --><section id="contact" class="scroll-mt-24 py-20 px-4 md:px-8 bg-muted/50">
+            <div class="container mx-auto max-w-2xl">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4 text-center" id="contact-title">Get in Touch</h2>
+                <p class="text-center text-muted-foreground mb-12 text-lg" id="contact-description">Ready to transform your research? Schedule a consultation today.</p>
+                
+                <div class="bg-card p-8 rounded-xl shadow-soft border border-border">
+                    <form id="contact-form" class="space-y-6">
+                        <div>
+                            <label for="name" class="block text-sm font-medium mb-2">Name</label>
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                required
+                                placeholder="Your full name"
+                                class="w-full p-3 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-background text-foreground"
+                            >
+                        </div>
+                        
+                        <div>
+                            <label for="email" class="block text-sm font-medium mb-2">Email</label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                required
+                                placeholder="your.email@example.com"
+                                class="w-full p-3 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-background text-foreground"
+                            >
+                        </div>
+                        
+                        <div>
+                            <label for="projectType" class="block text-sm font-medium mb-2">Project Type</label>
+                            <select
+                                id="projectType"
+                                name="projectType"
+                                required
+                                class="w-full p-3 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-background text-foreground appearance-none pr-8"
+                                style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%20viewBox%3D%220%200%20292.4%20292.4%22%3E%3Cpath%20fill%3D%22%2364748B%22%20d%3D%22M287%20197.8L154.9%2065.6c-4.4-4.4-11.4-4.4-15.8%200L5.4%20197.8c-4.4%204.4-4.4%2011.4%200%2015.8l15.8%2015.8c4.4%204.4%2011.4%204.4%2015.8%200l105.7-105.7c4.4-4.4%2011.4-4.4%2015.8%200l105.7%20105.7c4.4%204.4%2011.4%204.4%2015.8%200l15.8-15.8c4.4-4.4%204.4-11.4%200-15.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 0.7em top 50%; background-size: 0.65em auto;"
+                            >
+                                <option value="" disabled selected>Select project type</option>
+                                <option value="thesis" id="option1">Thesis / Dissertation</option>
+                                <option value="paper" id="option2">Journal Paper / Publication</option>
+                                <option value="methods" id="option3">Research Methods Only</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="message" class="block text-sm font-medium mb-2">Message</label>
+                            <textarea
+                                id="message"
+                                name="message"
+                                rows="5"
+                                required
+                                placeholder="Tell me about your research project..."
+                                class="w-full p-3 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-background text-foreground resize-none"
+                            ></textarea>
+                        </div>
+                        
+                        <div id="form-message-box" class="hidden text-center text-sm font-medium"></div>
+
+                        <button type="submit" id="form-submit-btn" class="w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-base font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-12 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary-dark shadow-elevated">
+                            Send Message
+                        </button>
+                    </form>
+                    
+                    <div class="mt-8 pt-8 border-t border-border text-center">
+                        <div class="flex items-center justify-center gap-2 text-muted-foreground">
+                            <i data-lucide="mail" class="h-4 w-4"></i>
+                            <a href="mailto:diego@sornoza.com" class="hover:text-primary transition-colors" id="direct-email-link">diego@sornoza.com</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-12 text-center">
+                    <a href="#contact" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-base font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-12 px-8 py-3 bg-primary text-primary-foreground hover:bg-primary-dark shadow-elevated cta-btn">
+                        Book a Consultation
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer --><footer class="py-8 px-4 md:px-8 border-t bg-muted/30">
+        <div class="container mx-auto text-center text-sm text-muted-foreground">
+            <p>&copy; 2025 Dr. Diego Sornoza Parrales. <span id="footer-rights">All rights reserved.</span></p>
+        </div>
+    </footer>
 </body>
 </html>
