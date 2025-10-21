@@ -101,6 +101,7 @@
                 resources_title: "Academic Profile",
                 googleScholar: "Google Scholar Profile",
                 linkedin: "LinkedIn Profile",
+                youtube: "YouTube Channel",
                 // Contact
                 contact_title: "Get in Touch",
                 contact_description: "Ready to transform your research? Schedule a consultation today.",
@@ -168,6 +169,7 @@
                 resources_title: "Perfil Académico",
                 googleScholar: "Perfil de Google Scholar",
                 linkedin: "Perfil de LinkedIn",
+                youtube: "Canal de YouTube",
                 // Contact
                 contact_title: "Contáctame",
                 contact_description: "¿Listo para transformar tu investigación? Agenda una consulta hoy.",
@@ -248,6 +250,7 @@
             document.querySelector('#resources-title').textContent = langData.resources_title;
             document.querySelector('#google-scholar-link').textContent = langData.googleScholar;
             document.querySelector('#linkedin-link').textContent = langData.linkedin;
+            document.querySelector('#youtube-link').textContent = langData.youtube;
 
             // Contact Section
             document.querySelector('#contact-title').textContent = langData.contact_title;
@@ -484,19 +487,22 @@
                 </div>
 
                 <!-- Academic Profile (Resources) --><div class="mt-12 text-center">
-                    <h3 class="text-2xl font-semibold text-card-foreground mb-6" id="resources-title">Academic Profile</h3>
-                    <div class="flex flex-wrap justify-center gap-4">
-                        <a href="https://scholar.google.com/citations?user=K8lYCIAAAAJ&hl=es" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 border border-input bg-background hover:bg-muted hover:text-foreground gap-2">
-                            <span id="google-scholar-link">Google Scholar Profile</span>
-                            <i data-lucide="external-link" class="h-4 w-4"></i>
-                        </a>
-                        <a href="https://www.linkedin.com/in/dsornoza/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 border border-input bg-background hover:bg-muted hover:text-foreground gap-2">
-                            <span id="linkedin-link">LinkedIn Profile</span>
-                            <i data-lucide="external-link" class="h-4 w-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
+    <h3 class="text-2xl font-semibold text-card-foreground mb-6" id="resources-title">Academic Profile</h3>
+    <div class="flex flex-wrap justify-center gap-4">
+        <a href="https://scholar.google.com/citations?user=K8lYCIAAAAJ&hl=es" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 border border-input bg-background hover:bg-muted hover:text-foreground gap-2">
+            <span id="google-scholar-link">Google Scholar Profile</span>
+            <i data-lucide="external-link" class="h-4 w-4"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/dsornoza/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 border border-input bg-background hover:bg-muted hover:text-foreground gap-2">
+            <span id="linkedin-link">LinkedIn Profile</span>
+            <i data-lucide="external-link" class="h-4 w-4"></i>
+        </a>
+        <a href="https://www.youtube.com/@SornozaAcademy" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 border border-input bg-background hover:bg-muted hover:text-foreground gap-2">
+            <span id="youtube-link">YouTube Channel</span>
+            <i data-lucide="external-link" class="h-4 w-4"></i>
+        </a>
+    </div>
+</div>
         </section>
 
         <!-- Publications Section (New based on Lovable.dev code) --><section id="publications" class="scroll-mt-24 py-20 px-4 md:px-8">
