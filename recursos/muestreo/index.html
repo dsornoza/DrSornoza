@@ -1,398 +1,519 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador de Muestreo - Sornoza.com</title>
+import React, { useState, useEffect, useRef } from 'react';
+import { Users, Layers, Grid, List, RefreshCw, Play, Info, UserCheck, PieChart, BookOpen, ThumbsUp, ThumbsDown } from 'lucide-react';
+
+const POPULATION_SIZE = 40;
+const SAMPLE_SIZE = 8;
+const CLUSTER_COUNT = 8;
+
+// Información didáctica para cada método
+const METHOD_INFO = {
+  simple: {
+    title: "Aleatorio Simple",
+    type: "Probabilístico",
+    example: "Imagina poner los nombres de todos los estudiantes en un sombrero y sacar 5 papeles sin mirar.",
+    pros: ["Sencillo de entender", "Cálculo de medias y varianzas fácil"],
+    cons: ["Requiere listado completo de la población", "Puede no representar bien a minorías"]
+  },
+  systematic: {
+    title: "Sistemático",
+    type: "Probabilístico",
+    example: "En una fábrica, revisar una de cada 10 cajas de producto que pasan por la cinta transportadora.",
+    pros: ["Fácil de ejecutar sin ordenador", "Garantiza cobertura uniforme"],
+    cons: ["Si hay un patrón cíclico en los datos, la muestra será sesgada"]
+  },
+  stratified: {
+    title: "Estratificado",
+    type: "Probabilístico",
+    example: "Queremos saber la opinión sobre un uniforme escolar. Aseguramos entrevistar proporcionalmente a alumnos de 1º, 2º y 3º grado.",
+    pros: ["Asegura representación de todos los grupos", "Mayor precisión con menor muestra"],
+    cons: ["Requiere conocer la proporción de cada estrato", "Análisis de datos más complejo"]
+  },
+  cluster: {
+    title: "Por Conglomerados",
+    type: "Probabilístico",
+    example: "No tenemos tiempo ni recursos para ir a todas las casas de una ciudad, así que elegimos manzanas (barrios) completas al azar y encuestamos a todos allí.",
+    pros: ["Muy eficiente en tiempo y dinero", "No requiere lista de individuos, solo de grupos"],
+    cons: ["Menos preciso si los grupos son muy diferentes entre sí", "Error de muestreo suele ser mayor"]
+  },
+  convenience: {
+    title: "Por Conveniencia",
+    type: "No Probabilístico",
+    example: "Un reportero de TV entrevista a las primeras 5 personas que se encuentra en la calle al salir del canal.",
+    pros: ["Muy rápido y económico", "Útil para pruebas piloto"],
+    cons: ["Altamente sesgado", "No se pueden generalizar los resultados"]
+  },
+  quota: {
+    title: "Por Cuotas",
+    type: "No Probabilístico",
+    example: "El entrevistador debe buscar '5 hombres y 5 mujeres', pero elige a los primeros que ve o a sus amigos hasta llenar la cuota.",
+    pros: ["Asegura presencia de ciertos grupos", "No requiere marco muestral aleatorio"],
+    cons: ["La selección dentro del grupo es subjetiva", "Riesgo de sesgo del entrevistador"]
+  }
+};
+
+const generatePopulation = () => {
+  return Array.from({ length: POPULATION_SIZE }, (_, i) => ({
+    id: i + 1,
+    type: i < POPULATION_SIZE * 0.6 ? 'A' : 'B', 
+    cluster: Math.floor(i / (POPULATION_SIZE / CLUSTER_COUNT)) + 1,
+    selected: false,
+  }));
+};
+
+const SamplingSimulator = () => {
+  const [population, setPopulation] = useState([]);
+  const [method, setMethod] = useState('simple'); 
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [logs, setLogs] = useState([]); // Historial de pasos
+  const [stats, setStats] = useState(null);
+  const logContainerRef = useRef(null);
+
+  useEffect(() => {
+    resetSimulation();
+  }, []);
+
+  useEffect(() => {
+    resetSimulation();
+  }, [method]);
+
+  // Auto-scroll para los logs
+  useEffect(() => {
+    if (logContainerRef.current) {
+      logContainerRef.current.scrollTop = logContainerRef.current.scrollHeight;
+    }
+  }, [logs]);
+
+  const resetSimulation = () => {
+    setPopulation(generatePopulation());
+    setIsAnimating(false);
+    setStats(null);
+    setLogs([`Listo para iniciar muestreo ${METHOD_INFO[method].title}.`]);
+  };
+
+  const addLog = (message) => {
+    setLogs(prev => [...prev, message]);
+  };
+
+  // --- LÓGICAS ---
+
+  const runSimpleRandom = async () => {
+    setIsAnimating(true);
+    addLog("Iniciando selección aleatoria...");
     
-    <!-- 1. Cargamos Tailwind CSS para el diseño -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    let currentPop = [...population];
+    let selectedCount = 0;
     
-    <!-- 2. Cargamos React y ReactDOM desde la nube -->
-    <script type="importmap">
-        {
-            "imports": {
-                "react": "https://esm.sh/react@18.2.0",
-                "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-                "lucide-react": "https://esm.sh/lucide-react@0.292.0"
-            }
-        }
-    </script>
+    while (selectedCount < SAMPLE_SIZE) {
+      const randomIndex = Math.floor(Math.random() * currentPop.length);
+      if (!currentPop[randomIndex].selected) {
+        currentPop[randomIndex].selected = true;
+        setPopulation([...currentPop]);
+        selectedCount++;
+        addLog(`Seleccionado individuo ID #${currentPop[randomIndex].id} al azar.`);
+        await new Promise(r => setTimeout(r, 200));
+      }
+    }
+    finishSimulation();
+  };
+
+  const runSystematic = async () => {
+    setIsAnimating(true);
+    const k = Math.floor(POPULATION_SIZE / SAMPLE_SIZE);
+    const start = Math.floor(Math.random() * k);
     
-    <!-- 3. Cargamos Babel para que el navegador entienda el código React -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    addLog(`Población (N): ${POPULATION_SIZE}, Muestra (n): ${SAMPLE_SIZE}`);
+    addLog(`Calculando intervalo de salto k = N/n = ${k}`);
+    addLog(`Eligiendo arranque aleatorio entre 1 y ${k}: ${start + 1}`);
+    
+    await new Promise(r => setTimeout(r, 1000));
+    let currentPop = [...population];
+    
+    for (let i = start; i < POPULATION_SIZE; i += k) {
+      if (currentPop[i]) {
+        currentPop[i].selected = true;
+        setPopulation([...currentPop]);
+        addLog(`Salto de ${k} posiciones -> Seleccionado ID #${currentPop[i].id}`);
+        await new Promise(r => setTimeout(r, 400));
+      }
+    }
+    finishSimulation();
+  };
 
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        /* Animaciones suaves */
-        .fade-in { animation: fadeIn 0.5s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    </style>
-</head>
-<body class="bg-slate-100">
-    <div id="root"></div>
+  const runStratified = async () => {
+    setIsAnimating(true);
+    addLog("Dividiendo población en Estratos: Azul (A) y Rosa (B).");
+    await new Promise(r => setTimeout(r, 1000));
 
-    <!-- 4. Aquí va nuestra aplicación React -->
-    <script type="text/babel" data-type="module">
-        import React, { useState, useEffect, useRef } from 'react';
-        import { createRoot } from 'react-dom/client';
-        import { Users, Layers, Grid, List, RefreshCw, Play, Info, UserCheck, PieChart, BookOpen, ThumbsUp, ThumbsDown } from 'lucide-react';
+    let currentPop = [...population];
+    const typeACount = currentPop.filter(p => p.type === 'A').length;
+    
+    // Fórmula
+    const targetA = Math.round((typeACount / POPULATION_SIZE) * SAMPLE_SIZE);
+    const targetB = SAMPLE_SIZE - targetA;
 
-        const POPULATION_SIZE = 40;
-        const SAMPLE_SIZE = 8;
-        const CLUSTER_COUNT = 8;
+    addLog(`Fórmula Estrato A: (${typeACount}/${POPULATION_SIZE}) * ${SAMPLE_SIZE} = ${targetA.toFixed(1)} ≈ ${targetA} individuos.`);
+    addLog(`Fórmula Estrato B: Restante para llegar a ${SAMPLE_SIZE} = ${targetB} individuos.`);
+    
+    await new Promise(r => setTimeout(r, 1500));
 
-        const METHOD_INFO = {
-            simple: {
-                title: "Aleatorio Simple",
-                type: "Probabilístico",
-                example: "Imagina poner los nombres de todos los estudiantes en un sombrero y sacar 5 papeles sin mirar.",
-                pros: ["Sencillo de entender", "Cálculo de medias y varianzas fácil"],
-                cons: ["Requiere listado completo de la población", "Puede no representar bien a minorías"]
-            },
-            systematic: {
-                title: "Sistemático",
-                type: "Probabilístico",
-                example: "En una fábrica, revisar una de cada 10 cajas de producto que pasan por la cinta transportadora.",
-                pros: ["Fácil de ejecutar sin ordenador", "Garantiza cobertura uniforme"],
-                cons: ["Si hay un patrón cíclico en los datos, la muestra será sesgada"]
-            },
-            stratified: {
-                title: "Estratificado",
-                type: "Probabilístico",
-                example: "Queremos saber la opinión sobre un uniforme escolar. Aseguramos entrevistar proporcionalmente a alumnos de 1º, 2º y 3º grado.",
-                pros: ["Asegura representación de todos los grupos", "Mayor precisión con menor muestra"],
-                cons: ["Requiere conocer la proporción de cada estrato", "Análisis de datos más complejo"]
-            },
-            cluster: {
-                title: "Por Conglomerados",
-                type: "Probabilístico",
-                example: "No tenemos tiempo ni recursos para ir a todas las casas de una ciudad, así que elegimos manzanas (barrios) completas al azar y encuestamos a todos allí.",
-                pros: ["Muy eficiente en tiempo y dinero", "No requiere lista de individuos, solo de grupos"],
-                cons: ["Menos preciso si los grupos son muy diferentes entre sí", "Error de muestreo suele ser mayor"]
-            },
-            convenience: {
-                title: "Por Conveniencia",
-                type: "No Probabilístico",
-                example: "Un reportero de TV entrevista a las primeras 5 personas que se encuentra en la calle al salir del canal.",
-                pros: ["Muy rápido y económico", "Útil para pruebas piloto"],
-                cons: ["Altamente sesgado", "No se pueden generalizar los resultados"]
-            },
-            quota: {
-                title: "Por Cuotas",
-                type: "No Probabilístico",
-                example: "El entrevistador debe buscar '5 hombres y 5 mujeres', pero elige a los primeros que ve o a sus amigos hasta llenar la cuota.",
-                pros: ["Asegura presencia de ciertos grupos", "No requiere marco muestral aleatorio"],
-                cons: ["La selección dentro del grupo es subjetiva", "Riesgo de sesgo del entrevistador"]
-            }
-        };
+    addLog(`>>> Seleccionando ${targetA} del grupo Azul al azar...`);
+    let countA = 0;
+    while (countA < targetA) {
+      const idx = Math.floor(Math.random() * currentPop.length);
+      if (currentPop[idx].type === 'A' && !currentPop[idx].selected) {
+        currentPop[idx].selected = true;
+        setPopulation([...currentPop]);
+        countA++;
+        await new Promise(r => setTimeout(r, 150));
+      }
+    }
 
-        const generatePopulation = () => {
-            return Array.from({ length: POPULATION_SIZE }, (_, i) => ({
-                id: i + 1,
-                type: i < POPULATION_SIZE * 0.6 ? 'A' : 'B', 
-                cluster: Math.floor(i / (POPULATION_SIZE / CLUSTER_COUNT)) + 1,
-                selected: false,
-            }));
-        };
+    addLog(`>>> Seleccionando ${targetB} del grupo Rosa al azar...`);
+    let countB = 0;
+    while (countB < targetB) {
+      const idx = Math.floor(Math.random() * currentPop.length);
+      if (currentPop[idx].type === 'B' && !currentPop[idx].selected) {
+        currentPop[idx].selected = true;
+        setPopulation([...currentPop]);
+        countB++;
+        await new Promise(r => setTimeout(r, 150));
+      }
+    }
+    finishSimulation();
+  };
 
-        const SamplingSimulator = () => {
-            const [population, setPopulation] = useState([]);
-            const [method, setMethod] = useState('simple'); 
-            const [isAnimating, setIsAnimating] = useState(false);
-            const [logs, setLogs] = useState([]); 
-            const [stats, setStats] = useState(null);
-            const logContainerRef = useRef(null);
+  const runCluster = async () => {
+    setIsAnimating(true);
+    addLog("Identificando grupos naturales (conglomerados)...");
+    await new Promise(r => setTimeout(r, 800));
 
-            useEffect(() => {
-                resetSimulation();
-            }, []);
+    const clustersToPick = 2;
+    addLog(`Decisión: Seleccionar ${clustersToPick} grupos completos al azar.`);
+    
+    const availableClusters = Array.from({ length: CLUSTER_COUNT }, (_, i) => i + 1);
+    const pickedClusters = [];
 
-            useEffect(() => {
-                resetSimulation();
-            }, [method]);
+    while (pickedClusters.length < clustersToPick) {
+      const randIndex = Math.floor(Math.random() * availableClusters.length);
+      const clusterId = availableClusters.splice(randIndex, 1)[0];
+      pickedClusters.push(clusterId);
+      
+      addLog(`¡La suerte elige el Grupo ${clusterId}! Seleccionando a TODOS sus miembros.`);
+      
+      setPopulation(prev => prev.map(p => {
+        if (p.cluster === clusterId) return { ...p, selected: true };
+        return p;
+      }));
+      await new Promise(r => setTimeout(r, 800));
+    }
+    finishSimulation();
+  };
 
-            useEffect(() => {
-                if (logContainerRef.current) {
-                    logContainerRef.current.scrollTop = logContainerRef.current.scrollHeight;
-                }
-            }, [logs]);
+  // --- NO PROBABILÍSTICOS ---
 
-            const resetSimulation = () => {
-                setPopulation(generatePopulation());
-                setIsAnimating(false);
-                setStats(null);
-                setLogs([`Listo para iniciar muestreo ${METHOD_INFO[method].title}.`]);
-            };
+  const runConvenience = async () => {
+    setIsAnimating(true);
+    addLog("Criterio: Elegir a los primeros individuos disponibles (más 'cercanos').");
+    addLog("No hay azar. Simplemente tomamos los primeros de la lista.");
+    await new Promise(r => setTimeout(r, 1000));
 
-            const addLog = (message) => {
-                setLogs(prev => [...prev, message]);
-            };
+    let currentPop = [...population];
+    for(let i=0; i<SAMPLE_SIZE; i++) {
+      currentPop[i].selected = true;
+      setPopulation([...currentPop]);
+      addLog(`Seleccionando ID #${currentPop[i].id} por proximidad.`);
+      await new Promise(r => setTimeout(r, 200));
+    }
+    finishSimulation();
+  };
 
-            const runSimpleRandom = async () => {
-                setIsAnimating(true);
-                addLog("Iniciando selección aleatoria...");
-                let currentPop = [...population];
-                let selectedCount = 0;
-                while (selectedCount < SAMPLE_SIZE) {
-                    const randomIndex = Math.floor(Math.random() * currentPop.length);
-                    if (!currentPop[randomIndex].selected) {
-                        currentPop[randomIndex].selected = true;
-                        setPopulation([...currentPop]);
-                        selectedCount++;
-                        addLog(`Seleccionado individuo ID #${currentPop[randomIndex].id} al azar.`);
-                        await new Promise(r => setTimeout(r, 200));
-                    }
-                }
-                finishSimulation();
-            };
+  const runQuota = async () => {
+    setIsAnimating(true);
+    addLog("Definiendo cuotas: Necesitamos 4 Azules y 4 Rosas.");
+    addLog("Diferencia con Estratificado: NO elegiremos al azar dentro del grupo, sino a los primeros que encontremos.");
+    await new Promise(r => setTimeout(r, 1500));
 
-            const runSystematic = async () => {
-                setIsAnimating(true);
-                const k = Math.floor(POPULATION_SIZE / SAMPLE_SIZE);
-                const start = Math.floor(Math.random() * k);
-                addLog(`Población (N): ${POPULATION_SIZE}, Muestra (n): ${SAMPLE_SIZE}`);
-                addLog(`Calculando intervalo de salto k = N/n = ${k}`);
-                addLog(`Eligiendo arranque aleatorio entre 1 y ${k}: ${start + 1}`);
-                await new Promise(r => setTimeout(r, 1000));
-                let currentPop = [...population];
-                for (let i = start; i < POPULATION_SIZE; i += k) {
-                    if (currentPop[i]) {
-                        currentPop[i].selected = true;
-                        setPopulation([...currentPop]);
-                        addLog(`Salto de ${k} posiciones -> Seleccionado ID #${currentPop[i].id}`);
-                        await new Promise(r => setTimeout(r, 400));
-                    }
-                }
-                finishSimulation();
-            };
+    let currentPop = [...population];
+    let countA = 0;
+    let countB = 0;
+    const target = SAMPLE_SIZE / 2;
 
-            const runStratified = async () => {
-                setIsAnimating(true);
-                addLog("Dividiendo población en Estratos: Azul (A) y Rosa (B).");
-                await new Promise(r => setTimeout(r, 1000));
-                let currentPop = [...population];
-                const typeACount = currentPop.filter(p => p.type === 'A').length;
-                const targetA = Math.round((typeACount / POPULATION_SIZE) * SAMPLE_SIZE);
-                const targetB = SAMPLE_SIZE - targetA;
-                addLog(`Fórmula Estrato A: (${typeACount}/${POPULATION_SIZE}) * ${SAMPLE_SIZE} = ${targetA.toFixed(1)} ≈ ${targetA} individuos.`);
-                addLog(`Fórmula Estrato B: Restante para llegar a ${SAMPLE_SIZE} = ${targetB} individuos.`);
-                await new Promise(r => setTimeout(r, 1500));
-                addLog(`>>> Seleccionando ${targetA} del grupo Azul al azar...`);
-                let countA = 0;
-                while (countA < targetA) {
-                    const idx = Math.floor(Math.random() * currentPop.length);
-                    if (currentPop[idx].type === 'A' && !currentPop[idx].selected) {
-                        currentPop[idx].selected = true;
-                        setPopulation([...currentPop]);
-                        countA++;
-                        await new Promise(r => setTimeout(r, 150));
-                    }
-                }
-                addLog(`>>> Seleccionando ${targetB} del grupo Rosa al azar...`);
-                let countB = 0;
-                while (countB < targetB) {
-                    const idx = Math.floor(Math.random() * currentPop.length);
-                    if (currentPop[idx].type === 'B' && !currentPop[idx].selected) {
-                        currentPop[idx].selected = true;
-                        setPopulation([...currentPop]);
-                        countB++;
-                        await new Promise(r => setTimeout(r, 150));
-                    }
-                }
-                finishSimulation();
-            };
+    for (let i = 0; i < currentPop.length; i++) {
+      if (countA < target && currentPop[i].type === 'A') {
+        currentPop[i].selected = true;
+        countA++;
+        addLog(`Cuota Azul: Elegido ID #${currentPop[i].id} (sin sorteo).`);
+        setPopulation([...currentPop]);
+        await new Promise(r => setTimeout(r, 200));
+      } else if (countB < target && currentPop[i].type === 'B') {
+        currentPop[i].selected = true;
+        countB++;
+        addLog(`Cuota Rosa: Elegido ID #${currentPop[i].id} (sin sorteo).`);
+        setPopulation([...currentPop]);
+        await new Promise(r => setTimeout(r, 200));
+      }
+      if(countA === target && countB === target) break;
+    }
+    finishSimulation();
+  };
 
-            const runCluster = async () => {
-                setIsAnimating(true);
-                addLog("Identificando grupos naturales (conglomerados)...");
-                await new Promise(r => setTimeout(r, 800));
-                const clustersToPick = 2;
-                addLog(`Decisión: Seleccionar ${clustersToPick} grupos completos al azar.`);
-                const availableClusters = Array.from({ length: CLUSTER_COUNT }, (_, i) => i + 1);
-                const pickedClusters = [];
-                while (pickedClusters.length < clustersToPick) {
-                    const randIndex = Math.floor(Math.random() * availableClusters.length);
-                    const clusterId = availableClusters.splice(randIndex, 1)[0];
-                    pickedClusters.push(clusterId);
-                    addLog(`¡La suerte elige el Grupo ${clusterId}! Seleccionando a TODOS sus miembros.`);
-                    setPopulation(prev => prev.map(p => {
-                        if (p.cluster === clusterId) return { ...p, selected: true };
-                        return p;
-                    }));
-                    await new Promise(r => setTimeout(r, 800));
-                }
-                finishSimulation();
-            };
+  const finishSimulation = () => {
+    setIsAnimating(false);
+    addLog("--- Muestreo Finalizado ---");
+    calculateStats();
+  };
 
-            const runConvenience = async () => {
-                setIsAnimating(true);
-                addLog("Criterio: Elegir a los primeros individuos disponibles (más 'cercanos').");
-                addLog("No hay azar. Simplemente tomamos los primeros de la lista.");
-                await new Promise(r => setTimeout(r, 1000));
-                let currentPop = [...population];
-                for(let i=0; i<SAMPLE_SIZE; i++) {
-                    currentPop[i].selected = true;
-                    setPopulation([...currentPop]);
-                    addLog(`Seleccionando ID #${currentPop[i].id} por proximidad.`);
-                    await new Promise(r => setTimeout(r, 200));
-                }
-                finishSimulation();
-            };
+  const calculateStats = () => {
+    const selected = population.filter(p => p.selected);
+    const typeA = selected.filter(p => p.type === 'A').length;
+    const typeB = selected.filter(p => p.type === 'B').length;
+    setStats({ total: selected.length, typeA, typeB });
+  };
 
-            const runQuota = async () => {
-                setIsAnimating(true);
-                addLog("Definiendo cuotas: Necesitamos 4 Azules y 4 Rosas.");
-                addLog("Diferencia con Estratificado: NO elegiremos al azar dentro del grupo, sino a los primeros que encontremos.");
-                await new Promise(r => setTimeout(r, 1500));
-                let currentPop = [...population];
-                let countA = 0;
-                let countB = 0;
-                const target = SAMPLE_SIZE / 2;
-                for (let i = 0; i < currentPop.length; i++) {
-                    if (countA < target && currentPop[i].type === 'A') {
-                        currentPop[i].selected = true;
-                        countA++;
-                        addLog(`Cuota Azul: Elegido ID #${currentPop[i].id} (sin sorteo).`);
-                        setPopulation([...currentPop]);
-                        await new Promise(r => setTimeout(r, 200));
-                    } else if (countB < target && currentPop[i].type === 'B') {
-                        currentPop[i].selected = true;
-                        countB++;
-                        addLog(`Cuota Rosa: Elegido ID #${currentPop[i].id} (sin sorteo).`);
-                        setPopulation([...currentPop]);
-                        await new Promise(r => setTimeout(r, 200));
-                    }
-                    if(countA === target && countB === target) break;
-                }
-                finishSimulation();
-            };
+  // --- COMPONENTES UI ---
 
-            const finishSimulation = () => {
-                setIsAnimating(false);
-                addLog("--- Muestreo Finalizado ---");
-                calculateStats();
-            };
+  const Person = ({ p }) => (
+    <div 
+      className={`
+        relative flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full transition-all duration-500
+        ${p.selected ? 'scale-110 ring-4 ring-green-400 z-10 shadow-lg font-bold' : 'scale-100 opacity-60 grayscale-[0.5]'}
+        ${p.type === 'A' ? 'bg-blue-600 text-white' : 'bg-rose-500 text-white'}
+      `}
+    >
+      <span className="text-xs">{p.id}</span>
+      {method !== 'cluster' && (
+        <span className="absolute -bottom-1 -right-1 text-[9px] bg-slate-800 text-white rounded-full w-4 h-4 flex items-center justify-center">
+          {p.cluster}
+        </span>
+      )}
+    </div>
+  );
 
-            const calculateStats = () => {
-                const selected = population.filter(p => p.selected);
-                const typeA = selected.filter(p => p.type === 'A').length;
-                const typeB = selected.filter(p => p.type === 'B').length;
-                setStats({ total: selected.length, typeA, typeB });
-            };
+  const info = METHOD_INFO[method];
 
-            const Person = ({ p }) => (
-                <div className={`relative flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full transition-all duration-500 ${p.selected ? 'scale-110 ring-4 ring-green-400 z-10 shadow-lg font-bold' : 'scale-100 opacity-60 grayscale-[0.5]'} ${p.type === 'A' ? 'bg-blue-600 text-white' : 'bg-rose-500 text-white'}`}>
-                    <span className="text-xs">{p.id}</span>
-                    {method !== 'cluster' && (
-                        <span className="absolute -bottom-1 -right-1 text-[9px] bg-slate-800 text-white rounded-full w-4 h-4 flex items-center justify-center">{p.cluster}</span>
-                    )}
+  return (
+    <div className="min-h-screen bg-slate-100 text-slate-800 font-sans p-2 md:p-6">
+      <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-xl overflow-hidden flex flex-col h-full">
+        
+        {/* Header */}
+        <div className="bg-slate-900 text-white p-4 md:p-6 border-b border-slate-700">
+          <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-3">
+            <RefreshCw className="w-8 h-8 text-green-400" /> Laboratorio de Muestreo - Sornoza.com
+          </h1>
+          <p className="text-slate-400 mt-1">Simulación interactiva de métodos probabilísticos y no probabilísticos.</p>
+        </div>
+
+        {/* Selector de Métodos */}
+        <div className="bg-slate-50 border-b p-2 md:p-4 overflow-x-auto">
+          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
+            
+            <div className="flex gap-2 items-center">
+              <span className="text-xs font-bold uppercase text-slate-400 tracking-wider mr-2">Probabilístico:</span>
+              <button onClick={() => setMethod('simple')} className={`btn-method ${method === 'simple' ? 'active' : ''}`} title="Aleatorio Simple"><Grid size={18} /></button>
+              <button onClick={() => setMethod('systematic')} className={`btn-method ${method === 'systematic' ? 'active' : ''}`} title="Sistemático"><List size={18} /></button>
+              <button onClick={() => setMethod('stratified')} className={`btn-method ${method === 'stratified' ? 'active' : ''}`} title="Estratificado"><Layers size={18} /></button>
+              <button onClick={() => setMethod('cluster')} className={`btn-method ${method === 'cluster' ? 'active' : ''}`} title="Conglomerados"><Users size={18} /></button>
+            </div>
+
+            <div className="h-8 w-px bg-slate-300 hidden md:block"></div>
+
+            <div className="flex gap-2 items-center">
+              <span className="text-xs font-bold uppercase text-slate-400 tracking-wider mr-2">No Probabilístico:</span>
+              <button onClick={() => setMethod('convenience')} className={`btn-method ${method === 'convenience' ? 'active' : ''}`} title="Conveniencia"><UserCheck size={18} /></button>
+              <button onClick={() => setMethod('quota')} className={`btn-method ${method === 'quota' ? 'active' : ''}`} title="Por Cuotas"><PieChart size={18} /></button>
+            </div>
+
+          </div>
+        </div>
+
+        {/* Cuerpo Principal */}
+        <div className="flex flex-col lg:flex-row flex-grow">
+          
+          {/* IZQUIERDA: Visualización */}
+          <div className="flex-1 p-4 md:p-6 bg-slate-50 min-h-[500px] flex flex-col">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-xl font-bold text-indigo-900 flex items-center gap-2">
+                  {info.title}
+                  <span className={`text-xs px-2 py-1 rounded-full ${info.type === 'Probabilístico' ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'}`}>
+                    {info.type}
+                  </span>
+                </h2>
+              </div>
+              <div className="flex gap-2">
+                <button onClick={resetSimulation} disabled={isAnimating} className="px-3 py-2 text-sm border rounded hover:bg-gray-100">Reiniciar</button>
+                <button 
+                  onClick={() => {
+                    if (method === 'simple') runSimpleRandom();
+                    else if (method === 'systematic') runSystematic();
+                    else if (method === 'stratified') runStratified();
+                    else if (method === 'cluster') runCluster();
+                    else if (method === 'convenience') runConvenience();
+                    else if (method === 'quota') runQuota();
+                  }} 
+                  disabled={isAnimating || stats}
+                  className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:bg-slate-300 flex items-center gap-2 shadow-sm font-medium"
+                >
+                  <Play size={16} /> Ejecutar
+                </button>
+              </div>
+            </div>
+
+            {/* CANVAS DE POBLACIÓN */}
+            <div className="flex-grow">
+              {method === 'cluster' ? (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {Array.from({ length: CLUSTER_COUNT }).map((_, i) => {
+                    const clusterId = i + 1;
+                    const members = population.filter(p => p.cluster === clusterId);
+                    const isSelected = members.some(p => p.selected);
+                    return (
+                      <div key={clusterId} className={`border-2 rounded-xl p-2 transition-all ${isSelected ? 'border-green-500 bg-green-50 shadow-inner' : 'border-slate-200 bg-white'}`}>
+                        <div className="text-[10px] font-bold text-slate-400 uppercase mb-2">Conglomerado {clusterId}</div>
+                        <div className="flex flex-wrap gap-2 justify-center">
+                          {members.map((p) => <Person key={p.id} p={p} />)}
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
-            );
+              ) : method === 'stratified' || method === 'quota' ? (
+                <div className="flex flex-col gap-4">
+                  <div className="border border-blue-200 rounded-xl p-4 bg-blue-50/50">
+                    <h3 className="text-blue-800 font-bold text-sm mb-2">Estrato / Grupo A (Azul)</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {population.filter(p => p.type === 'A').map((p) => <Person key={p.id} p={p} />)}
+                    </div>
+                  </div>
+                  <div className="border border-rose-200 rounded-xl p-4 bg-rose-50/50">
+                    <h3 className="text-rose-800 font-bold text-sm mb-2">Estrato / Grupo B (Rosa)</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {population.filter(p => p.type === 'B').map((p) => <Person key={p.id} p={p} />)}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-wrap gap-3 justify-center content-start p-4">
+                  {(method === 'systematic' || method === 'convenience' ? [...population].sort((a,b) => a.id - b.id) : population).map((p) => (
+                    <Person key={p.id} p={p} />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
 
-            const info = METHOD_INFO[method];
+          {/* DERECHA: Panel Didáctico (Sidebar) */}
+          <div className="lg:w-96 bg-white border-l border-slate-200 flex flex-col max-h-screen overflow-y-auto">
+            
+            {/* SECCIÓN 1: ESTADO / LOGS */}
+            <div className="p-4 border-b border-slate-100 bg-slate-50">
+              <h3 className="text-sm font-bold text-slate-500 uppercase mb-2 flex items-center gap-2">
+                <List size={16} /> Proceso Paso a Paso
+              </h3>
+              <div 
+                ref={logContainerRef}
+                className="h-40 overflow-y-auto text-sm font-mono bg-white border border-slate-200 rounded p-2 shadow-inner space-y-1"
+              >
+                {logs.map((log, idx) => (
+                  <div key={idx} className="border-b border-slate-50 pb-1 last:border-0 text-slate-600">
+                    <span className="text-indigo-400 mr-2">{idx+1}.</span>{log}
+                  </div>
+                ))}
+              </div>
+            </div>
 
-            return (
-                <div className="min-h-screen bg-slate-100 text-slate-800 font-sans p-2 md:p-6">
-                    <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-xl overflow-hidden flex flex-col h-full">
-                        <div className="bg-slate-900 text-white p-4 md:p-6 border-b border-slate-700">
-                            <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-3">
-                                <RefreshCw className="w-8 h-8 text-green-400" /> Laboratorio de Muestreo
-                            </h1>
-                            <p className="text-slate-400 mt-1">Simulación interactiva de métodos probabilísticos y no probabilísticos.</p>
-                        </div>
+            {/* SECCIÓN 2: RESULTADOS (Solo si hay stats) */}
+            {stats && (
+              <div className="p-4 border-b border-slate-100 bg-green-50 animate-in fade-in slide-in-from-top-2">
+                 <h3 className="text-sm font-bold text-green-700 uppercase mb-2 flex items-center gap-2">
+                   <ThumbsUp size={16} /> Resultados de la Muestra
+                 </h3>
+                 <div className="flex items-center justify-around bg-white p-3 rounded border border-green-200">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-slate-800">{stats.total}</div>
+                      <div className="text-[10px] text-slate-500 uppercase">Total</div>
+                    </div>
+                    <div className="h-8 w-px bg-slate-200"></div>
+                    <div className="text-center">
+                      <div className="text-xl font-bold text-blue-600">{stats.typeA}</div>
+                      <div className="text-[10px] text-blue-400 uppercase">Azules</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xl font-bold text-rose-600">{stats.typeB}</div>
+                      <div className="text-[10px] text-rose-400 uppercase">Rosas</div>
+                    </div>
+                 </div>
+                 <p className="text-xs text-green-800 mt-2 italic text-center">
+                   "Revisa el historial arriba para ver cómo llegamos a estos números."
+                 </p>
+              </div>
+            )}
 
-                        <div className="bg-slate-50 border-b p-2 md:p-4 overflow-x-auto">
-                            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
-                                <div className="flex gap-2 items-center">
-                                    <span className="text-xs font-bold uppercase text-slate-400 tracking-wider mr-2">Probabilístico:</span>
-                                    <button onClick={() => setMethod('simple')} className={`p-2 rounded bg-white border ${method === 'simple' ? 'bg-indigo-600 text-white border-indigo-600' : 'text-slate-500 hover:bg-slate-100'}`} title="Aleatorio Simple"><Grid size={18} /></button>
-                                    <button onClick={() => setMethod('systematic')} className={`p-2 rounded bg-white border ${method === 'systematic' ? 'bg-indigo-600 text-white border-indigo-600' : 'text-slate-500 hover:bg-slate-100'}`} title="Sistemático"><List size={18} /></button>
-                                    <button onClick={() => setMethod('stratified')} className={`p-2 rounded bg-white border ${method === 'stratified' ? 'bg-indigo-600 text-white border-indigo-600' : 'text-slate-500 hover:bg-slate-100'}`} title="Estratificado"><Layers size={18} /></button>
-                                    <button onClick={() => setMethod('cluster')} className={`p-2 rounded bg-white border ${method === 'cluster' ? 'bg-indigo-600 text-white border-indigo-600' : 'text-slate-500 hover:bg-slate-100'}`} title="Conglomerados"><Users size={18} /></button>
-                                </div>
-                                <div className="h-8 w-px bg-slate-300 hidden md:block"></div>
-                                <div className="flex gap-2 items-center">
-                                    <span className="text-xs font-bold uppercase text-slate-400 tracking-wider mr-2">No Probabilístico:</span>
-                                    <button onClick={() => setMethod('convenience')} className={`p-2 rounded bg-white border ${method === 'convenience' ? 'bg-indigo-600 text-white border-indigo-600' : 'text-slate-500 hover:bg-slate-100'}`} title="Conveniencia"><UserCheck size={18} /></button>
-                                    <button onClick={() => setMethod('quota')} className={`p-2 rounded bg-white border ${method === 'quota' ? 'bg-indigo-600 text-white border-indigo-600' : 'text-slate-500 hover:bg-slate-100'}`} title="Por Cuotas"><PieChart size={18} /></button>
-                                </div>
-                            </div>
-                        </div>
+            {/* SECCIÓN 3: EJEMPLO DIDÁCTICO */}
+            <div className="p-5 border-b border-slate-100">
+              <h3 className="text-sm font-bold text-indigo-600 uppercase mb-2 flex items-center gap-2">
+                <BookOpen size={16} /> Ejemplo Real
+              </h3>
+              <div className="bg-indigo-50 p-3 rounded-lg border border-indigo-100 text-sm text-indigo-900 leading-relaxed">
+                {info.example}
+              </div>
+            </div>
 
-                        <div className="flex flex-col lg:flex-row flex-grow">
-                            <div className="flex-1 p-4 md:p-6 bg-slate-50 min-h-[500px] flex flex-col">
-                                <div className="flex justify-between items-center mb-6">
-                                    <div>
-                                        <h2 className="text-xl font-bold text-indigo-900 flex items-center gap-2">
-                                            {info.title}
-                                            <span className={`text-xs px-2 py-1 rounded-full ${info.type === 'Probabilístico' ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'}`}>{info.type}</span>
-                                        </h2>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <button onClick={resetSimulation} disabled={isAnimating} className="px-3 py-2 text-sm border rounded hover:bg-gray-100">Reiniciar</button>
-                                        <button 
-                                            onClick={() => {
-                                                if (method === 'simple') runSimpleRandom();
-                                                else if (method === 'systematic') runSystematic();
-                                                else if (method === 'stratified') runStratified();
-                                                else if (method === 'cluster') runCluster();
-                                                else if (method === 'convenience') runConvenience();
-                                                else if (method === 'quota') runQuota();
-                                            }} 
-                                            disabled={isAnimating || stats}
-                                            className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:bg-slate-300 flex items-center gap-2 shadow-sm font-medium"
-                                        >
-                                            <Play size={16} /> Ejecutar
-                                        </button>
-                                    </div>
-                                </div>
+            {/* SECCIÓN 4: VENTAJAS / DESVENTAJAS */}
+            <div className="p-5 flex-grow">
+              <h3 className="text-sm font-bold text-slate-500 uppercase mb-3 flex items-center gap-2">
+                <Info size={16} /> Análisis
+              </h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <div className="text-xs font-bold text-green-600 flex items-center gap-1 mb-1">
+                    <ThumbsUp size={12} /> VENTAJAS
+                  </div>
+                  <ul className="text-xs text-slate-600 list-disc pl-4 space-y-1">
+                    {info.pros.map((p, i) => <li key={i}>{p}</li>)}
+                  </ul>
+                </div>
+                
+                <div>
+                  <div className="text-xs font-bold text-red-500 flex items-center gap-1 mb-1">
+                    <ThumbsDown size={12} /> DESVENTAJAS
+                  </div>
+                  <ul className="text-xs text-slate-600 list-disc pl-4 space-y-1">
+                    {info.cons.map((c, i) => <li key={i}>{c}</li>)}
+                  </ul>
+                </div>
+              </div>
 
-                                <div className="flex-grow">
-                                    {method === 'cluster' ? (
-                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                            {Array.from({ length: CLUSTER_COUNT }).map((_, i) => {
-                                                const clusterId = i + 1;
-                                                const members = population.filter(p => p.cluster === clusterId);
-                                                const isSelected = members.some(p => p.selected);
-                                                return (
-                                                    <div key={clusterId} className={`border-2 rounded-xl p-2 transition-all ${isSelected ? 'border-green-500 bg-green-50 shadow-inner' : 'border-slate-200 bg-white'}`}>
-                                                        <div className="text-[10px] font-bold text-slate-400 uppercase mb-2">Conglomerado {clusterId}</div>
-                                                        <div className="flex flex-wrap gap-2 justify-center">
-                                                            {members.map((p) => <Person key={p.id} p={p} />)}
-                                                        </div>
-                                                    </div>
-                                                )
-                                            })}
-                                        </div>
-                                    ) : method === 'stratified' || method === 'quota' ? (
-                                        <div className="flex flex-col gap-4">
-                                            <div className="border border-blue-200 rounded-xl p-4 bg-blue-50/50">
-                                                <h3 className="text-blue-800 font-bold text-sm mb-2">Estrato / Grupo A (Azul)</h3>
-                                                <div className="flex flex-wrap gap-2">
-                                                    {population.filter(p => p.type === 'A').map((p) => <Person key={p.id} p={p} />)}
-                                                </div>
-                                            </div>
-                                            <div className="border border-rose-200 rounded-xl p-4 bg-rose-50/50">
-                                                <h3 className="text-rose-800 font-bold text-sm mb-2">Estrato / Grupo B (Rosa)</h3>
-                                                <div className="flex flex-wrap gap-2">
-                                                    {population.filter(p => p.type === 'B').map((p) => <Person key={p.id} p={p} />)}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="flex flex-wrap gap-3 justify-center content-start p-4">
-                                            {(method === 'systematic' || method === 'convenience' ? [...population].sort((a,b) => a.id - b.id) : population).map((p) => (
-                                                <Person key={p.id} p={p} />
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
+            </div>
 
-                            <div className="lg:w-96 bg-white border-l border-slate-200 flex flex-col max-h-screen overflow-y-auto">
-                                <div className="p-4 border-b border-slate-100 bg-slate-50">
-                                    <h3 className="text-sm font-bold text-slate-500 uppercase mb-2 flex items-center gap-2"><List size={16} /> Proceso Paso a Paso</h3>
-                                    <div ref={logContainerRef} className="h-40 overflow-y-auto text-sm font-mono bg-white border border-slate-200 rounded p-2 shadow-inner space-y-1">
-                                        {logs.map((log, idx) => (
-                                            <div key={idx} className="border-b border-slate-50 pb-1 last:border-0
+          </div>
+        </div>
+
+        <style>{`
+          .btn-method {
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            color: #64748b;
+            transition: all 0.2s;
+          }
+          .btn-method:hover {
+            background-color: #f1f5f9;
+            color: #334155;
+          }
+          .btn-method.active {
+            background-color: #4f46e5;
+            color: white;
+            border-color: #4338ca;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+          }
+        `}</style>
+
+      </div>
+    </div>
+  );
+};
+
+export default SamplingSimulator;
