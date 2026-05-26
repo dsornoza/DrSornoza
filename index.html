@@ -4,31 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dr. Diego Sornoza Parrales | Academic Consultation</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Custom Colors & Shadows to match Lovable.dev/Shadcn UI aesthetic */
         :root {
-            --primary: #06B6D4; /* A vibrant teal/cyan as accent (like in Lovable.dev's output) */
-            --primary-foreground: #FFFFFF; /* White for text on primary background */
-            --muted: #F1F5F9; /* Light gray for muted backgrounds */
-            --muted-foreground: #64748B; /* Darker gray for muted text */
-            --card: #FFFFFF; /* White for card backgrounds */
-            --card-foreground: #1E293B; /* Dark gray for text on cards */
-            --border: #E2E8F0; /* Light border color */
-            --input: #E2E8F0; /* Input border color */
-            --background: #FFFFFF; /* Main background */
-            --foreground: #0F172A; /* Main text color */
-            --shadow-elevated: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Stronger shadow */
-            --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Lighter shadow */
+            --primary: #06B6D4;
+            --primary-foreground: #FFFFFF;
+            --muted: #F1F5F9;
+            --muted-foreground: #64748B;
+            --card: #FFFFFF;
+            --card-foreground: #1E293B;
+            --border: #E2E8F0;
+            --input: #E2E8F0;
+            --background: #FFFFFF;
+            --foreground: #0F172A;
+            --shadow-elevated: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --shadow-soft: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
         }
-
         .bg-primary { background-color: var(--primary); }
         .text-primary { color: var(--primary); }
-        .hover\:bg-primary-dark:hover { background-color: #0E7490; /* A darker shade for hover */ }
+        .hover\:bg-primary-dark:hover { background-color: #0E7490; }
         .bg-primary-foreground { background-color: var(--primary-foreground); }
         .text-primary-foreground { color: var(--primary-foreground); }
         .bg-muted { background-color: var(--muted); }
@@ -36,624 +32,612 @@
         .bg-card { background-color: var(--card); }
         .text-card-foreground { color: var(--card-foreground); }
         .border { border-color: var(--border); }
-        .border-primary\/20 { border-color: rgba(6, 182, 212, 0.2); } /* primary with 20% opacity */
+        .border-primary\/20 { border-color: rgba(6,182,212,0.2); }
         .shadow-elevated { box-shadow: var(--shadow-elevated); }
         .shadow-soft { box-shadow: var(--shadow-soft); }
         .focus\:ring-primary:focus { --tw-ring-color: var(--primary); }
         .focus\:border-primary:focus { border-color: var(--primary); }
+        body { font-family: 'Inter', sans-serif; color: var(--foreground); background-color: var(--background); }
+        .scroll-mt-24 { scroll-margin-top: 6rem; }
+        html { scroll-behavior: smooth; }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            color: var(--foreground);
-            background-color: var(--background);
-        }
-        .scroll-mt-24 { scroll-margin-top: 6rem; } /* For fixed header links */
-        html { scroll-behavior: smooth; } /* Smooth scrolling for nav links */
+        /* Counter animation */
+        @keyframes countUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .counter-item { animation: countUp 0.4s ease forwards; }
     </style>
 </head>
 <body class="antialiased">
 
-    <!-- Language Content Data (JSON structure) -->
-    <script>
-        const content = {
-            en: {
-                // Navigation
-                nav_title_full: "Dr. Diego Sornoza Parrales",
-                nav_about: "About",
-                nav_services: "Services",
-                nav_credentials: "Credentials",
-                nav_publications: "Publications",
-nav_resources: "Resources",
-nav_contact: "Contact",
-                cta_phrase: "Book a Consultation",
-                // Hero
-                hero_headline: "Transform Your Research: From Idea to Publication, Powered by Modern Methods",
-                hero_tagline: "Expert Guidance in Methods, Thesis, and Paper Writing, Enhanced by AI",
-                hero_subtext: "Ph.D. from The University of Western Ontario, Canada.",
-                hero_cta: "Book a Thesis/Paper Consultation",
-                // About
-                about_title: "About Dr. Sornoza Parrales",
-                about_summary_p1: "With over 10 years of experience in higher education, Dr. Diego Sornoza Parrales brings a wealth of expertise in research, teaching, and academic management.",
-                about_summary_p2: "As an Accredited Investigator (SENESCYT: REG-INV-16-01687) and Associate Professor, he specializes in Critical Policy, Equity and Leadership Studies. His Ph.D. from The University of Western Ontario, Canada, combined with extensive experience directing postgraduate theses, positions him uniquely to guide researchers through every stage of their academic journey.",
-                about_summary_p3: "He is passionate about empowering researchers to achieve publication success through strategic, modern methods, including ethical AI integration.",
-                // Services
-                services_title: "Expertise & Services",
-                services_sub: "Comprehensive support for every stage of your academic journey.",
-                service1_title: "Research Methods Consultation",
-                service1_description: "Expert guidance in research design and methodology, including Qualitative, Quantitative, Mixed Methods, Bibliometric Analysis, and Systematic Literature Review.",
-                service2_title: "Thesis & Paper Writing Coaching",
-                service2_description: "Professional support in structure, drafting, and academic formatting. Proficient with LaTeX and advanced reference managers (Mendeley, Zotero).",
-                service3_title: "Data & Statistical Analysis Support",
-                service3_description: "Comprehensive help in interpreting and presenting research data using SPSS, NVivo, VOSviewer, and Bibliometrix.",
-                service4_title: "AI Integration for Academics",
-                service4_description: "Ethical and effective use of modern AI tools in the research process, backed by specialized research in Educational Technology and Artificial Intelligence.",
-                // Credentials
-                credentials_title: "Proof of Impact & Credentials",
-                cred1_title: "Distinguished Investigator",
-                cred1_description: "Recognized as 'Investigador destacado' (Level 1—maximum level) in 2024 by UNESUM for outstanding scientific productivity.",
-                cred2_title: "High-Impact Publications",
-                cred2_description: "Authored/Co-authored 2 books and 20+ articles in arbitrated journals (SCOPUS and regional bases).",
-                // Publications (New Section)
-                publications_title: "Recent Publications",
-                pub1_title: "Evolution and Research Trends in VR and AR for the AEC Industry: A Systematic Review and Science Mapping Approach",
-                pub1_abstract: "This systematic review and bibliometric analysis maps the evolution of Virtual Reality (VR) and Augmented Reality (AR) in the Architecture, Engineering, and Construction (AEC) industry from 2015 to 2025. A dual-database search (Scopus + Web of Science) yielded 1,553 unique articles after removing duplicates. Results show exponential growth—from 9 articles in 2015 to 331 in 2024 (42.78% annual growth rate). Science mapping identified three research clusters: traditional AEC applications (BIM, construction safety, visualization), intelligent systems (digital twins, machine learning, e-learning), and frontier technologies (metaverse, blockchain, IoT). Published in Frontiers in Virtual Reality (2025).",
-                pub1_url: "https://www.frontiersin.org/journals/virtual-reality/articles/10.3389/frvir.2025.1725875/full",
-                pub2_title: "Business Administration Students' Perceptions of Formative Assessment as an Instructional Tool",
-                pub2_abstract: "This study with 112 Ecuadorian students revealed that their perceptions of formative assessment are moderately positive. Although congruence and authenticity were well-rated, consultation (student participation) was the lowest. It is recommended to improve the authenticity of tasks and student involvement in evaluation criteria.",
-                pub3_title: "Educational modality and performance: Differential patterns by major in a university cohort before, during, and after the COVID-19 pandemic",
-                pub3_abstract: "This longitudinal study with 442 students showed that COVID-19 virtuality impacted performance unequally. Health programs improved and finished with a net positive balance. In contrast, technical programs like Civil Engineering declined upon returning to face-to-face, recording losses. The conclusion is that differentiated educational strategies are required by discipline.",
-                pub4_title: "Artificial Intelligence in the Transformation of the Teaching-Learning Process",
-                pub4_abstract: "This correlational study surveyed 234 Business Administration students regarding the use of Artificial Intelligence (AI). Results revealed a high use of tools like ChatGPT and a positive and significant correlation (ρ = 0.827) between the use of AI and the transformation of the teaching-learning process. It is concluded that the strategic use of AI creates more dynamic and innovative educational environments.",
-                // Resources
-                resources_title: "Academic Profile",
-                googleScholar: "Google Scholar Profile",
-                linkedin: "LinkedIn Profile",
-                youtube: "YouTube Channel",
-                // Contact
-                contact_title: "Get in Touch",
-                contact_description: "Ready to transform your research? Schedule a consultation today.",
-                form_name: "Name",
-                form_namePlaceholder: "Your full name",
-                form_email: "Email",
-                form_emailPlaceholder: "your.email@example.com",
-                form_projectType: "Project Type",
-                form_projectTypePlaceholder: "Select project type",
-                form_message: "Message",
-                form_messagePlaceholder: "Tell me about your research project...",
-                form_submit: "Send Message",
-                form_option1: "Thesis / Dissertation",
-                form_option2: "Journal Paper / Publication",
-                form_option3: "Research Methods Only",
-                form_success: "Thank you for your inquiry! Dr. Sornoza Parrales will be in touch shortly.",
-                form_sending: "Sending...",
-                direct_email: "diego@sornoza.com",
-            },
-            es: {
-                // Navigation
-                nav_title_full: "Dr. Diego Sornoza Parrales",
-                nav_about: "Acerca de",
-                nav_services: "Servicios",
-                nav_credentials: "Credenciales",
-                nav_publications: "Publicaciones",
-nav_resources: "Recursos",
-nav_contact: "Contacto",
-                cta_phrase: "Agenda una Consulta",
-                // Hero
-                hero_headline: "Transforma Tu Investigación: De la Idea a la Publicación, Impulsado por Métodos Modernos",
-                hero_tagline: "Asesoría Experta en Métodos, Tesis y Escritura de Artículos, Potenciada por IA",
-                hero_subtext: "Ph.D. de The University of Western Ontario, Canadá.",
-                hero_cta: "Agenda una Consulta de Tesis/Artículo",
-                // About
-                about_title: "Acerca del Dr. Sornoza Parrales",
-                about_summary_p1: "Con más de 10 años de experiencia en educación superior, el Dr. Diego Sornoza Parrales aporta una amplia experiencia en investigación, docencia y gestión académica.",
-                about_summary_p2: "Como Investigador Acreditado (SENESCYT: REG-INV-16-01687) y Profesor Asociado, se especializa en Políticas Críticas, Equidad y Estudios de Liderazgo. Su Ph.D. de The University of Western Ontario, Canadá, combinado con amplia experiencia dirigiendo tesis de posgrado, lo posiciona de manera única para guiar a los investigadores en cada etapa de su trayectoria académica.",
-                about_summary_p3: "Su pasión es empoderar a los investigadores para alcanzar el éxito en la publicación a través de métodos estratégicos y modernos, incluyendo la integración ética de la IA.",
-                // Services
-                services_title: "Experiencia y Servicios",
-                services_sub: "Soporte integral para cada etapa de tu recorrido académico.",
-                service1_title: "Consultoría en Métodos de Investigación",
-                service1_description: "Orientación experta en diseño de investigación y metodología, incluyendo Métodos Cualitativos, Cuantitativos, Mixtos, Análisis Bibliométrico y Revisión Sistemática de Literatura.",
-                service2_title: "Asesoría en Escritura de Tesis y Artículos",
-                service2_description: "Apoyo profesional en estructura, redacción y formato académico. Dominio de LaTeX y gestores de referencias avanzados (Mendeley, Zotero).",
-                service3_title: "Soporte en Análisis de Datos y Estadística",
-                service3_description: "Ayuda integral en la interpretación y presentación de datos de investigación usando SPSS, NVivo, VOSviewer y Bibliometrix.",
-                service4_title: "Integración de IA para Académicos",
-                service4_description: "Uso ético y efectivo de herramientas modernas de IA en el proceso de investigación, respaldado por investigación especializada en Tecnología Educativa e Inteligencia Artificial.",
-                // Credentials
-                credentials_title: "Prueba de Impacto y Credenciales",
-                cred1_title: "Investigador Destacado",
-                cred1_description: "Reconocido como 'Investigador destacado' (Nivel 1—nivel máximo) en 2024 por UNESUM por su sobresaliente productividad científica.",
-                cred2_title: "Publicaciones de Alto Impacto",
-                cred2_description: "Autor/Coautor de 2 libros y más de 20 artículos en revistas arbitradas (SCOPUS y bases regionales).",
-                // Publications (New Section)
-                publications_title: "Publicaciones Recientes",
-                pub1_title: "Evolución y Tendencias de Investigación en RV y RA para la Industria AEC: Una Revisión Sistemática y Mapeo Científico",
-                pub1_abstract: "Esta revisión sistemática y análisis bibliométrico mapea la evolución de la Realidad Virtual (RV) y la Realidad Aumentada (RA) en la industria de Arquitectura, Ingeniería y Construcción (AEC) de 2015 a 2025. La búsqueda en doble base de datos (Scopus + Web of Science) produjo 1,553 artículos únicos. Los resultados muestran un crecimiento exponencial, de 9 artículos en 2015 a 331 en 2024 (tasa de crecimiento anual del 42,78%). El mapeo científico identificó tres clústeres: aplicaciones AEC tradicionales (BIM, seguridad en construcción), sistemas inteligentes (gemelos digitales, machine learning) y tecnologías de frontera (metaverso, blockchain, IoT). Publicado en Frontiers in Virtual Reality (2025).",
-                pub1_url: "https://www.frontiersin.org/journals/virtual-reality/articles/10.3389/frvir.2025.1725875/full",
-                pub2_title: "Percepciones de Estudiantes de Administración de Empresas sobre la Evaluación Formativa como Herramienta de Instrucción",
-                pub2_abstract: "Este estudio con 112 estudiantes ecuatorianos reveló que sus percepciones sobre la evaluación formativa son moderadamente positivas. Aunque la congruencia y la autenticidad fueron bien valoradas, la consulta (participación estudiantil) fue la más baja. Se recomienda mejorar la autenticidad de las tareas y la participación del estudiante en los criterios de evaluación.",
-                pub3_title: "Modalidad educativa y rendimiento: Patrones diferenciales por especialidad en una cohorte universitaria antes, durante y después de la pandemia de COVID-19",
-                pub3_abstract: "Este estudio longitudinal con 442 estudiantes mostró que la virtualidad por COVID-19 impactó el rendimiento de forma desigual. Los programas de Salud mejoraron y terminaron con saldo positivo. En cambio, programas técnicos como Ingeniería Civil cayeron al volver a la presencialidad, registrando pérdidas. Se concluye que se requieren estrategias educativas diferenciadas por disciplina.",
-                pub4_title: "Inteligencia Artificial en la Transformación del Proceso de Enseñanza-Aprendizaje",
-                pub4_abstract: "Este estudio correlacional encuestó a 234 estudiantes de Administración de Empresas sobre el uso de la Inteligencia Artificial (IA). Los resultados revelaron un alto uso de herramientas como ChatGPT y una correlación positiva y significativa (ρ = 0.827) entre el uso de la IA y la transformación del proceso de enseñanza-aprendizaje. Se concluye que el uso estratégico de la IA crea ambientes educativos más dinámicos e innovadores.",
-                // Resources
-                resources_title: "Perfil Académico",
-                googleScholar: "Perfil de Google Scholar",
-                linkedin: "Perfil de LinkedIn",
-                youtube: "Canal de YouTube",
-                // Contact
-                contact_title: "Contáctame",
-                contact_description: "¿Listo para transformar tu investigación? Agenda una consulta hoy.",
-                form_name: "Nombre",
-                form_namePlaceholder: "Tu nombre completo",
-                form_email: "Correo Electrónico",
-                form_emailPlaceholder: "tu.correo@ejemplo.com",
-                form_projectType: "Tipo de Proyecto",
-                form_projectTypePlaceholder: "Selecciona el tipo de proyecto",
-                form_message: "Mensaje",
-                form_messagePlaceholder: "Cuéntame sobre tu proyecto de investigación...",
-                form_submit: "Enviar Mensaje",
-                form_option1: "Tesis / Disertación",
-                form_option2: "Artículo de Revista / Publicación",
-                form_option3: "Solo Métodos de Investigación",
-                form_success: "¡Gracias por su consulta! El Dr. Sornoza Parrales se pondrá en contacto pronto.",
-                form_sending: "Enviando...",
-                direct_email: "diego@sornoza.com",
-            }
-        };
+<script>
+const content = {
+    en: {
+        nav_title_full: "Dr. Diego Sornoza Parrales",
+        nav_about: "About",
+        nav_services: "Services",
+        nav_credentials: "Credentials",
+        nav_publications: "Publications",
+        nav_resources: "Resources",
+        nav_bima: "BIMA",
+        nav_contact: "Contact",
+        cta_phrase: "Book a Consultation",
+        hero_headline: "Transform Your Research: From Idea to Publication, Powered by Modern Methods",
+        hero_tagline: "Expert Guidance in Methods, Thesis, and Paper Writing, Enhanced by AI",
+        hero_subtext: "Ph.D. from The University of Western Ontario, Canada.",
+        hero_cta: "Book a Thesis/Paper Consultation",
+        about_title: "About Dr. Sornoza Parrales",
+        about_summary_p1: "With over 10 years of experience in higher education, Dr. Diego Sornoza Parrales brings a wealth of expertise in research, teaching, and academic management.",
+        about_summary_p2: "As an Accredited Investigator (SENESCYT: REG-INV-16-01687) and Associate Professor, he specializes in Critical Policy, Equity and Leadership Studies. His Ph.D. from The University of Western Ontario, Canada, combined with extensive experience directing postgraduate theses, positions him uniquely to guide researchers through every stage of their academic journey.",
+        about_summary_p3: "He is passionate about empowering researchers to achieve publication success through strategic, modern methods, including ethical AI integration.",
+        services_title: "Expertise & Services",
+        services_sub: "Comprehensive support for every stage of your academic journey.",
+        service1_title: "Research Methods Consultation",
+        service1_description: "Expert guidance in research design and methodology, including Qualitative, Quantitative, Mixed Methods, Bibliometric Analysis, and Systematic Literature Review.",
+        service2_title: "Thesis & Paper Writing Coaching",
+        service2_description: "Professional support in structure, drafting, and academic formatting. Proficient with LaTeX and advanced reference managers (Mendeley, Zotero).",
+        service3_title: "Data & Statistical Analysis Support",
+        service3_description: "Comprehensive help in interpreting and presenting research data using SPSS, NVivo, VOSviewer, and Bibliometrix.",
+        service4_title: "AI Integration for Academics",
+        service4_description: "Ethical and effective use of modern AI tools in the research process, backed by specialized research in Educational Technology and Artificial Intelligence.",
+        credentials_title: "Proof of Impact & Credentials",
+        cred1_title: "Distinguished Investigator",
+        cred1_description: "Recognized as 'Investigador destacado' (Level 1—maximum level) in 2024 by UNESUM for outstanding scientific productivity.",
+        cred2_title: "High-Impact Publications",
+        cred2_description: "Authored/Co-authored 2 books and 20+ articles in arbitrated journals (SCOPUS and regional bases).",
+        counter_years: "Years of Experience",
+        counter_articles: "Published Articles",
+        counter_books: "Books Authored",
+        counter_theses: "Theses Directed",
+        publications_title: "Recent Publications",
+        pub1_title: "Evolution and Research Trends in VR and AR for the AEC Industry: A Systematic Review and Science Mapping Approach",
+        pub1_abstract: "This systematic review and bibliometric analysis maps the evolution of Virtual Reality (VR) and Augmented Reality (AR) in the Architecture, Engineering, and Construction (AEC) industry from 2015 to 2025. A dual-database search (Scopus + Web of Science) yielded 1,553 unique articles after removing duplicates. Results show exponential growth—from 9 articles in 2015 to 331 in 2024 (42.78% annual growth rate). Science mapping identified three research clusters: traditional AEC applications (BIM, construction safety, visualization), intelligent systems (digital twins, machine learning, e-learning), and frontier technologies (metaverse, blockchain, IoT). Published in Frontiers in Virtual Reality (2025).",
+        pub1_url: "https://www.frontiersin.org/journals/virtual-reality/articles/10.3389/frvir.2025.1725875/full",
+        pub1_link_label: "View in Frontiers in Virtual Reality",
+        pub2_title: "Business Administration Students' Perceptions of Formative Assessment as an Instructional Tool",
+        pub2_abstract: "This study with 112 Ecuadorian students revealed that their perceptions of formative assessment are moderately positive. Although congruence and authenticity were well-rated, consultation (student participation) was the lowest. It is recommended to improve the authenticity of tasks and student involvement in evaluation criteria.",
+        pub3_title: "Educational modality and performance: Differential patterns by major in a university cohort before, during, and after the COVID-19 pandemic",
+        pub3_abstract: "This longitudinal study with 442 students showed that COVID-19 virtuality impacted performance unequally. Health programs improved and finished with a net positive balance. In contrast, technical programs like Civil Engineering declined upon returning to face-to-face, recording losses. The conclusion is that differentiated educational strategies are required by discipline.",
+        pub4_title: "Artificial Intelligence in the Transformation of the Teaching-Learning Process",
+        pub4_abstract: "This correlational study surveyed 234 Business Administration students regarding the use of Artificial Intelligence (AI). Results revealed a high use of tools like ChatGPT and a positive and significant correlation (ρ = 0.827) between the use of AI and the transformation of the teaching-learning process. It is concluded that the strategic use of AI creates more dynamic and innovative educational environments.",
+        resources_title: "Academic Profile",
+        googleScholar: "Google Scholar Profile",
+        linkedin: "LinkedIn Profile",
+        youtube: "YouTube Channel",
+        contact_title: "Get in Touch",
+        contact_description: "Ready to transform your research? Schedule a consultation today.",
+        form_name: "Name",
+        form_namePlaceholder: "Your full name",
+        form_email: "Email",
+        form_emailPlaceholder: "your.email@example.com",
+        form_projectType: "Project Type",
+        form_projectTypePlaceholder: "Select project type",
+        form_message: "Message",
+        form_messagePlaceholder: "Tell me about your research project...",
+        form_submit: "Send Message",
+        form_option1: "Thesis / Dissertation",
+        form_option2: "Journal Paper / Publication",
+        form_option3: "Research Methods Only",
+        form_success: "Thank you for your inquiry! Dr. Sornoza Parrales will be in touch shortly.",
+        form_sending: "Sending...",
+        direct_email: "diego@sornoza.com",
+    },
+    es: {
+        nav_title_full: "Dr. Diego Sornoza Parrales",
+        nav_about: "Acerca de",
+        nav_services: "Servicios",
+        nav_credentials: "Credenciales",
+        nav_publications: "Publicaciones",
+        nav_resources: "Recursos",
+        nav_bima: "BIMA",
+        nav_contact: "Contacto",
+        cta_phrase: "Agenda una Consulta",
+        hero_headline: "Transforma Tu Investigación: De la Idea a la Publicación, Impulsado por Métodos Modernos",
+        hero_tagline: "Asesoría Experta en Métodos, Tesis y Escritura de Artículos, Potenciada por IA",
+        hero_subtext: "Ph.D. de The University of Western Ontario, Canadá.",
+        hero_cta: "Agenda una Consulta de Tesis/Artículo",
+        about_title: "Acerca del Dr. Sornoza Parrales",
+        about_summary_p1: "Con más de 10 años de experiencia en educación superior, el Dr. Diego Sornoza Parrales aporta una amplia experiencia en investigación, docencia y gestión académica.",
+        about_summary_p2: "Como Investigador Acreditado (SENESCYT: REG-INV-16-01687) y Profesor Asociado, se especializa en Políticas Críticas, Equidad y Estudios de Liderazgo. Su Ph.D. de The University of Western Ontario, Canadá, combinado con amplia experiencia dirigiendo tesis de posgrado, lo posiciona de manera única para guiar a los investigadores en cada etapa de su trayectoria académica.",
+        about_summary_p3: "Su pasión es empoderar a los investigadores para alcanzar el éxito en la publicación a través de métodos estratégicos y modernos, incluyendo la integración ética de la IA.",
+        services_title: "Experiencia y Servicios",
+        services_sub: "Soporte integral para cada etapa de tu recorrido académico.",
+        service1_title: "Consultoría en Métodos de Investigación",
+        service1_description: "Orientación experta en diseño de investigación y metodología, incluyendo Métodos Cualitativos, Cuantitativos, Mixtos, Análisis Bibliométrico y Revisión Sistemática de Literatura.",
+        service2_title: "Asesoría en Escritura de Tesis y Artículos",
+        service2_description: "Apoyo profesional en estructura, redacción y formato académico. Dominio de LaTeX y gestores de referencias avanzados (Mendeley, Zotero).",
+        service3_title: "Soporte en Análisis de Datos y Estadística",
+        service3_description: "Ayuda integral en la interpretación y presentación de datos de investigación usando SPSS, NVivo, VOSviewer y Bibliometrix.",
+        service4_title: "Integración de IA para Académicos",
+        service4_description: "Uso ético y efectivo de herramientas modernas de IA en el proceso de investigación, respaldado por investigación especializada en Tecnología Educativa e Inteligencia Artificial.",
+        credentials_title: "Prueba de Impacto y Credenciales",
+        cred1_title: "Investigador Destacado",
+        cred1_description: "Reconocido como 'Investigador destacado' (Nivel 1—nivel máximo) en 2024 por UNESUM por su sobresaliente productividad científica.",
+        cred2_title: "Publicaciones de Alto Impacto",
+        cred2_description: "Autor/Coautor de 2 libros y más de 20 artículos en revistas arbitradas (SCOPUS y bases regionales).",
+        counter_years: "Años de Experiencia",
+        counter_articles: "Artículos Publicados",
+        counter_books: "Libros Publicados",
+        counter_theses: "Tesis Dirigidas",
+        publications_title: "Publicaciones Recientes",
+        pub1_title: "Evolución y Tendencias de Investigación en RV y RA para la Industria AEC: Una Revisión Sistemática y Mapeo Científico",
+        pub1_abstract: "Esta revisión sistemática y análisis bibliométrico mapea la evolución de la Realidad Virtual (RV) y la Realidad Aumentada (RA) en la industria de Arquitectura, Ingeniería y Construcción (AEC) de 2015 a 2025. La búsqueda en doble base de datos (Scopus + Web of Science) produjo 1,553 artículos únicos. Los resultados muestran un crecimiento exponencial, de 9 artículos en 2015 a 331 en 2024 (tasa de crecimiento anual del 42,78%). El mapeo científico identificó tres clústeres: aplicaciones AEC tradicionales (BIM, seguridad en construcción), sistemas inteligentes (gemelos digitales, machine learning) y tecnologías de frontera (metaverso, blockchain, IoT). Publicado en Frontiers in Virtual Reality (2025).",
+        pub1_url: "https://www.frontiersin.org/journals/virtual-reality/articles/10.3389/frvir.2025.1725875/full",
+        pub1_link_label: "Ver en Frontiers in Virtual Reality",
+        pub2_title: "Percepciones de Estudiantes de Administración de Empresas sobre la Evaluación Formativa como Herramienta de Instrucción",
+        pub2_abstract: "Este estudio con 112 estudiantes ecuatorianos reveló que sus percepciones sobre la evaluación formativa son moderadamente positivas. Aunque la congruencia y la autenticidad fueron bien valoradas, la consulta (participación estudiantil) fue la más baja. Se recomienda mejorar la autenticidad de las tareas y la participación del estudiante en los criterios de evaluación.",
+        pub3_title: "Modalidad educativa y rendimiento: Patrones diferenciales por especialidad en una cohorte universitaria antes, durante y después de la pandemia de COVID-19",
+        pub3_abstract: "Este estudio longitudinal con 442 estudiantes mostró que la virtualidad por COVID-19 impactó el rendimiento de forma desigual. Los programas de Salud mejoraron y terminaron con saldo positivo. En cambio, programas técnicos como Ingeniería Civil cayeron al volver a la presencialidad, registrando pérdidas. Se concluye que se requieren estrategias educativas diferenciadas por disciplina.",
+        pub4_title: "Inteligencia Artificial en la Transformación del Proceso de Enseñanza-Aprendizaje",
+        pub4_abstract: "Este estudio correlacional encuestó a 234 estudiantes de Administración de Empresas sobre el uso de la Inteligencia Artificial (IA). Los resultados revelaron un alto uso de herramientas como ChatGPT y una correlación positiva y significativa (ρ = 0.827) entre el uso de la IA y la transformación del proceso de enseñanza-aprendizaje. Se concluye que el uso estratégico de la IA crea ambientes educativos más dinámicos e innovadores.",
+        resources_title: "Perfil Académico",
+        googleScholar: "Perfil de Google Scholar",
+        linkedin: "Perfil de LinkedIn",
+        youtube: "Canal de YouTube",
+        contact_title: "Contáctame",
+        contact_description: "¿Listo para transformar tu investigación? Agenda una consulta hoy.",
+        form_name: "Nombre",
+        form_namePlaceholder: "Tu nombre completo",
+        form_email: "Correo Electrónico",
+        form_emailPlaceholder: "tu.correo@ejemplo.com",
+        form_projectType: "Tipo de Proyecto",
+        form_projectTypePlaceholder: "Selecciona el tipo de proyecto",
+        form_message: "Mensaje",
+        form_messagePlaceholder: "Cuéntame sobre tu proyecto de investigación...",
+        form_submit: "Enviar Mensaje",
+        form_option1: "Tesis / Disertación",
+        form_option2: "Artículo de Revista / Publicación",
+        form_option3: "Solo Métodos de Investigación",
+        form_success: "¡Gracias por su consulta! El Dr. Sornoza Parrales se pondrá en contacto pronto.",
+        form_sending: "Enviando...",
+        direct_email: "diego@sornoza.com",
+    }
+};
 
-        let currentLang = 'en';
+let currentLang = 'en';
 
-        // Function to update all text elements based on the current language
-        function updateContent() {
-            const langData = content[currentLang];
-            // Update Navigation
-            document.querySelector('#nav-title-full').textContent = langData.nav_title_full;
-            document.querySelectorAll('.nav-about').forEach(el => el.textContent = langData.nav_about);
-            document.querySelectorAll('.nav-services').forEach(el => el.textContent = langData.nav_services);
-            document.querySelectorAll('.nav-credentials').forEach(el => el.textContent = langData.nav_credentials);
-            document.querySelectorAll('.nav-publications').forEach(el => el.textContent = langData.nav_publications);
-document.querySelectorAll('.nav-resources').forEach(el => el.textContent = langData.nav_resources);
-document.querySelectorAll('.nav-contact').forEach(el => el.textContent = langData.nav_contact);
-            document.querySelectorAll('.cta-btn').forEach(el => el.textContent = langData.cta_phrase);
-            document.querySelectorAll('.hero-cta-btn').forEach(el => el.textContent = langData.hero_cta);
+function updateContent() {
+    const langData = content[currentLang];
+    document.querySelector('#nav-title-full').textContent = langData.nav_title_full;
+    document.querySelectorAll('.nav-about').forEach(el => el.textContent = langData.nav_about);
+    document.querySelectorAll('.nav-services').forEach(el => el.textContent = langData.nav_services);
+    document.querySelectorAll('.nav-credentials').forEach(el => el.textContent = langData.nav_credentials);
+    document.querySelectorAll('.nav-publications').forEach(el => el.textContent = langData.nav_publications);
+    document.querySelectorAll('.nav-resources').forEach(el => el.textContent = langData.nav_resources);
+    document.querySelectorAll('.nav-bima').forEach(el => el.textContent = langData.nav_bima);
+    document.querySelectorAll('.nav-contact').forEach(el => el.textContent = langData.nav_contact);
+    document.querySelectorAll('.cta-btn').forEach(el => el.textContent = langData.cta_phrase);
+    document.querySelectorAll('.hero-cta-btn').forEach(el => el.textContent = langData.hero_cta);
+    document.querySelector('#hero-headline').textContent = langData.hero_headline;
+    document.querySelector('#hero-tagline').textContent = langData.hero_tagline;
+    document.querySelector('#hero-subtext').textContent = langData.hero_subtext;
+    document.querySelector('#about-title').textContent = langData.about_title;
+    document.querySelector('#about-p1').textContent = langData.about_summary_p1;
+    document.querySelector('#about-p2').textContent = langData.about_summary_p2;
+    document.querySelector('#about-p3').textContent = langData.about_summary_p3;
+    document.querySelector('#services-title').textContent = langData.services_title;
+    document.querySelector('#services-sub').textContent = langData.services_sub;
+    document.querySelector('#s1-title').textContent = langData.service1_title;
+    document.querySelector('#s1-description').textContent = langData.service1_description;
+    document.querySelector('#s2-title').textContent = langData.service2_title;
+    document.querySelector('#s2-description').textContent = langData.service2_description;
+    document.querySelector('#s3-title').textContent = langData.service3_title;
+    document.querySelector('#s3-description').textContent = langData.service3_description;
+    document.querySelector('#s4-title').textContent = langData.service4_title;
+    document.querySelector('#s4-description').textContent = langData.service4_description;
+    document.querySelector('#credentials-title').textContent = langData.credentials_title;
+    document.querySelector('#cred1-title').textContent = langData.cred1_title;
+    document.querySelector('#cred1-description').textContent = langData.cred1_description;
+    document.querySelector('#cred2-title').textContent = langData.cred2_title;
+    document.querySelector('#cred2-description').textContent = langData.cred2_description;
+    document.querySelector('#counter-years-label').textContent = langData.counter_years;
+    document.querySelector('#counter-articles-label').textContent = langData.counter_articles;
+    document.querySelector('#counter-books-label').textContent = langData.counter_books;
+    document.querySelector('#counter-theses-label').textContent = langData.counter_theses;
+    document.querySelector('#publications-title').textContent = langData.publications_title;
+    document.querySelector('#pub1-title').textContent = langData.pub1_title;
+    document.querySelector('#pub1-abstract').textContent = langData.pub1_abstract;
+    document.querySelector('#pub1-link').textContent = langData.pub1_link_label;
+    document.querySelector('#pub2-title').textContent = langData.pub2_title;
+    document.querySelector('#pub2-abstract').textContent = langData.pub2_abstract;
+    document.querySelector('#pub3-title').textContent = langData.pub3_title;
+    document.querySelector('#pub3-abstract').textContent = langData.pub3_abstract;
+    document.querySelector('#pub4-title').textContent = langData.pub4_title;
+    document.querySelector('#pub4-abstract').textContent = langData.pub4_abstract;
+    document.querySelector('#resources-title').textContent = langData.resources_title;
+    document.querySelector('#google-scholar-link').textContent = langData.googleScholar;
+    document.querySelector('#linkedin-link').textContent = langData.linkedin;
+    document.querySelector('#youtube-link').textContent = langData.youtube;
+    document.querySelector('#contact-title').textContent = langData.contact_title;
+    document.querySelector('#contact-description').textContent = langData.contact_description;
+    document.querySelector('label[for="name"]').textContent = langData.form_name;
+    document.querySelector('#name').placeholder = langData.form_namePlaceholder;
+    document.querySelector('label[for="email"]').textContent = langData.form_email;
+    document.querySelector('#email').placeholder = langData.form_emailPlaceholder;
+    document.querySelector('label[for="projectType"]').textContent = langData.form_projectType;
+    const selectPlaceholder = document.querySelector('option[value=""][disabled]');
+    if (selectPlaceholder) selectPlaceholder.textContent = langData.form_projectTypePlaceholder;
+    document.querySelector('option[value="thesis"]').textContent = langData.form_option1;
+    document.querySelector('option[value="paper"]').textContent = langData.form_option2;
+    document.querySelector('option[value="methods"]').textContent = langData.form_option3;
+    document.querySelector('label[for="message"]').textContent = langData.form_message;
+    document.querySelector('#message').placeholder = langData.form_messagePlaceholder;
+    document.querySelector('#form-submit-btn').textContent = langData.form_submit;
+    document.querySelector('#direct-email-link').textContent = langData.direct_email;
+    document.querySelector('#footer-rights').textContent = currentLang === 'en' ? 'All rights reserved.' : 'Todos los derechos reservados.';
+    const langBtnText = currentLang === 'en' ? 'ES' : 'EN';
+    document.querySelectorAll('.lang-btn-text').forEach(el => el.textContent = langBtnText);
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.remove('font-bold', 'text-primary');
+        if (btn.dataset.lang === currentLang) btn.classList.add('font-bold', 'text-primary');
+    });
+    document.documentElement.lang = currentLang;
+}
 
-            // Hero Section
-            document.querySelector('#hero-headline').textContent = langData.hero_headline;
-            document.querySelector('#hero-tagline').textContent = langData.hero_tagline;
-            document.querySelector('#hero-subtext').textContent = langData.hero_subtext;
+function switchLanguage(lang) {
+    currentLang = lang;
+    updateContent();
+}
 
-            // About Section
-            document.querySelector('#about-title').textContent = langData.about_title;
-            document.querySelector('#about-p1').textContent = langData.about_summary_p1;
-            document.querySelector('#about-p2').textContent = langData.about_summary_p2;
-            document.querySelector('#about-p3').textContent = langData.about_summary_p3;
-           
-            // Services Section
-            document.querySelector('#services-title').textContent = langData.services_title;
-            document.querySelector('#services-sub').textContent = langData.services_sub;
-            document.querySelector('#s1-title').textContent = langData.service1_title;
-            document.querySelector('#s1-description').textContent = langData.service1_description;
-            document.querySelector('#s2-title').textContent = langData.service2_title;
-            document.querySelector('#s2-description').textContent = langData.service2_description;
-            document.querySelector('#s3-title').textContent = langData.service3_title;
-            document.querySelector('#s3-description').textContent = langData.service3_description;
-            document.querySelector('#s4-title').textContent = langData.service4_title;
-            document.querySelector('#s4-description').textContent = langData.service4_description;
+document.addEventListener('DOMContentLoaded', () => {
+    updateContent();
 
-            // Credentials Section
-            document.querySelector('#credentials-title').textContent = langData.credentials_title;
-            document.querySelector('#cred1-title').textContent = langData.cred1_title;
-            document.querySelector('#cred1-description').textContent = langData.cred1_description;
-            document.querySelector('#cred2-title').textContent = langData.cred2_title;
-            document.querySelector('#cred2-description').textContent = langData.cred2_description;
-
-            // Publications Section
-            document.querySelector('#publications-title').textContent = langData.publications_title;
-            document.querySelector('#pub1-title').textContent = langData.pub1_title;
-            document.querySelector('#pub1-abstract').textContent = langData.pub1_abstract;
-            document.querySelector('#pub2-title').textContent = langData.pub2_title;
-            document.querySelector('#pub2-abstract').textContent = langData.pub2_abstract;
-            document.querySelector('#pub3-title').textContent = langData.pub3_title;
-            document.querySelector('#pub3-abstract').textContent = langData.pub3_abstract;
-            document.querySelector('#pub4-title').textContent = langData.pub4_title;
-            document.querySelector('#pub4-abstract').textContent = langData.pub4_abstract;
-
-
-            // Resources Section
-            document.querySelector('#resources-title').textContent = langData.resources_title;
-            document.querySelector('#google-scholar-link').textContent = langData.googleScholar;
-            document.querySelector('#linkedin-link').textContent = langData.linkedin;
-            document.querySelector('#youtube-link').textContent = langData.youtube;
-
-            // Contact Section
-            document.querySelector('#contact-title').textContent = langData.contact_title;
-            document.querySelector('#contact-description').textContent = langData.contact_description;
-            document.querySelector('label[for="name"]').textContent = langData.form_name;
-            document.querySelector('#name').placeholder = langData.form_namePlaceholder;
-            document.querySelector('label[for="email"]').textContent = langData.form_email;
-            document.querySelector('#email').placeholder = langData.form_emailPlaceholder;
-            document.querySelector('label[for="projectType"]').textContent = langData.form_projectType;
-            // Select dropdown options update
-            const selectPlaceholder = document.querySelector('option[value=""][disabled]');
-            if (selectPlaceholder) selectPlaceholder.textContent = langData.form_projectTypePlaceholder;
-            document.querySelector('option[value="thesis"]').textContent = langData.form_option1;
-            document.querySelector('option[value="paper"]').textContent = langData.form_option2;
-            document.querySelector('option[value="methods"]').textContent = langData.form_option3;
-            
-            document.querySelector('label[for="message"]').textContent = langData.form_message;
-            document.querySelector('#message').placeholder = langData.form_messagePlaceholder;
-            document.querySelector('#form-submit-btn').textContent = langData.form_submit;
-            document.querySelector('#direct-email-link').textContent = langData.direct_email;
-            
-            // Footer update
-            document.querySelector('#footer-rights').textContent = currentLang === 'en' ? 'All rights reserved.' : 'Todos los derechos reservados.';
-
-
-            // Update language selector active state
-            const langBtnText = currentLang === 'en' ? 'ES' : 'EN';
-            document.querySelectorAll('.lang-btn-text').forEach(el => el.textContent = langBtnText);
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.classList.remove('font-bold', 'text-primary');
-                if (btn.dataset.lang === currentLang) {
-                    btn.classList.add('font-bold', 'text-primary');
-                }
-            });
-            document.documentElement.lang = currentLang;
-        }
-
-        // Language Switcher Handler
-        function switchLanguage(lang) {
-            currentLang = lang;
-            updateContent();
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            updateContent(); // Initialize content
-
-            // Language button setup
-            const langSwitcherButton = document.querySelector('#lang-switcher-button');
-            if (langSwitcherButton) {
-                langSwitcherButton.addEventListener('click', () => {
-                    switchLanguage(currentLang === 'en' ? 'es' : 'en');
-                });
-            }
-
-            // Mobile menu toggle
-            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-            const mobileMenu = document.getElementById('mobile-menu');
-            if (mobileMenuBtn) {
-                mobileMenuBtn.addEventListener('click', () => {
-                    mobileMenu.classList.toggle('hidden');
-                });
-                // Close mobile menu when a link is clicked
-                mobileMenu.querySelectorAll('a').forEach(link => {
-                    link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
-                });
-            }
-
-            // Initialize Lucide Icons
-            lucide.createIcons();
+    const langSwitcherButton = document.querySelector('#lang-switcher-button');
+    if (langSwitcherButton) {
+        langSwitcherButton.addEventListener('click', () => {
+            switchLanguage(currentLang === 'en' ? 'es' : 'en');
         });
-    </script>
+    }
 
-    <!-- Header / Navigation (Fixed) -->
-    <header class="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
-        <div class="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
-            <!-- Logo/Name -->
-            <div class="flex items-center gap-2">
-                <i data-lucide="graduation-cap" class="h-6 w-6 text-primary"></i>
-                <span class="text-lg font-semibold" id="nav-title-full">Dr. Diego Sornoza Parrales</span>
-            </div>
-            
-            <!-- Navigation Links -->
-            <nav class="hidden md:flex items-center gap-8">
-                <a href="#about" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors nav-about">About</a>
-                <a href="#services" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors nav-services">Services</a>
-                <a href="#credentials" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors nav-credentials">Credentials</a>
-                <a href="#publications" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors nav-publications">Publications</a>
-<a href="/recursos/" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors nav-resources">Resources</a>
-<a href="#contact" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors nav-contact">Contact</a>
-            </nav>
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+        });
+    }
 
-            <!-- CTA Button & Language Switcher -->
-            <div class="flex items-center gap-4">
-                <button
-                    id="lang-switcher-button"
-                    class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-foreground/70 hover:text-primary transition-colors rounded-md bg-muted/50 hover:bg-muted/70"
-                >
-                    <i data-lucide="languages" class="h-4 w-4"></i>
-                    <span class="lang-btn-text">ES</span>
-                </button>
-                <a href="#contact" class="hidden sm:inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary-dark shadow-elevated cta-btn">
-                    Book a Consultation
-                </a>
-                <!-- Mobile Menu Button (Hamburger) -->
-                <button id="mobile-menu-btn" class="md:hidden flex items-center justify-center p-2 rounded-md text-foreground/80 hover:bg-muted/70">
-                    <i data-lucide="menu" class="h-6 w-6"></i>
-                </button>
-            </div>
+    lucide.createIcons();
+
+    // Impact counter animation
+    const counters = document.querySelectorAll('.counter-number');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !entry.target.dataset.done) {
+                entry.target.dataset.done = '1';
+                const target = parseInt(entry.target.dataset.target);
+                const suffix = entry.target.dataset.suffix || '';
+                let current = 0;
+                const duration = 1500;
+                const increment = target / (duration / 16);
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    entry.target.textContent = Math.floor(current) + suffix;
+                }, 16);
+            }
+        });
+    }, { threshold: 0.5 });
+    counters.forEach(c => observer.observe(c));
+});
+</script>
+
+<!-- Header -->
+<header class="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
+    <div class="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
+        <div class="flex items-center gap-2">
+            <i data-lucide="graduation-cap" class="h-6 w-6 text-primary"></i>
+            <span class="text-lg font-semibold" id="nav-title-full">Dr. Diego Sornoza Parrales</span>
         </div>
-        <!-- Mobile Menu (Hidden by default) -->
-        <div id="mobile-menu" class="hidden md:hidden bg-card border-t border-border">
-            <a href="#about" class="block py-3 px-4 text-foreground/80 hover:bg-muted/50 transition-colors nav-about">About</a>
-            <a href="#services" class="block py-3 px-4 text-foreground/80 hover:bg-muted/50 transition-colors nav-services">Services</a>
-            <a href="#credentials" class="block py-3 px-4 text-foreground/80 hover:bg-muted/50 transition-colors nav-credentials">Credentials</a>
-            <a href="#publications" class="block py-3 px-4 text-foreground/80 hover:bg-muted/50 transition-colors nav-publications">Publications</a>
-<a href="/recursos/" class="block py-3 px-4 text-foreground/80 hover:bg-muted/50 transition-colors nav-resources">Resources</a>
-<a href="#contact" class="block py-3 px-4 text-foreground/80 hover:bg-muted/50 transition-colors nav-contact">Contact</a>
-            <a href="#contact" class="block w-full text-center py-3 bg-primary text-primary-foreground font-semibold cta-btn">Book a Consultation</a>
+
+        <nav class="hidden md:flex items-center gap-8">
+            <a href="#about" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors nav-about">About</a>
+            <a href="#services" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors nav-services">Services</a>
+            <a href="#credentials" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors nav-credentials">Credentials</a>
+            <a href="#publications" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors nav-publications">Publications</a>
+            <a href="/recursos/" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors nav-resources">Resources</a>
+            <a href="/bima/" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors flex items-center gap-1.5 nav-bima">
+                BIMA
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+            </a>
+            <a href="#contact" class="text-sm font-medium text-foreground/80 hover:text-primary transition-colors nav-contact">Contact</a>
+        </nav>
+
+        <div class="flex items-center gap-4">
+            <button id="lang-switcher-button"
+                class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-foreground/70 hover:text-primary transition-colors rounded-md bg-muted/50 hover:bg-muted/70">
+                <i data-lucide="languages" class="h-4 w-4"></i>
+                <span class="lang-btn-text">ES</span>
+            </button>
+            <a href="#contact" class="hidden sm:inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary-dark shadow-elevated cta-btn transition-colors">
+                Book a Consultation
+            </a>
+            <button id="mobile-menu-btn" class="md:hidden flex items-center justify-center p-2 rounded-md text-foreground/80 hover:bg-muted/70">
+                <i data-lucide="menu" class="h-6 w-6"></i>
+            </button>
         </div>
-    </header>
+    </div>
 
-    <main>
-        <!-- Hero Section -->
-        <section id="hero" class="py-20 md:py-32 px-4 md:px-8 bg-gradient-to-b from-background to-muted/30">
-            <div class="container mx-auto max-w-6xl">
-                <div class="flex flex-col md:flex-row items-center gap-12">
-                    <div class="flex-1 text-center md:text-left space-y-6">
-                        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-foreground">
-                            <span id="hero-headline" class="block">Transform Your Research: From Idea to Publication, Powered by Modern Methods</span>
-                        </h1>
-                        <p class="text-xl md:text-2xl text-primary font-semibold">
-                            <span id="hero-tagline">Expert Guidance in Methods, Thesis, and Paper Writing, Enhanced by AI</span>
-                        </p>
-                        <p class="text-base md:text-lg text-muted-foreground">
-                            <span id="hero-subtext">Ph.D. from The University of Western Ontario, Canada.</span>
-                        </p>
-                        <div class="pt-4">
-                            <a href="#contact" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-base font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-12 px-8 py-3 bg-primary text-primary-foreground hover:bg-primary-dark shadow-elevated hover:scale-105 hero-cta-btn">
-                                Book a Thesis/Paper Consultation
-                            </a>
-                        </div>
-                    </div>
-                    <div class="flex-shrink-0">
-                        <img 
-                            src="./Foto headshot small.jpg" 
-                            alt="Dr. Diego Sornoza Parrales" 
-                            onerror="this.onerror=null;this.src='https://placehold.co/320x320/06B6D4/FFFFFF?text=Dr.+Sornoza';"
-                            class="w-64 h-64 md:w-80 md:h-80 rounded-full object-cover shadow-elevated border-4 border-primary/20"
-                        />
-                    </div>
-                </div>
-            </div>
-        </section>
+    <div id="mobile-menu" class="hidden md:hidden bg-card border-t border-border">
+        <a href="#about" class="block py-3 px-4 text-foreground/80 hover:bg-muted/50 transition-colors nav-about">About</a>
+        <a href="#services" class="block py-3 px-4 text-foreground/80 hover:bg-muted/50 transition-colors nav-services">Services</a>
+        <a href="#credentials" class="block py-3 px-4 text-foreground/80 hover:bg-muted/50 transition-colors nav-credentials">Credentials</a>
+        <a href="#publications" class="block py-3 px-4 text-foreground/80 hover:bg-muted/50 transition-colors nav-publications">Publications</a>
+        <a href="/recursos/" class="block py-3 px-4 text-foreground/80 hover:bg-muted/50 transition-colors nav-resources">Resources</a>
+        <a href="/bima/" class="py-3 px-4 text-foreground/80 hover:bg-muted/50 transition-colors flex items-center gap-2 nav-bima">
+            BIMA <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+        </a>
+        <a href="#contact" class="block py-3 px-4 text-foreground/80 hover:bg-muted/50 transition-colors nav-contact">Contact</a>
+        <a href="#contact" class="block w-full text-center py-3 bg-primary text-primary-foreground font-semibold cta-btn">Book a Consultation</a>
+    </div>
+</header>
 
-        <!-- About Section -->
-        <section id="about" class="scroll-mt-24 py-20 px-4 md:px-8 bg-muted/50">
-            <div class="container mx-auto max-w-4xl">
-                <h2 class="text-3xl md:text-4xl font-bold mb-8 text-center" id="about-title">About Dr. Sornoza Parrales</h2>
-                <div class="space-y-6 text-lg leading-relaxed text-foreground/90">
-                    <p id="about-p1">With over 10 years of experience in higher education, Dr. Diego Sornoza Parrales brings a wealth of expertise in research, teaching, and academic management.</p>
-                    <p id="about-p2">As an Accredited Investigator (SENESCYT: REG-INV-16-01687) and Associate Professor, he specializes in Critical Policy, Equity and Leadership Studies. His Ph.D. from The University of Western Ontario, Canada, combined with extensive experience directing postgraduate theses, positions him uniquely to guide researchers through every stage of their academic journey.</p>
-                    <p id="about-p3">He is passionate about empowering researchers to achieve publication success through strategic, modern methods, including ethical AI integration.</p>
-                </div>
-            </div>
-        </section>
+<main>
 
-        <!-- Expertise & Services Section -->
-        <section id="services" class="scroll-mt-24 py-20 px-4 md:px-8">
-            <div class="container mx-auto max-w-6xl">
-                <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center" id="services-title">Expertise & Services</h2>
-                <p class="mt-4 text-xl text-muted-foreground text-center mb-12" id="services-sub">Comprehensive support for every stage of your academic journey.</p>
-
-                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <!-- Service 1: Research Methods -->
-                    <div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300">
-                        <i data-lucide="book-open" class="h-10 w-10 text-primary mb-4"></i>
-                        <h3 class="text-xl font-semibold text-card-foreground mb-3" id="s1-title">Research Methods Consultation</h3>
-                        <p class="text-muted-foreground leading-relaxed" id="s1-description">Expert guidance in research design and methodology, including Qualitative, Quantitative, Mixed Methods, Bibliometric Analysis, and Systematic Literature Review.</p>
-                    </div>
-                    
-                    <!-- Service 2: Thesis & Paper Writing -->
-                    <div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300">
-                        <i data-lucide="brain" class="h-10 w-10 text-primary mb-4"></i>
-                        <h3 class="text-xl font-semibold text-card-foreground mb-3" id="s2-title">Thesis & Paper Writing Coaching</h3>
-                        <p class="text-muted-foreground leading-relaxed" id="s2-description">Professional support in structure, drafting, and academic formatting. Proficient with LaTeX and advanced reference managers (Mendeley, Zotero).</p>
-                    </div>
-
-                    <!-- Service 3: Data Analysis -->
-                    <div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300">
-                        <i data-lucide="bar-chart-3" class="h-10 w-10 text-primary mb-4"></i>
-                        <h3 class="text-xl font-semibold text-card-foreground mb-3" id="s3-title">Data & Statistical Analysis Support</h3>
-                        <p class="text-muted-foreground leading-relaxed" id="s3-description">Comprehensive help in interpreting and presenting research data using SPSS, NVivo, VOSviewer, and Bibliometrix.</p>
-                    </div>
-
-                    <!-- Service 4: AI Integration -->
-                    <div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300">
-                        <i data-lucide="sparkles" class="h-10 w-10 text-primary mb-4"></i>
-                        <h3 class="text-xl font-semibold text-card-foreground mb-3" id="s4-title">AI Integration for Academics</h3>
-                        <p class="text-muted-foreground leading-relaxed" id="s4-description">Ethical and effective use of modern AI tools in the research process, backed by specialized research in Educational Technology and Artificial Intelligence.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Credentials Section -->
-        <section id="credentials" class="scroll-mt-24 py-20 px-4 md:px-8 bg-muted/50">
-            <div class="container mx-auto max-w-4xl">
-                <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center" id="credentials-title">Proof of Impact & Credentials</h2>
-                
-                <div class="grid md:grid-cols-2 gap-8">
-                    <!-- Credential 1: Recognition -->
-                    <div class="bg-card p-8 text-center rounded-xl shadow-soft border border-primary/20 hover:shadow-elevated transition-all duration-300">
-                        <i data-lucide="award" class="h-12 w-12 text-primary mx-auto mb-4"></i>
-                        <h3 class="text-xl font-semibold text-card-foreground mb-2" id="cred1-title">Distinguished Investigator</h3>
-                        <p class="text-muted-foreground" id="cred1-description">Recognized as 'Investigador destacado' (Level 1—maximum level) in 2024 by UNESUM for outstanding scientific productivity.</p>
-                    </div>
-
-                    <!-- Credential 2: Publications -->
-                    <div class="bg-card p-8 text-center rounded-xl shadow-soft border border-primary/20 hover:shadow-elevated transition-all duration-300">
-                        <i data-lucide="book-open" class="h-12 w-12 text-primary mx-auto mb-4"></i>
-                        <h3 class="text-xl font-semibold text-card-foreground mb-2" id="cred2-title">High-Impact Publications</h3>
-                        <p class="text-muted-foreground" id="cred2-description">Authored/Co-authored 2 books and 20+ articles in arbitrated journals (SCOPUS and regional bases).</p>
-                    </div>
-                </div>
-
-                <!-- Academic Profile (Resources) -->
-                <div class="mt-12 text-center">
-                    <h3 class="text-2xl font-semibold text-card-foreground mb-6" id="resources-title">Academic Profile</h3>
-                    <div class="flex flex-wrap justify-center gap-4">
-                        <a href="https://scholar.google.com/citations?user=K8lYCIAAAAJ&hl=es" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 border border-input bg-background hover:bg-muted hover:text-foreground gap-2">
-                            <span id="google-scholar-link">Google Scholar Profile</span>
-                            <i data-lucide="external-link" class="h-4 w-4"></i>
-                        </a>
-                        <a href="https://www.linkedin.com/in/dsornoza/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 border border-input bg-background hover:bg-muted hover:text-foreground gap-2">
-                            <span id="linkedin-link">LinkedIn Profile</span>
-                            <i data-lucide="external-link" class="h-4 w-4"></i>
-                        </a>
-                        <a href="https://www.youtube.com/@SornozaAcademy" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 border border-input bg-background hover:bg-muted hover:text-foreground gap-2">
-                            <span id="youtube-link">YouTube Channel</span>
-                            <i data-lucide="external-link" class="h-4 w-4"></i>
+    <!-- Hero -->
+    <section id="hero" class="py-20 md:py-32 px-4 md:px-8 bg-gradient-to-b from-background to-muted/30">
+        <div class="container mx-auto max-w-6xl">
+            <div class="flex flex-col md:flex-row items-center gap-12">
+                <div class="flex-1 text-center md:text-left space-y-6">
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-foreground">
+                        <span id="hero-headline" class="block">Transform Your Research: From Idea to Publication, Powered by Modern Methods</span>
+                    </h1>
+                    <p class="text-xl md:text-2xl text-primary font-semibold">
+                        <span id="hero-tagline">Expert Guidance in Methods, Thesis, and Paper Writing, Enhanced by AI</span>
+                    </p>
+                    <p class="text-base md:text-lg text-muted-foreground">
+                        <span id="hero-subtext">Ph.D. from The University of Western Ontario, Canada.</span>
+                    </p>
+                    <div class="pt-4">
+                        <a href="#contact" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-base font-medium h-12 px-8 py-3 bg-primary text-primary-foreground hover:bg-primary-dark shadow-elevated hover:scale-105 transition-all hero-cta-btn">
+                            Book a Thesis/Paper Consultation
                         </a>
                     </div>
                 </div>
-            </div>
-        </section>
-
-        <!-- Publications Section -->
-        <section id="publications" class="scroll-mt-24 py-20 px-4 md:px-8">
-            <div class="container mx-auto max-w-5xl">
-                <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center" id="publications-title">Recent Publications</h2>
-                <div class="space-y-6">
-    <!-- Publication 1: VR/AR AEC (Frontiers, 2025) -->
-    <div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300">
-        <div class="flex gap-4">
-            <i data-lucide="file-text" class="h-6 w-6 text-primary flex-shrink-0 mt-1"></i>
-            <div>
-                <h3 class="text-xl font-semibold text-card-foreground mb-3" id="pub1-title"></h3>
-                <p class="text-muted-foreground leading-relaxed mb-4" id="pub1-abstract"></p>
-                <a href="https://www.frontiersin.org/journals/virtual-reality/articles/10.3389/frvir.2025.1725875/full" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
-                    View in Frontiers in Virtual Reality
-                    <i data-lucide="external-link" class="h-3.5 w-3.5"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-    <!-- Publication 2: Formative Assessment -->
-    <div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300">
-        <div class="flex gap-4">
-            <i data-lucide="file-text" class="h-6 w-6 text-primary flex-shrink-0 mt-1"></i>
-            <div>
-                <h3 class="text-xl font-semibold text-card-foreground mb-3" id="pub2-title"></h3>
-                <p class="text-muted-foreground leading-relaxed" id="pub2-abstract"></p>
-            </div>
-        </div>
-    </div>
-    <!-- Publication 3: COVID-19 Modality -->
-    <div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300">
-        <div class="flex gap-4">
-            <i data-lucide="file-text" class="h-6 w-6 text-primary flex-shrink-0 mt-1"></i>
-            <div>
-                <h3 class="text-xl font-semibold text-card-foreground mb-3" id="pub3-title"></h3>
-                <p class="text-muted-foreground leading-relaxed" id="pub3-abstract"></p>
-            </div>
-        </div>
-    </div>
-    <!-- Publication 4: AI Teaching-Learning -->
-    <div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300">
-        <div class="flex gap-4">
-            <i data-lucide="file-text" class="h-6 w-6 text-primary flex-shrink-0 mt-1"></i>
-            <div>
-                <h3 class="text-xl font-semibold text-card-foreground mb-3" id="pub4-title"></h3>
-                <p class="text-muted-foreground leading-relaxed" id="pub4-abstract"></p>
-            </div>
-        </div>
-    </div>
-</div>
-            </div>
-        </section>
-
-        <!-- Contact Section -->
-        <section id="contact" class="scroll-mt-24 py-20 px-4 md:px-8 bg-muted/50">
-            <div class="container mx-auto max-w-2xl">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4 text-center" id="contact-title">Get in Touch</h2>
-                <p class="text-center text-muted-foreground mb-12 text-lg" id="contact-description">Ready to transform your research? Schedule a consultation today.</p>
-                
-                <div class="bg-card p-8 rounded-xl shadow-soft border border-border">
-                    <form id="contact-form" action="https://formspree.io/f/mkgqakjn" method="POST" class="space-y-6">
-                        <div>
-                            <label for="name" class="block text-sm font-medium mb-2">Name</label>
-                            <input
-                                type="text"
-                                id="name"
-                                name="name"
-                                required
-                                placeholder="Your full name"
-                                class="w-full p-3 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-background text-foreground"
-                            >
-                        </div>
-                        
-                        <div>
-                            <label for="email" class="block text-sm font-medium mb-2">Email</label>
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                required
-                                placeholder="your.email@example.com"
-                                class="w-full p-3 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-background text-foreground"
-                            >
-                        </div>
-                        
-                        <div>
-                            <label for="projectType" class="block text-sm font-medium mb-2">Project Type</label>
-                            <select
-                                id="projectType"
-                                name="projectType"
-                                required
-                                class="w-full p-3 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-background text-foreground appearance-none pr-8"
-                                style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%20viewBox%3D%220%200%20292.4%20292.4%22%3E%3Cpath%20fill%3D%22%2364748B%22%20d%3D%22M287%20197.8L154.9%2065.6c-4.4-4.4-11.4-4.4-15.8%200L5.4%20197.8c-4.4%204.4-4.4%2011.4%200%2015.8l15.8%2015.8c4.4%204.4%2011.4%204.4%2015.8%200l105.7-105.7c4.4-4.4%2011.4-4.4%2015.8%200l105.7%20105.7c4.4%204.4%2011.4%204.4%2015.8%200l15.8-15.8c4.4-4.4%204.4-11.4%200-15.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 0.7em top 50%; background-size: 0.65em auto;"
-                            >
-                                <option value="" disabled selected>Select project type</option>
-                                <option value="thesis" id="option1">Thesis / Dissertation</option>
-                                <option value="paper" id="option2">Journal Paper / Publication</option>
-                                <option value="methods" id="option3">Research Methods Only</option>
-                            </select>
-                        </div>
-                        
-                        <div>
-                            <label for="message" class="block text-sm font-medium mb-2">Message</label>
-                            <textarea
-                                id="message"
-                                name="message"
-                                rows="5"
-                                required
-                                placeholder="Tell me about your research project..."
-                                class="w-full p-3 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-background text-foreground resize-none"
-                            ></textarea>
-                        </div>
-                        
-                        <div id="form-message-box" class="hidden text-center text-sm font-medium"></div>
-
-                        <button type="submit" id="form-submit-btn" class="w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-base font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-12 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary-dark shadow-elevated">
-                            Send Message
-                        </button>
-                    </form>
-                    
-                    <div class="mt-8 pt-8 border-t border-border text-center">
-                        <div class="flex items-center justify-center gap-2 text-muted-foreground">
-                            <i data-lucide="mail" class="h-4 w-4"></i>
-                            <a href="mailto:diego@sornoza.com" class="hover:text-primary transition-colors" id="direct-email-link">diego@sornoza.com</a>
-                        </div>
-                    </div>
+                <div class="flex-shrink-0">
+                    <img src="./Foto headshot small.jpg" alt="Dr. Diego Sornoza Parrales"
+                        onerror="this.onerror=null;this.src='https://placehold.co/320x320/06B6D4/FFFFFF?text=Dr.+Sornoza';"
+                        class="w-64 h-64 md:w-80 md:h-80 rounded-full object-cover shadow-elevated border-4 border-primary/20"/>
                 </div>
-                
-                <div class="mt-12 text-center">
-                    <a href="#contact" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-base font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-12 px-8 py-3 bg-primary text-primary-foreground hover:bg-primary-dark shadow-elevated cta-btn">
-                        Book a Consultation
+            </div>
+        </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="scroll-mt-24 py-20 px-4 md:px-8 bg-muted/50">
+        <div class="container mx-auto max-w-4xl">
+            <h2 class="text-3xl md:text-4xl font-bold mb-8 text-center" id="about-title">About Dr. Sornoza Parrales</h2>
+            <div class="space-y-6 text-lg leading-relaxed text-foreground/90">
+                <p id="about-p1"></p>
+                <p id="about-p2"></p>
+                <p id="about-p3"></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services -->
+    <section id="services" class="scroll-mt-24 py-20 px-4 md:px-8">
+        <div class="container mx-auto max-w-6xl">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-center" id="services-title">Expertise & Services</h2>
+            <p class="text-xl text-muted-foreground text-center mb-12" id="services-sub">Comprehensive support for every stage of your academic journey.</p>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300">
+                    <i data-lucide="book-open" class="h-10 w-10 text-primary mb-4"></i>
+                    <h3 class="text-xl font-semibold text-card-foreground mb-3" id="s1-title"></h3>
+                    <p class="text-muted-foreground leading-relaxed" id="s1-description"></p>
+                </div>
+                <div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300">
+                    <i data-lucide="brain" class="h-10 w-10 text-primary mb-4"></i>
+                    <h3 class="text-xl font-semibold text-card-foreground mb-3" id="s2-title"></h3>
+                    <p class="text-muted-foreground leading-relaxed" id="s2-description"></p>
+                </div>
+                <div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300">
+                    <i data-lucide="bar-chart-3" class="h-10 w-10 text-primary mb-4"></i>
+                    <h3 class="text-xl font-semibold text-card-foreground mb-3" id="s3-title"></h3>
+                    <p class="text-muted-foreground leading-relaxed" id="s3-description"></p>
+                </div>
+                <div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300">
+                    <i data-lucide="sparkles" class="h-10 w-10 text-primary mb-4"></i>
+                    <h3 class="text-xl font-semibold text-card-foreground mb-3" id="s4-title"></h3>
+                    <p class="text-muted-foreground leading-relaxed" id="s4-description"></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Credentials -->
+    <section id="credentials" class="scroll-mt-24 py-20 px-4 md:px-8 bg-muted/50">
+        <div class="container mx-auto max-w-4xl">
+            <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center" id="credentials-title">Proof of Impact & Credentials</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-card p-8 text-center rounded-xl shadow-soft border border-primary/20 hover:shadow-elevated transition-all duration-300">
+                    <i data-lucide="award" class="h-12 w-12 text-primary mx-auto mb-4"></i>
+                    <h3 class="text-xl font-semibold text-card-foreground mb-2" id="cred1-title"></h3>
+                    <p class="text-muted-foreground" id="cred1-description"></p>
+                </div>
+                <div class="bg-card p-8 text-center rounded-xl shadow-soft border border-primary/20 hover:shadow-elevated transition-all duration-300">
+                    <i data-lucide="book-open" class="h-12 w-12 text-primary mx-auto mb-4"></i>
+                    <h3 class="text-xl font-semibold text-card-foreground mb-2" id="cred2-title"></h3>
+                    <p class="text-muted-foreground" id="cred2-description"></p>
+                </div>
+            </div>
+            <div class="mt-12 text-center">
+                <h3 class="text-2xl font-semibold text-card-foreground mb-6" id="resources-title">Academic Profile</h3>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <a href="https://scholar.google.com/citations?user=K8lYCIAAAAJ&hl=es" target="_blank" rel="noopener noreferrer"
+                        class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium h-10 px-4 py-2 border border-input bg-background hover:bg-muted hover:text-foreground gap-2 transition-colors">
+                        <span id="google-scholar-link">Google Scholar Profile</span>
+                        <i data-lucide="external-link" class="h-4 w-4"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/dsornoza/" target="_blank" rel="noopener noreferrer"
+                        class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium h-10 px-4 py-2 border border-input bg-background hover:bg-muted hover:text-foreground gap-2 transition-colors">
+                        <span id="linkedin-link">LinkedIn Profile</span>
+                        <i data-lucide="external-link" class="h-4 w-4"></i>
+                    </a>
+                    <a href="https://www.youtube.com/@SornozaAcademy" target="_blank" rel="noopener noreferrer"
+                        class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium h-10 px-4 py-2 border border-input bg-background hover:bg-muted hover:text-foreground gap-2 transition-colors">
+                        <span id="youtube-link">YouTube Channel</span>
+                        <i data-lucide="external-link" class="h-4 w-4"></i>
                     </a>
                 </div>
             </div>
-        </section>
-
-    </main>
-
-    <!-- Footer -->
-    <footer class="py-8 px-4 md:px-8 border-t bg-muted/30">
-        <div class="container mx-auto text-center text-sm text-muted-foreground">
-            <p>&copy; 2025 Dr. Diego Sornoza Parrales. <span id="footer-rights">All rights reserved.</span></p>
         </div>
-    </footer>
+    </section>
+
+    <!-- ── IMPACT COUNTER ─────────────────────────────────────── -->
+    <section id="impact" class="py-16 px-4 md:px-8 bg-white">
+        <div class="container mx-auto max-w-4xl">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                <div class="counter-item p-6">
+                    <div class="text-4xl md:text-5xl font-extrabold text-primary mb-2">
+                        <span class="counter-number" data-target="10" data-suffix="+">0+</span>
+                    </div>
+                    <p class="text-sm font-medium text-muted-foreground" id="counter-years-label">Years of Experience</p>
+                </div>
+                <div class="counter-item p-6">
+                    <div class="text-4xl md:text-5xl font-extrabold text-primary mb-2">
+                        <span class="counter-number" data-target="20" data-suffix="+">0+</span>
+                    </div>
+                    <p class="text-sm font-medium text-muted-foreground" id="counter-articles-label">Published Articles</p>
+                </div>
+                <div class="counter-item p-6">
+                    <div class="text-4xl md:text-5xl font-extrabold text-primary mb-2">
+                        <span class="counter-number" data-target="2" data-suffix="">0</span>
+                    </div>
+                    <p class="text-sm font-medium text-muted-foreground" id="counter-books-label">Books Authored</p>
+                </div>
+                <div class="counter-item p-6">
+                    <div class="text-4xl md:text-5xl font-extrabold text-primary mb-2">
+                        <span class="counter-number" data-target="8" data-suffix="">0</span>
+                    </div>
+                    <p class="text-sm font-medium text-muted-foreground" id="counter-theses-label">Theses Directed</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ─────────────────────────────────────────────────────────── -->
+
+    <!-- Publications -->
+    <section id="publications" class="scroll-mt-24 py-20 px-4 md:px-8 bg-muted/50">
+        <div class="container mx-auto max-w-5xl">
+            <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center" id="publications-title">Recent Publications</h2>
+            <div class="space-y-6">
+
+                <div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300">
+                    <div class="flex gap-4">
+                        <i data-lucide="file-text" class="h-6 w-6 text-primary flex-shrink-0 mt-1"></i>
+                        <div>
+                            <h3 class="text-xl font-semibold text-card-foreground mb-3" id="pub1-title"></h3>
+                            <p class="text-muted-foreground leading-relaxed mb-4" id="pub1-abstract"></p>
+                            <a id="pub1-link" href="https://www.frontiersin.org/journals/virtual-reality/articles/10.3389/frvir.2025.1725875/full"
+                                target="_blank" rel="noopener noreferrer"
+                                class="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+                                View in Frontiers in Virtual Reality
+                                <i data-lucide="external-link" class="h-3.5 w-3.5"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300">
+                    <div class="flex gap-4">
+                        <i data-lucide="file-text" class="h-6 w-6 text-primary flex-shrink-0 mt-1"></i>
+                        <div>
+                            <h3 class="text-xl font-semibold text-card-foreground mb-3" id="pub2-title"></h3>
+                            <p class="text-muted-foreground leading-relaxed" id="pub2-abstract"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300">
+                    <div class="flex gap-4">
+                        <i data-lucide="file-text" class="h-6 w-6 text-primary flex-shrink-0 mt-1"></i>
+                        <div>
+                            <h3 class="text-xl font-semibold text-card-foreground mb-3" id="pub3-title"></h3>
+                            <p class="text-muted-foreground leading-relaxed" id="pub3-abstract"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300">
+                    <div class="flex gap-4">
+                        <i data-lucide="file-text" class="h-6 w-6 text-primary flex-shrink-0 mt-1"></i>
+                        <div>
+                            <h3 class="text-xl font-semibold text-card-foreground mb-3" id="pub4-title"></h3>
+                            <p class="text-muted-foreground leading-relaxed" id="pub4-abstract"></p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="scroll-mt-24 py-20 px-4 md:px-8 bg-white">
+        <div class="container mx-auto max-w-2xl">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-center" id="contact-title">Get in Touch</h2>
+            <p class="text-center text-muted-foreground mb-12 text-lg" id="contact-description">Ready to transform your research? Schedule a consultation today.</p>
+
+            <div class="bg-card p-8 rounded-xl shadow-soft border border-border">
+                <form id="contact-form" action="https://formspree.io/f/mkgqakjn" method="POST" class="space-y-6">
+                    <div>
+                        <label for="name" class="block text-sm font-medium mb-2">Name</label>
+                        <input type="text" id="name" name="name" required placeholder="Your full name"
+                            class="w-full p-3 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-background text-foreground">
+                    </div>
+                    <div>
+                        <label for="email" class="block text-sm font-medium mb-2">Email</label>
+                        <input type="email" id="email" name="email" required placeholder="your.email@example.com"
+                            class="w-full p-3 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-background text-foreground">
+                    </div>
+                    <div>
+                        <label for="projectType" class="block text-sm font-medium mb-2">Project Type</label>
+                        <select id="projectType" name="projectType" required
+                            class="w-full p-3 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-background text-foreground appearance-none pr-8"
+                            style="background-image:url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%20viewBox%3D%220%200%20292.4%20292.4%22%3E%3Cpath%20fill%3D%22%2364748B%22%20d%3D%22M287%20197.8L154.9%2065.6c-4.4-4.4-11.4-4.4-15.8%200L5.4%20197.8c-4.4%204.4-4.4%2011.4%200%2015.8l15.8%2015.8c4.4%204.4%2011.4%204.4%2015.8%200l105.7-105.7c4.4-4.4%2011.4-4.4%2015.8%200l105.7%20105.7c4.4%204.4%2011.4%204.4%2015.8%200l15.8-15.8c4.4-4.4%204.4-11.4%200-15.8z%22%2F%3E%3C%2Fsvg%3E');background-repeat:no-repeat;background-position:right 0.7em top 50%;background-size:0.65em auto;">
+                            <option value="" disabled selected>Select project type</option>
+                            <option value="thesis">Thesis / Dissertation</option>
+                            <option value="paper">Journal Paper / Publication</option>
+                            <option value="methods">Research Methods Only</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="message" class="block text-sm font-medium mb-2">Message</label>
+                        <textarea id="message" name="message" rows="5" required placeholder="Tell me about your research project..."
+                            class="w-full p-3 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-background text-foreground resize-none"></textarea>
+                    </div>
+                    <div id="form-message-box" class="hidden text-center text-sm font-medium"></div>
+                    <button type="submit" id="form-submit-btn"
+                        class="w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-base font-medium h-12 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary-dark shadow-elevated transition-colors">
+                        Send Message
+                    </button>
+                </form>
+                <div class="mt-8 pt-8 border-t border-border text-center">
+                    <div class="flex items-center justify-center gap-2 text-muted-foreground">
+                        <i data-lucide="mail" class="h-4 w-4"></i>
+                        <a href="mailto:diego@sornoza.com" class="hover:text-primary transition-colors" id="direct-email-link">diego@sornoza.com</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-12 text-center">
+                <a href="#contact" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-base font-medium h-12 px-8 py-3 bg-primary text-primary-foreground hover:bg-primary-dark shadow-elevated cta-btn transition-colors">
+                    Book a Consultation
+                </a>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="py-8 px-4 md:px-8 border-t bg-muted/30">
+    <div class="container mx-auto text-center text-sm text-muted-foreground">
+        <p>&copy; 2025 Dr. Diego Sornoza Parrales. <span id="footer-rights">All rights reserved.</span></p>
+    </div>
+</footer>
+
 </body>
 </html>
