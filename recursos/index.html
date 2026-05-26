@@ -3,177 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recursos Didácticos - Dr. Diego Sornoza Parrales</title>
+    <title>Recursos Didácticos — Sornoza.com</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
             --primary: #06B6D4;
-            --primary-foreground: #FFFFFF;
+            --primary-dark: #0E7490;
             --muted: #F1F5F9;
             --muted-foreground: #64748B;
-            --card: #FFFFFF;
-            --card-foreground: #1E293B;
             --border: #E2E8F0;
-            --background: #FFFFFF;
             --foreground: #0F172A;
-            --shadow-elevated: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --card-foreground: #1E293B;
             --shadow-soft: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-elevated: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
         }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            color: var(--foreground);
-            background-color: var(--background);
-        }
-
-        .bg-primary { background-color: var(--primary); }
-        .text-primary { color: var(--primary); }
-        .hover\:bg-primary-dark:hover { background-color: #0E7490; }
-        .bg-muted { background-color: var(--muted); }
-        .text-muted-foreground { color: var(--muted-foreground); }
-        .shadow-elevated { box-shadow: var(--shadow-elevated); }
-        .shadow-soft { box-shadow: var(--shadow-soft); }
-
-        .card-hover {
-            transition: all 0.3s ease;
-        }
-        .card-hover:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-elevated);
-            border-color: rgba(6, 182, 212, 0.4);
-        }
-        .card-hover:hover .card-icon-bg {
-            background-color: rgba(6, 182, 212, 0.08);
-        }
-        .card-hover:hover .card-title {
-            color: var(--primary);
-        }
-        .card-hover:hover .card-cta {
-            color: #0E7490;
-        }
+        body { font-family: 'Inter', sans-serif; color: var(--foreground); background: var(--muted); }
+        .card-link { border: 1px solid var(--border); transition: all 0.25s ease; box-shadow: var(--shadow-soft); }
+        .card-link:hover { border-color: var(--primary); box-shadow: var(--shadow-elevated); transform: translateY(-3px); }
+        .card-link:hover .card-icon { background: rgba(6,182,212,0.1); }
+        .card-link:hover .card-arrow { color: var(--primary); transform: translateX(3px); }
+        .card-icon { transition: background 0.25s ease; }
+        .card-arrow { transition: all 0.2s ease; }
     </style>
 </head>
-<body class="antialiased">
+<body class="min-h-screen antialiased">
 
-    <!-- Header -->
-    <header class="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur" style="border-color: var(--border);">
+    <header class="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur" style="border-color:var(--border);">
         <div class="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
             <div class="flex items-center gap-2">
-                <i data-lucide="graduation-cap" class="h-6 w-6 text-primary"></i>
-                <span class="text-lg font-semibold" style="color: var(--foreground);">Dr. Diego Sornoza Parrales</span>
+                <i data-lucide="graduation-cap" class="h-5 w-5" style="color:var(--primary)"></i>
+                <span class="text-base font-semibold">Dr. Diego Sornoza Parrales</span>
             </div>
-            <a href="/" class="inline-flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-md transition-colors"
-               style="color: var(--muted-foreground);"
-               onmouseover="this.style.color='var(--primary)'"
-               onmouseout="this.style.color='var(--muted-foreground)'">
-                <i data-lucide="arrow-left" class="h-4 w-4"></i>
-                Volver al inicio
-            </a>
+            <a href="/" class="text-sm font-medium transition-colors hover:text-cyan-500" style="color:var(--muted-foreground)">← Inicio</a>
         </div>
     </header>
 
     <!-- Hero -->
-    <section class="py-20 px-4 md:px-8" style="background: linear-gradient(to bottom, #ffffff, #F1F5F9);">
-        <div class="container mx-auto max-w-4xl text-center space-y-4">
-            <h1 class="text-4xl md:text-5xl font-bold tracking-tight" style="color: var(--foreground);">
-                Recursos Didácticos
-            </h1>
-            <p class="text-xl font-semibold text-primary">
-                Herramientas Interactivas de Acceso Abierto
-            </p>
-            <p class="text-base md:text-lg max-w-2xl mx-auto" style="color: var(--muted-foreground);">
-                Simuladores y materiales de apoyo gratuitos para estudiantes.
+    <section class="py-16 md:py-20 px-4 md:px-8 bg-white">
+        <div class="container mx-auto max-w-4xl text-center">
+            <h1 class="text-3xl md:text-4xl font-bold mb-3" style="color:var(--foreground)">Recursos Didácticos</h1>
+            <p class="text-lg max-w-2xl mx-auto" style="color:var(--muted-foreground)">
+                Herramientas interactivas y simuladores para estudiantes de Metodología de la Investigación.
             </p>
         </div>
     </section>
 
-    <!-- Resources Grid -->
-    <main class="py-16 px-4 md:px-8" style="background-color: var(--muted);">
-        <div class="container mx-auto max-w-5xl">
-            <div class="flex flex-col md:flex-row gap-8 justify-center">
+    <main class="container mx-auto max-w-5xl px-4 md:px-8 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-                <!-- Card 1: Simulador de Muestreo -->
-                <a href="./muestreo/" class="card-hover block bg-white rounded-xl border overflow-hidden no-underline w-full md:w-72" style="border-color: var(--border);">
-                    <div class="card-icon-bg h-32 flex items-center justify-center transition-colors duration-300" style="background-color: var(--muted);">
-                        <i data-lucide="refresh-cw" class="h-12 w-12 text-primary"></i>
-                    </div>
-                    <div class="p-6 space-y-3">
-                        <h3 class="card-title text-xl font-semibold transition-colors duration-300" style="color: var(--card-foreground);">
-                            Simulador de Muestreo
-                        </h3>
-                        <p class="text-sm leading-relaxed" style="color: var(--muted-foreground);">
-                            Aprende interactivamente la diferencia entre muestreo aleatorio simple, estratificado, sistemático y por conglomerados.
-                        </p>
-                        <span class="card-cta inline-flex items-center gap-1 text-sm font-semibold text-primary transition-colors duration-300">
-                            Abrir Simulador
-                            <i data-lucide="arrow-right" class="h-4 w-4"></i>
-                        </span>
-                    </div>
-                </a>
-
-                <!-- Card 2: Calculadora de Muestra -->
-                <a href="./calculadora-muestra/" class="card-hover block bg-white rounded-xl border overflow-hidden no-underline w-full md:w-72" style="border-color: var(--border);">
-                    <div class="card-icon-bg h-32 flex items-center justify-center transition-colors duration-300" style="background-color: var(--muted);">
-                        <i data-lucide="calculator" class="h-12 w-12 text-primary"></i>
-                    </div>
-                    <div class="p-6 space-y-3">
-                        <h3 class="card-title text-xl font-semibold transition-colors duration-300" style="color: var(--card-foreground);">
-                            Calculadora de Muestra
-                        </h3>
-                        <p class="text-sm leading-relaxed" style="color: var(--muted-foreground);">
-                            Fórmula de Cochran interactiva: calcula el tamaño mínimo de muestra con niveles de confianza del 90%, 95% y 99%.
-                        </p>
-                        <span class="card-cta inline-flex items-center gap-1 text-sm font-semibold text-primary transition-colors duration-300">
-                            Abrir Calculadora
-                            <i data-lucide="arrow-right" class="h-4 w-4"></i>
-                        </span>
-                    </div>
-                </a>
-
-                <!-- Card 3: Próximamente -->
-                <div class="block bg-white rounded-xl border overflow-hidden w-full md:w-72 opacity-40" style="border-color: var(--border); border-style: dashed;">
-                    <div class="h-32 flex items-center justify-center" style="background-color: var(--muted);">
-                        <i data-lucide="plus" class="h-10 w-10" style="color: var(--muted-foreground);"></i>
-                    </div>
-                    <div class="p-6 space-y-2">
-                        <h3 class="text-lg font-semibold" style="color: var(--muted-foreground);">Próximamente</h3>
-                        <p class="text-sm" style="color: var(--muted-foreground);">Más herramientas en desarrollo.</p>
-                    </div>
+            <!-- Simulador de Muestreo -->
+            <a href="./muestreo/" class="card-link bg-white rounded-xl overflow-hidden block">
+                <div class="card-icon h-28 flex items-center justify-center" style="background:var(--muted);">
+                    <i data-lucide="rotate-cw" class="h-10 w-10" style="color:var(--primary)"></i>
                 </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-bold mb-2" style="color:var(--card-foreground)">Simulador de Muestreo</h3>
+                    <p class="text-sm leading-relaxed mb-4" style="color:var(--muted-foreground)">
+                        Visualiza de forma interactiva los 6 métodos de muestreo: aleatorio, estratificado, sistemático, conglomerados y no probabilísticos.
+                    </p>
+                    <span class="card-arrow text-sm font-semibold flex items-center gap-1" style="color:var(--muted-foreground)">
+                        Abrir simulador <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                    </span>
+                </div>
+            </a>
 
+            <!-- Visualizador de Correlación -->
+            <a href="./correlacion/" class="card-link bg-white rounded-xl overflow-hidden block">
+                <div class="card-icon h-28 flex items-center justify-center" style="background:var(--muted);">
+                    <i data-lucide="scatter-chart" class="h-10 w-10" style="color:var(--primary)"></i>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-bold mb-2" style="color:var(--card-foreground)">Visualizador de Correlación</h3>
+                    <p class="text-sm leading-relaxed mb-4" style="color:var(--muted-foreground)">
+                        Mueve un slider de −1 a +1 y observa cómo cambia el diagrama de dispersión. Compara Pearson vs. Spearman.
+                    </p>
+                    <span class="card-arrow text-sm font-semibold flex items-center gap-1" style="color:var(--muted-foreground)">
+                        Abrir visualizador <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                    </span>
+                </div>
+            </a>
+
+            <!-- Generador de Títulos -->
+            <a href="./titulos/" class="card-link bg-white rounded-xl overflow-hidden block">
+                <div class="card-icon h-28 flex items-center justify-center relative" style="background:var(--muted);">
+                    <i data-lucide="sparkles" class="h-10 w-10" style="color:var(--primary)"></i>
+                    <span class="absolute top-3 right-3 text-xs font-bold px-2 py-0.5 rounded-full text-white" style="background:var(--primary)">IA</span>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-bold mb-2" style="color:var(--card-foreground)">Generador de Títulos</h3>
+                    <p class="text-sm leading-relaxed mb-4" style="color:var(--muted-foreground)">
+                        Usa la técnica 5W+1H para describir tu proyecto y obtén 3 títulos propositivos generados con Gemini AI.
+                    </p>
+                    <span class="card-arrow text-sm font-semibold flex items-center gap-1" style="color:var(--muted-foreground)">
+                        Generar título <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                    </span>
+                </div>
+            </a>
+
+            <!-- Selector de Método -->
+            <a href="./metodo/" class="card-link bg-white rounded-xl overflow-hidden block">
+                <div class="card-icon h-28 flex items-center justify-center" style="background:var(--muted);">
+                    <i data-lucide="git-branch" class="h-10 w-10" style="color:var(--primary)"></i>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-bold mb-2" style="color:var(--card-foreground)">Selector de Método</h3>
+                    <p class="text-sm leading-relaxed mb-4" style="color:var(--muted-foreground)">
+                        Árbol de decisión interactivo: responde hasta 8 preguntas y descubre el diseño de investigación más adecuado para tu proyecto.
+                    </p>
+                    <span class="card-arrow text-sm font-semibold flex items-center gap-1" style="color:var(--muted-foreground)">
+                        Empezar <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                    </span>
+                </div>
+            </a>
+
+            <!-- Placeholder -->
+            <div class="bg-white rounded-xl overflow-hidden" style="border:1px dashed var(--border);opacity:0.6;">
+                <div class="h-28 flex items-center justify-center" style="background:var(--muted);">
+                    <i data-lucide="plus-circle" class="h-10 w-10" style="color:var(--muted-foreground)"></i>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-bold mb-2" style="color:var(--muted-foreground)">Próximamente</h3>
+                    <p class="text-sm" style="color:var(--muted-foreground)">Más herramientas en desarrollo.</p>
+                </div>
             </div>
+
         </div>
     </main>
 
-    <!-- CTA Section -->
-    <section class="py-16 px-4 md:px-8 bg-white">
-        <div class="container mx-auto max-w-2xl text-center space-y-6">
-            <h2 class="text-2xl md:text-3xl font-bold" style="color: var(--foreground);">
-                ¿Necesitas orientación en metodología?
-            </h2>
-            <p class="text-lg" style="color: var(--muted-foreground);">
-                Agenda una consulta personalizada con el Dr. Sornoza Parrales.
-            </p>
-            <a href="/#contact"
-               class="inline-flex items-center justify-center gap-2 rounded-md text-base font-medium h-12 px-8 py-3 shadow-elevated transition-all hover:scale-105"
-               style="background-color: var(--primary); color: var(--primary-foreground);">
-                <i data-lucide="calendar" class="h-5 w-5"></i>
-                Agenda una Consulta
-            </a>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="py-8 px-4 md:px-8 border-t" style="background-color: rgba(241,245,249,0.3); border-color: var(--border);">
-        <div class="container mx-auto text-center text-sm" style="color: var(--muted-foreground);">
-            <p>&copy; 2025 Dr. Diego Sornoza Parrales. Todos los derechos reservados.</p>
-        </div>
+    <footer class="py-8 px-4 border-t text-center text-sm" style="border-color:var(--border);color:var(--muted-foreground);background:white;">
+        &copy; 2025 Dr. Diego Sornoza Parrales — <a href="/" class="hover:underline" style="color:var(--primary)">sornoza.com</a>
     </footer>
 
-    <script>
-        lucide.createIcons();
-    </script>
+<script>
+document.addEventListener('DOMContentLoaded', () => lucide.createIcons());
+</script>
 </body>
 </html>
