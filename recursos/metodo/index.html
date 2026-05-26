@@ -1,1 +1,357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selector de Método de Investigación - Sornoza.com</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #06B6D4;
+            --primary-dark: #0E7490;
+            --muted: #F1F5F9;
+            --muted-foreground: #64748B;
+            --border: #E2E8F0;
+            --foreground: #0F172A;
+            --card-foreground: #1E293B;
+            --shadow-soft: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-elevated: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+        }
+        body { font-family: 'Inter', sans-serif; color: var(--foreground); background: var(--muted); }
+        .option-btn { border: 2px solid var(--border); transition: all 0.2s ease; text-align:left; }
+        .option-btn:hover { border-color: var(--primary); background: rgba(6,182,212,0.04); transform: translateY(-1px); box-shadow: var(--shadow-soft); }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);} }
+        .q-animate { animation: fadeUp 0.3s ease forwards; }
+        @keyframes resultIn { from{opacity:0;transform:scale(0.98);}to{opacity:1;transform:scale(1);} }
+        .result-animate { animation: resultIn 0.35s ease forwards; }
+        .progress-dot { transition: all 0.3s ease; }
+        .badge { display:inline-block;padding:3px 10px;border-radius:9999px;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em; }
+    </style>
+</head>
+<body class="min-h-screen antialiased">
 
+    <header class="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur" style="border-color:var(--border);">
+        <div class="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
+            <div class="flex items-center gap-2">
+                <i data-lucide="graduation-cap" class="h-5 w-5" style="color:var(--primary)"></i>
+                <span class="text-base font-semibold">sornoza.com</span>
+            </div>
+            <a href="/recursos/" class="text-sm font-medium transition-colors hover:text-cyan-500" style="color:var(--muted-foreground)">← Recursos</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto max-w-2xl px-4 md:px-8 py-12">
+
+        <div class="mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold mb-2">Selector de Método</h1>
+            <p class="text-lg" style="color:var(--muted-foreground)">Responde hasta 8 preguntas y descubre tu diseño de investigación ideal.</p>
+        </div>
+
+        <!-- Progress -->
+        <div class="flex items-center gap-2 mb-7" id="progress-bar"></div>
+
+        <!-- Question card -->
+        <div id="question-card" class="bg-white rounded-xl p-7 q-animate" style="border:1px solid var(--border);box-shadow:var(--shadow-soft);"></div>
+
+        <!-- Result card -->
+        <div id="result-card" class="hidden result-animate"></div>
+
+        <!-- Navigation -->
+        <div class="flex items-center justify-between mt-5">
+            <button id="btn-back" class="hidden text-sm font-medium flex items-center gap-1.5 transition-colors px-3 py-2 rounded-lg hover:bg-white" style="color:var(--muted-foreground)">
+                <i data-lucide="arrow-left" class="h-4 w-4"></i> Anterior
+            </button>
+            <button id="btn-restart" class="hidden ml-auto text-sm font-medium transition-colors hover:underline" style="color:var(--primary)">
+                ↺ Empezar de nuevo
+            </button>
+        </div>
+
+    </main>
+
+    <footer class="py-8 px-4 border-t text-center text-sm" style="border-color:var(--border);color:var(--muted-foreground);background:var(--muted);">
+        &copy; 2025 Dr. Diego Sornoza Parrales — <a href="/" class="hover:underline" style="color:var(--primary)">sornoza.com</a>
+    </footer>
+
+<script>
+const TREE = {
+    q1:{question:"¿Cuál es el objetivo principal de tu investigación?",hint:"Piensa en qué quieres lograr al final del proyecto.",
+        options:[
+            {label:"🔍 Explorar un fenómeno poco estudiado o describir una realidad",next:"q2",path:"Exploratorio/Descriptivo"},
+            {label:"📐 Medir, cuantificar o probar una hipótesis con datos numéricos",next:"q3",path:"Cuantitativo"},
+            {label:"💬 Comprender experiencias, significados o perspectivas humanas",next:"q5",path:"Cualitativo"},
+            {label:"🔧 Diseñar, construir o proponer una solución concreta",next:"q6",path:"Propositivo-Aplicado"},
+        ]},
+    q2:{question:"¿Buscas solo describir la realidad o también relacionar variables?",hint:"Describir = caracterizar cómo es algo. Relacionar = ver si dos fenómenos se conectan.",
+        options:[
+            {label:"Solo describir características o frecuencias de un fenómeno",next:"r_descriptivo",path:"Descriptivo"},
+            {label:"Relacionar o comparar variables sin manipularlas",next:"r_correlacional",path:"Correlacional"},
+        ]},
+    q3:{question:"¿Controlas o manipulas alguna variable para ver su efecto?",hint:"Ej: asignas grupos aleatoriamente, aplicas un tratamiento y mides resultados.",
+        options:[
+            {label:"Sí, tengo control experimental sobre las variables",next:"r_experimental",path:"Experimental"},
+            {label:"No, solo observo y mido sin intervenir en la realidad",next:"q4",path:"No experimental"},
+        ]},
+    q4:{question:"¿Tus datos se recolectan en un solo momento o a lo largo del tiempo?",hint:"Transversal = una sola vez. Longitudinal = mides al mismo grupo en distintos momentos.",
+        options:[
+            {label:"En un solo momento (corte transversal)",next:"r_encuesta",path:"Transversal"},
+            {label:"En varios momentos siguiendo a los mismos sujetos",next:"r_longitudinal",path:"Longitudinal"},
+        ]},
+    q5:{question:"¿Qué tipo de fenómeno cualitativo deseas estudiar?",hint:"Cada diseño cualitativo tiene un foco distinto.",
+        options:[
+            {label:"La cultura, prácticas y significados de un grupo social",next:"r_etnografia",path:"Etnográfico"},
+            {label:"La experiencia vivida de personas sobre un fenómeno",next:"r_fenomenologia",path:"Fenomenológico"},
+            {label:"Un caso único (institución, persona, evento) en profundidad",next:"r_caso",path:"Estudio de caso"},
+            {label:"Construir una teoría desde los datos sin teoría previa",next:"r_grounded",path:"Teoría fundamentada"},
+        ]},
+    q6:{question:"¿Qué tipo de propuesta o producto vas a desarrollar?",hint:"El diseño metodológico depende del tipo de solución que propones.",
+        options:[
+            {label:"Una obra, sistema o infraestructura física/tecnológica",next:"r_ingenieria",path:"Ingeniería/Tecnológico"},
+            {label:"Un plan, programa o estrategia de intervención social/educativa",next:"r_intervencion",path:"Intervención"},
+            {label:"Una propuesta fundamentada en análisis bibliométrico integrado",next:"r_bima",path:"BIMA"},
+            {label:"Una propuesta que combina datos cuantitativos y cualitativos",next:"r_mixto",path:"Mixto"},
+        ]},
+
+    r_descriptivo:{result:true,emoji:"📊",design:"Diseño Descriptivo",type:"Cuantitativo",
+        summary:"Tu investigación describe las características de una población o fenómeno tal como existe, sin manipular variables.",
+        when_use:"Cuando quieres saber cómo es algo: frecuencias, promedios, proporciones. Útil como primera etapa antes de estudios más complejos.",
+        techniques:["Encuesta con cuestionario cerrado (escala Likert, dicotómica)","Análisis de frecuencias en SPSS","Estadística descriptiva: media, moda, desviación estándar","Tablas y gráficos de distribución","Alpha de Cronbach para validar el instrumento"],
+        examples:["Caracterización del perfil académico de estudiantes de primer año en la UNESUM","Diagnóstico del nivel de satisfacción laboral en docentes universitarios del cantón Jipijapa"],
+        caution:"Un estudio descriptivo no puede establecer causas ni relaciones. Si quieres ir más allá, considera un diseño correlacional o experimental.",
+        refs:["Hernández-Sampieri et al. (2014) — Metodología de la Investigación, Cap. 5","Arias (2012) — El Proyecto de Investigación, 6ta ed."]},
+
+    r_correlacional:{result:true,emoji:"🔗",design:"Diseño Correlacional",type:"Cuantitativo",
+        summary:"Mides la relación estadística entre dos o más variables sin manipular ninguna.",
+        when_use:"Cuando quieres saber si dos fenómenos se relacionan y en qué dirección e intensidad. No prueba causalidad, pero la sugiere.",
+        techniques:["Pearson (variables continuas con distribución normal)","Spearman (variables ordinales o sin normalidad)","Regresión lineal simple o múltiple","Encuesta o test estandarizado","SPSS para análisis estadístico"],
+        examples:["Relación entre uso de IA y rendimiento académico en estudiantes universitarios (ρ = 0.827)","Correlación entre horas de capacitación docente y resultados de aprendizaje en secundaria"],
+        caution:"Correlación no implica causalidad. Dos variables pueden correlacionarse sin que una cause a la otra. Siempre interpreta con precaución.",
+        refs:["Hernández-Sampieri et al. (2014) — Cap. 7","Field (2018) — Discovering Statistics Using IBM SPSS Statistics"]},
+
+    r_experimental:{result:true,emoji:"🧪",design:"Experimental / Cuasiexperimental",type:"Cuantitativo",
+        summary:"Manipulas una variable independiente para medir su efecto sobre una variable dependiente, con grupos de control.",
+        when_use:"Cuando quieres probar que A causa B. Si asignas grupos aleatoriamente = experimental puro. Si no puedes = cuasiexperimental (más común en educación).",
+        techniques:["Diseño pre-test / post-test con grupo control","Asignación aleatoria (experimental) o por conveniencia (cuasi)","Análisis de varianza ANOVA","T de Student para comparar grupos","SPSS o R para análisis"],
+        examples:["Efecto de la gamificación sobre el rendimiento en matemáticas: grupo experimental vs. control","Impacto de tutorías entre pares en la tasa de reprobación en ingeniería civil"],
+        caution:"En ciencias sociales y educación, el cuasiexperimental es más frecuente porque no siempre es ético o posible asignar grupos aleatoriamente.",
+        refs:["Campbell & Stanley (1963) — Experimental and Quasi-experimental Designs","Shadish, Cook & Campbell (2002) — Experimental and Quasi-Experimental Designs"]},
+
+    r_encuesta:{result:true,emoji:"📋",design:"Encuesta Transversal (Survey)",type:"Cuantitativo",
+        summary:"Recolectas datos de una muestra en un único momento para describir o correlacionar variables en una población.",
+        when_use:"Es el diseño más común en ciencias sociales. Económico, escalable y permite generalizar si el muestreo es correcto.",
+        techniques:["Cuestionario estructurado (Likert, escalas validadas)","Muestreo probabilístico: aleatorio simple, estratificado","SPSS para análisis estadístico","Alpha de Cronbach para validez del instrumento","Estadística descriptiva e inferencial"],
+        examples:["Percepción de los estudiantes sobre la evaluación formativa en la UNESUM (n=112)","Actitudes hacia el trabajo remoto en empleados del sector público del cantón Manta"],
+        caution:"Los resultados son válidos solo para el momento de aplicación. El tamaño y representatividad de la muestra son críticos para la validez externa.",
+        refs:["Babbie (2016) — The Practice of Social Research, 14th ed.","Hernández-Sampieri et al. (2014) — Cap. 8"]},
+
+    r_longitudinal:{result:true,emoji:"📈",design:"Diseño Longitudinal (Panel/Cohorte)",type:"Cuantitativo",
+        summary:"Sigues a los mismos sujetos o grupos en múltiples momentos para analizar cambios o tendencias en el tiempo.",
+        when_use:"Cuando el tiempo es una variable importante: antes/durante/después, evolución de una cohorte, impacto de un evento sostenido.",
+        techniques:["Análisis de varianza de medidas repetidas","Modelos de regresión con efectos fijos/aleatorios","Pruebas de diferencias pre-post: t pareada, Wilcoxon","Gráficos de tendencias temporales","SPSS o R para análisis longitudinal"],
+        examples:["Patrones de rendimiento académico antes, durante y después del COVID-19 por carrera (n=442)","Evolución del nivel de competencias digitales en docentes durante 3 años lectivos"],
+        caution:"Requiere más tiempo y recursos. Planifica el sistema de seguimiento desde el inicio para evitar pérdida de participantes (desgaste muestral).",
+        refs:["Singer & Willett (2003) — Applied Longitudinal Data Analysis","Menard (2007) — Handbook of Longitudinal Research"]},
+
+    r_etnografia:{result:true,emoji:"🌍",design:"Diseño Etnográfico",type:"Cualitativo",
+        summary:"Estudias en profundidad la cultura, prácticas y significados de un grupo social desde adentro, durante un período prolongado.",
+        when_use:"Cuando quieres entender cómo vive, piensa y actúa un grupo. Requiere presencia prolongada en el campo y reflexividad constante.",
+        techniques:["Observación participante con diario de campo","Entrevistas en profundidad no estructuradas","Análisis de documentos y artefactos culturales","Codificación temática con NVivo o Atlas.ti","Triangulación de fuentes"],
+        examples:["Cultura organizacional en instituciones educativas rurales de Manabí","Prácticas pedagógicas de docentes en aulas interculturales bilingües"],
+        caution:"El investigador es el instrumento principal. El sesgo de observación debe controlarse con reflexividad y memoing sistemático.",
+        refs:["Spradley (1980) — Participant Observation","Hammersley & Atkinson (2007) — Ethnography: Principles in Practice"]},
+
+    r_fenomenologia:{result:true,emoji:"💭",design:"Diseño Fenomenológico",type:"Cualitativo",
+        summary:"Describes e interpretas la experiencia vivida de personas que han pasado por un fenómeno particular, buscando su esencia.",
+        when_use:"Cuando el fenómeno es subjetivo y la experiencia individual importa: duelo, discriminación, éxito académico, fracaso, vocación.",
+        techniques:["Entrevistas en profundidad semiestructuradas (8-15 participantes)","Reducción fenomenológica (bracketing/epoché)","Análisis de contenido temático","Identificación de unidades de significado","NVivo o Atlas.ti"],
+        examples:["Experiencia de estudiantes universitarios durante la transición a la virtualidad por COVID-19","Percepción del fracaso académico en jóvenes de primera generación universitaria en Jipijapa"],
+        caution:"Debes 'poner entre paréntesis' tus presuposiciones (epoché). La muestra pequeña e intencional (8-15 personas) es metodológicamente correcta, no un error.",
+        refs:["Moustakas (1994) — Phenomenological Research Methods","Creswell (2013) — Qualitative Inquiry and Research Design"]},
+
+    r_caso:{result:true,emoji:"🔬",design:"Estudio de Caso",type:"Cualitativo",
+        summary:"Analizas en profundidad un caso delimitado (institución, programa, evento, persona) usando múltiples fuentes de evidencia.",
+        when_use:"Cuando el caso es único, revelador o representativo de un fenómeno más amplio. Muy usado en investigaciones institucionales.",
+        techniques:["Triangulación de fuentes: entrevistas + documentos + observación","Análisis de documentos institucionales","Entrevistas semiestructuradas a informantes clave","NVivo para codificación y matrices de análisis","Validación por member checking"],
+        examples:["Gestión del cambio curricular en la UNESUM: un estudio de caso institucional","Implementación de evaluación por competencias en una carrera de ingeniería civil"],
+        caution:"No se generaliza estadísticamente, sino analíticamente (transferibilidad). Documenta el contexto con detalle suficiente para que otros juzguen la aplicabilidad.",
+        refs:["Yin (2018) — Case Study Research and Applications, 6th ed.","Stake (1995) — The Art of Case Study Research"]},
+
+    r_grounded:{result:true,emoji:"🌱",design:"Teoría Fundamentada",type:"Cualitativo",
+        summary:"Construyes una teoría inductiva emergente directamente desde los datos, sin partir de una hipótesis previa.",
+        when_use:"Cuando el fenómeno está poco teorizado y quieres proponer un modelo conceptual desde la evidencia empírica.",
+        techniques:["Muestreo teórico hasta saturación de categorías","Codificación abierta, axial y selectiva","Análisis comparativo constante","Diagramas de relaciones entre categorías","NVivo o Atlas.ti"],
+        examples:["Proceso de adaptación de docentes universitarios a la enseñanza híbrida post-pandemia","Factores que determinan el abandono temprano de emprendimientos juveniles rurales en Manabí"],
+        caution:"No empieces con una teoría previa — debes dejar que emerja. Requiere manejo avanzado de análisis cualitativo. El rigor está en el proceso, no en el tamaño de muestra.",
+        refs:["Strauss & Corbin (1998) — Basics of Qualitative Research, 2nd ed.","Charmaz (2014) — Constructing Grounded Theory"]},
+
+    r_ingenieria:{result:true,emoji:"⚙️",design:"Proyecto de Ingeniería / Desarrollo Tecnológico",type:"Aplicado / Propositivo",
+        summary:"Diseñas o construyes un sistema, estructura, dispositivo o solución tecnológica para resolver un problema concreto.",
+        when_use:"Cuando el producto final es tangible: una obra civil, un software, un prototipo, un sistema de información o una infraestructura.",
+        techniques:["Diagnóstico situacional (levantamiento cuantitativo del problema)","Diseño técnico: planos, especificaciones, diagramas","Validación por expertos o prueba piloto","Presupuesto referencial y cronograma de implementación","Normas técnicas aplicables (INEN, NEC, etc.)"],
+        examples:["Diseño de ampliación de vía para disminuir la congestión vehicular en la Av. Universitaria","Desarrollo de sistema web para gestión de inventarios en la UNESUM"],
+        caution:"Necesitas un diagnóstico cuantitativo sólido del problema antes de la propuesta. No saltes directo al diseño sin evidenciar la magnitud del problema.",
+        refs:["Arias (2012) — El Proyecto de Investigación, Cap. 8","Balestrini (2006) — Cómo se elabora el Proyecto de Investigación"]},
+
+    r_intervencion:{result:true,emoji:"🎯",design:"Investigación-Acción / Propuesta de Intervención",type:"Aplicado / Propositivo",
+        summary:"Diseñas un plan, programa o estrategia para intervenir en una realidad social o educativa y mejorarla.",
+        when_use:"Cuando el resultado es un plan de acción, programa de capacitación, guía didáctica, modelo pedagógico o estrategia de mejora.",
+        techniques:["Diagnóstico participativo (encuesta + grupos focales)","Diseño detallado del plan/programa de intervención","Validación por juicio de expertos (coeficiente de Kendall)","Definición de indicadores de seguimiento y evaluación","Presupuesto y cronograma"],
+        examples:["Propuesta de estrategias didácticas para reducir la deserción en la carrera de Contabilidad","Plan de capacitación en TIC para docentes de educación básica del cantón Paján"],
+        caution:"Define claramente si la propuesta se implementa (investigación-acción) o solo se diseña (propuesta). Esto afecta significativamente tu metodología y alcance.",
+        refs:["Kemmis & McTaggart (1988) — The Action Research Planner","Elliott (1991) — Action Research for Educational Change"]},
+
+    r_bima:{result:true,emoji:"📚",design:"BIMA — Bibliometric Integrated Mixed Analysis",type:"Metodología Avanzada",highlight:true,
+        summary:"Combinas análisis bibliométrico (VOSviewer, Bibliometrix) con revisión mixta de literatura para fundamentar una propuesta en la evidencia científica global.",
+        when_use:"Cuando tu propuesta necesita respaldarse en el estado del arte científico internacional. Ideal para innovación educativa, políticas públicas o temas emergentes.",
+        techniques:["Ecuación de búsqueda en SCOPUS/Web of Science","Análisis de co-citación y co-ocurrencia (VOSviewer)","Análisis de productividad científica (Bibliometrix en R)","Síntesis cualitativa temática de artículos clave","Integración de hallazgos bibliométricos con propuesta aplicada"],
+        examples:["Propuesta de modelo pedagógico con IA para universidades ecuatorianas (revisión bibliométrica 2015-2025)","Estrategia de internacionalización universitaria fundamentada en análisis bibliométrico de SCOPUS"],
+        caution:"BIMA es una metodología avanzada que requiere dominio de herramientas especializadas. Se recomienda una consultoría para implementarla correctamente.",
+        refs:["Donthu et al. (2021) — How to conduct a bibliometric analysis. Journal of Business Research","Aria & Cuccurullo (2017) — bibliometrix: An R-tool for comprehensive science mapping. Journal of Informetrics"]},
+
+    r_mixto:{result:true,emoji:"🔀",design:"Diseño Mixto (Cuantitativo + Cualitativo)",type:"Mixto",
+        summary:"Combinas métodos cuantitativos y cualitativos en la misma investigación para obtener una comprensión más completa del fenómeno.",
+        when_use:"Cuando ningún método por sí solo responde a todas tus preguntas. Los datos numéricos y las experiencias se complementan mutuamente.",
+        techniques:["Fase cuantitativa (encuesta) + fase cualitativa (entrevistas): secuencial","O ambas fases simultáneas: convergente","SPSS para datos cuantitativos, NVivo para cualitativos","Triangulación metodológica de resultados","Meta-inferencias que integran ambos componentes"],
+        examples:["Factores del rendimiento académico: encuesta a 200 estudiantes + entrevistas a casos extremos","Evaluación de programa educativo: datos de desempeño + experiencias de docentes y estudiantes"],
+        caution:"Requiere más tiempo y dominio metodológico. Debes justificar por qué necesitas ambos métodos y cómo se integran — no son dos estudios separados.",
+        refs:["Creswell & Plano Clark (2018) — Designing and Conducting Mixed Methods Research, 3rd ed.","Tashakkori & Teddlie (2010) — SAGE Handbook of Mixed Methods Research"]}
+};
+
+let history = [], currentNode = 'q1';
+
+function render() {
+    const node = TREE[currentNode];
+    updateProgress();
+    if(node.result) showResult(node);
+    else showQuestion(node);
+    document.getElementById('btn-back').classList.toggle('hidden', history.length===0);
+}
+
+function showQuestion(node) {
+    document.getElementById('question-card').classList.remove('hidden');
+    document.getElementById('result-card').classList.add('hidden');
+    document.getElementById('btn-restart').classList.add('hidden');
+    const qNum = history.length+1;
+    const card = document.getElementById('question-card');
+    card.className='bg-white rounded-xl p-7 q-animate';
+    card.style.cssText='border:1px solid var(--border);box-shadow:var(--shadow-soft);';
+    card.innerHTML=`
+        <div class="flex items-center gap-2 mb-4">
+            <span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full" style="background:rgba(6,182,212,0.1);color:var(--primary)">Pregunta ${qNum} de máx. 8</span>
+        </div>
+        <h2 class="text-xl font-bold mb-2 leading-snug" style="color:var(--card-foreground)">${node.question}</h2>
+        ${node.hint?`<p class="text-sm mb-6" style="color:var(--muted-foreground)">${node.hint}</p>`:'<div class="mb-6"></div>'}
+        <div class="space-y-3">
+            ${node.options.map(opt=>`
+                <button class="option-btn w-full px-5 py-4 rounded-xl text-sm font-medium" 
+                    style="background:var(--muted);color:var(--card-foreground);"
+                    onclick="selectOption('${opt.next}','${opt.path}')">
+                    ${opt.label}
+                </button>`).join('')}
+        </div>`;
+}
+
+function showResult(node) {
+    document.getElementById('question-card').classList.add('hidden');
+    document.getElementById('btn-restart').classList.remove('hidden');
+    const trail = history.map(h=>h.path).filter(Boolean).join(' → ');
+    const typeBadgeStyle = node.type==='Cualitativo'?'background:#ede9fe;color:#6d28d9':
+        node.type.includes('Cuantitativo')?'background:#dbeafe;color:#1d4ed8':
+        node.type==='Mixto'?'background:#fce7f3;color:#9d174d':
+        node.highlight?'background:rgba(6,182,212,0.15);color:var(--primary-dark)':
+        'background:#dcfce7;color:#166534';
+
+    const resultDiv = document.getElementById('result-card');
+    resultDiv.className='result-animate';
+    resultDiv.innerHTML=`
+        <div class="bg-white rounded-xl p-7 mb-4" style="border:1px solid rgba(6,182,212,0.2);box-shadow:var(--shadow-elevated);">
+            <div class="flex items-start gap-4 mb-6 pb-6" style="border-bottom:1px solid var(--border);">
+                <div class="text-4xl">${node.emoji}</div>
+                <div>
+                    <div class="flex flex-wrap gap-2 mb-2">
+                        <span class="badge" style="${typeBadgeStyle}">${node.type}</span>
+                        ${node.highlight?`<span class="badge" style="background:rgba(6,182,212,0.1);color:var(--primary)">★ Avanzado</span>`:''}
+                    </div>
+                    <h2 class="text-2xl font-bold" style="color:var(--foreground)">${node.design}</h2>
+                    ${trail?`<p class="text-xs mt-1" style="color:var(--muted-foreground)">Tu ruta: ${trail}</p>`:''}
+                </div>
+            </div>
+
+            <p class="leading-relaxed mb-6" style="color:var(--card-foreground)">${node.summary}</p>
+
+            <div class="space-y-4">
+                <div class="rounded-xl p-4" style="background:var(--muted);border:1px solid var(--border);">
+                    <h3 class="text-xs font-bold uppercase tracking-wider mb-2" style="color:var(--primary)">¿Cuándo usar este diseño?</h3>
+                    <p class="text-sm leading-relaxed" style="color:var(--card-foreground)">${node.when_use}</p>
+                </div>
+
+                <div class="rounded-xl p-4" style="background:var(--muted);border:1px solid var(--border);">
+                    <h3 class="text-xs font-bold uppercase tracking-wider mb-3" style="color:var(--primary)">Técnicas e instrumentos típicos</h3>
+                    <ul class="space-y-1.5">
+                        ${node.techniques.map(t=>`<li class="text-sm flex gap-2" style="color:var(--card-foreground)"><span style="color:var(--primary)">•</span>${t}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="rounded-xl p-4" style="background:var(--muted);border:1px solid var(--border);">
+                    <h3 class="text-xs font-bold uppercase tracking-wider mb-3" style="color:var(--primary)">Ejemplos de temas</h3>
+                    <ul class="space-y-1.5">
+                        ${node.examples.map(e=>`<li class="text-sm flex gap-2" style="color:var(--muted-foreground)"><span style="color:var(--primary)">→</span><em>"${e}"</em></li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="rounded-xl p-4" style="background:#fffbeb;border:1px solid #fde68a;">
+                    <h3 class="text-xs font-bold uppercase tracking-wider mb-2" style="color:#92400e;">⚠ Consideración importante</h3>
+                    <p class="text-sm leading-relaxed" style="color:#78350f;">${node.caution}</p>
+                </div>
+
+                <div class="rounded-xl p-4" style="background:var(--muted);border:1px solid var(--border);">
+                    <h3 class="text-xs font-bold uppercase tracking-wider mb-2" style="color:var(--primary)">Referencias sugeridas</h3>
+                    <ul class="space-y-1">
+                        ${node.refs.map(r=>`<li class="text-xs font-mono" style="color:var(--muted-foreground)">${r}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="pt-2 text-center">
+                    <p class="text-sm mb-3" style="color:var(--muted-foreground)">¿Necesitas ayuda para aplicar este método?</p>
+                    <a href="/#contact" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold text-white transition-all shadow-soft"
+                        style="background:var(--primary);"
+                        onmouseover="this.style.background='var(--primary-dark)'"
+                        onmouseout="this.style.background='var(--primary)'">
+                        Consultar con el Dr. Sornoza →
+                    </a>
+                </div>
+            </div>
+        </div>`;
+    resultDiv.classList.remove('hidden');
+}
+
+function selectOption(nextId, path) {
+    history.push({nodeId:currentNode,path});
+    currentNode=nextId;
+    render();
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function updateProgress() {
+    const bar = document.getElementById('progress-bar');
+    const step = history.length;
+    bar.innerHTML = Array.from({length:8},(_,i)=>`
+        <div class="progress-dot w-2.5 h-2.5 rounded-full" style="background:${i<step?'var(--primary)':i===step?'rgba(6,182,212,0.4)':'var(--border)'}"></div>`
+    ).join('')+(step>0?`<span class="text-xs ml-2" style="color:var(--muted-foreground)">${step} de máx. 8 preguntas</span>`:'');
+}
+
+document.getElementById('btn-back').addEventListener('click',()=>{
+    if(!history.length) return;
+    currentNode=history.pop().nodeId;
+    render();
+});
+document.getElementById('btn-restart').addEventListener('click',()=>{
+    history=[]; currentNode='q1';
+    render(); window.scrollTo({top:0,behavior:'smooth'});
+});
+
+document.addEventListener('DOMContentLoaded',()=>{ lucide.createIcons(); render(); });
+</script>
+</body>
+</html>
