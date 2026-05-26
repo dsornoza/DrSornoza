@@ -1,1 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Títulos - Sornoza.com</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #06B6D4;
+            --primary-dark: #0E7490;
+            --muted: #F1F5F9;
+            --muted-foreground: #64748B;
+            --border: #E2E8F0;
+            --foreground: #0F172A;
+            --card-foreground: #1E293B;
+            --shadow-soft: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-elevated: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+        }
+        body { font-family: 'Inter', sans-serif; color: var(--foreground); background: var(--muted); }
+        .shadow-soft { box-shadow: var(--shadow-soft); }
+        textarea, input, select { font-family: 'Inter', sans-serif; }
+        .field-tag { display:inline-block; padding:2px 10px; border-radius:9999px; font-size:0.65rem; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; }
+        @keyframes slideUp { from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);} }
+        .slide-up { animation: slideUp 0.35s ease forwards; opacity:0; }
+        .slide-up:nth-child(2){animation-delay:0.08s}
+        .slide-up:nth-child(3){animation-delay:0.16s}
+        .spinner { animation: spin 0.7s linear infinite; transform-origin:center; }
+        @keyframes spin { to { transform:rotate(360deg); } }
+    </style>
+</head>
+<body class="min-h-screen antialiased">
 
+    <header class="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur" style="border-color:var(--border);">
+        <div class="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
+            <div class="flex items-center gap-2">
+                <i data-lucide="graduation-cap" class="h-5 w-5" style="color:var(--primary)"></i>
+                <span class="text-base font-semibold">sornoza.com</span>
+            </div>
+            <a href="/recursos/" class="text-sm font-medium transition-colors hover:text-cyan-500" style="color:var(--muted-foreground)">← Recursos</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto max-w-3xl px-4 md:px-8 py-12">
+
+        <div class="mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold mb-2">Generador de Títulos</h1>
+            <p class="text-lg" style="color:var(--muted-foreground)">Técnica 5W+1H para proyectos propositivos aplicados — powered by Gemini AI.</p>
+        </div>
+
+        <!-- API Key -->
+        <div id="api-setup" class="rounded-xl p-5 mb-6 border" style="background:#fffbeb;border-color:#fde68a;">
+            <div class="flex items-start gap-3">
+                <i data-lucide="key" class="h-5 w-5 mt-0.5 flex-shrink-0" style="color:#d97706"></i>
+                <div class="flex-1">
+                    <p class="text-sm font-semibold mb-0.5" style="color:#92400e">API Key de Google Gemini</p>
+                    <p class="text-xs mb-3" style="color:#a16207">Obtén una gratis en <a href="https://aistudio.google.com/app/apikey" target="_blank" class="underline font-medium">aistudio.google.com</a>. Tu clave se guarda solo en tu navegador.</p>
+                    <div class="flex gap-2">
+                        <input type="password" id="api-key-input" placeholder="Pega tu API Key aquí..."
+                            class="flex-1 px-3 py-2 rounded-lg border text-sm focus:outline-none focus:ring-2 bg-white"
+                            style="border-color:#fcd34d;font-family:monospace;font-size:0.8rem;">
+                        <button id="btn-save-key" class="px-4 py-2 rounded-lg text-sm font-semibold text-white transition-colors"
+                            style="background:#d97706;" onmouseover="this.style.background='#b45309'" onmouseout="this.style.background='#d97706'">
+                            Guardar
+                        </button>
+                    </div>
+                    <p id="key-status" class="text-xs mt-2 hidden"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <div class="bg-white rounded-xl shadow-soft p-6 md:p-8 mb-6" style="border:1px solid var(--border);">
+            <div class="flex items-center gap-3 mb-7 pb-5" style="border-bottom:1px solid var(--border);">
+                <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm text-white" style="background:var(--primary)">5W</div>
+                <div>
+                    <p class="font-semibold text-sm">Completa los 6 campos</p>
+                    <p class="text-xs" style="color:var(--muted-foreground)">Sé específico — mejor información produce mejores títulos.</p>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+
+                <div>
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <span class="field-tag" style="background:#dbeafe;color:#1d4ed8;">Qué</span>
+                        <label class="text-xs font-semibold uppercase tracking-wider" style="color:var(--primary)">¿Cuál es el problema o fenómeno central?</label>
+                    </div>
+                    <textarea id="f-que" rows="2" placeholder="Ej: la congestión vehicular en horas pico, el bajo rendimiento académico en matemáticas..."
+                        class="w-full px-4 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 resize-none transition-all"
+                        style="border-color:var(--border);color:var(--foreground);"
+                        onfocus="this.style.borderColor='var(--primary)';this.style.boxShadow='0 0 0 3px rgba(6,182,212,0.1)'"
+                        onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'"></textarea>
+                </div>
+
+                <div>
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <span class="field-tag" style="background:#ede9fe;color:#6d28d9;">Quién</span>
+                        <label class="text-xs font-semibold uppercase tracking-wider" style="color:var(--primary)">¿Quiénes son los beneficiarios directos?</label>
+                    </div>
+                    <textarea id="f-quien" rows="2" placeholder="Ej: los conductores de la ciudad, los estudiantes de primer año..."
+                        class="w-full px-4 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 resize-none transition-all"
+                        style="border-color:var(--border);color:var(--foreground);"
+                        onfocus="this.style.borderColor='var(--primary)';this.style.boxShadow='0 0 0 3px rgba(6,182,212,0.1)'"
+                        onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'"></textarea>
+                </div>
+
+                <div>
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <span class="field-tag" style="background:#dcfce7;color:#166534;">Dónde</span>
+                        <label class="text-xs font-semibold uppercase tracking-wider" style="color:var(--primary)">¿En qué lugar o institución ocurre el problema?</label>
+                    </div>
+                    <textarea id="f-donde" rows="2" placeholder="Ej: la avenida universitaria de Jipijapa, la UNESUM, el cantón Paján..."
+                        class="w-full px-4 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 resize-none transition-all"
+                        style="border-color:var(--border);color:var(--foreground);"
+                        onfocus="this.style.borderColor='var(--primary)';this.style.boxShadow='0 0 0 3px rgba(6,182,212,0.1)'"
+                        onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'"></textarea>
+                </div>
+
+                <div>
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <span class="field-tag" style="background:#fef9c3;color:#a16207;">Cuándo</span>
+                        <label class="text-xs font-semibold uppercase tracking-wider" style="color:var(--primary)">¿En qué período se desarrolla el problema?</label>
+                    </div>
+                    <textarea id="f-cuando" rows="2" placeholder="Ej: durante el período lectivo 2025, en los últimos 5 años..."
+                        class="w-full px-4 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 resize-none transition-all"
+                        style="border-color:var(--border);color:var(--foreground);"
+                        onfocus="this.style.borderColor='var(--primary)';this.style.boxShadow='0 0 0 3px rgba(6,182,212,0.1)'"
+                        onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'"></textarea>
+                </div>
+
+                <div>
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <span class="field-tag" style="background:#fee2e2;color:#991b1b;">Por qué</span>
+                        <label class="text-xs font-semibold uppercase tracking-wider" style="color:var(--primary)">¿Por qué es urgente resolver este problema?</label>
+                    </div>
+                    <textarea id="f-porq" rows="2" placeholder="Ej: porque genera accidentes y pérdidas económicas, porque causa deserción estudiantil..."
+                        class="w-full px-4 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 resize-none transition-all"
+                        style="border-color:var(--border);color:var(--foreground);"
+                        onfocus="this.style.borderColor='var(--primary)';this.style.boxShadow='0 0 0 3px rgba(6,182,212,0.1)'"
+                        onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'"></textarea>
+                </div>
+
+                <div>
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <span class="field-tag text-white" style="background:var(--primary);">Cómo</span>
+                        <label class="text-xs font-semibold uppercase tracking-wider" style="color:var(--primary)">¿Cuál es tu propuesta o alternativa de solución?</label>
+                    </div>
+                    <textarea id="f-como" rows="2" placeholder="Ej: diseño de un carril adicional con semaforización inteligente, implementación de tutorías entre pares..."
+                        class="w-full px-4 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 resize-none transition-all"
+                        style="border-color:var(--border);color:var(--foreground);"
+                        onfocus="this.style.borderColor='var(--primary)';this.style.boxShadow='0 0 0 3px rgba(6,182,212,0.1)'"
+                        onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'"></textarea>
+                </div>
+            </div>
+
+            <div id="form-error" class="hidden mt-4 p-3 rounded-lg border text-sm" style="background:#fef2f2;border-color:#fecaca;color:#dc2626;"></div>
+
+            <button id="btn-generate"
+                class="mt-7 w-full h-12 rounded-lg text-base font-semibold text-white flex items-center justify-center gap-2 transition-all shadow-elevated"
+                style="background:var(--primary);"
+                onmouseover="this.style.background='var(--primary-dark)'"
+                onmouseout="this.style.background='var(--primary)'">
+                <i data-lucide="sparkles" class="h-5 w-5"></i>
+                <span id="btn-text">Generar 3 Títulos con IA</span>
+            </button>
+        </div>
+
+        <!-- Results -->
+        <div id="results" class="hidden space-y-4 mb-8">
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-bold">Títulos Generados</h2>
+                <button id="btn-regenerate" class="text-sm font-medium transition-colors hover:underline" style="color:var(--primary)">↺ Generar de nuevo</button>
+            </div>
+            <div id="titles-container" class="space-y-3"></div>
+            <div id="ai-notes" class="rounded-xl p-4 text-sm leading-relaxed" style="background:var(--muted);color:var(--muted-foreground);border:1px solid var(--border);"></div>
+        </div>
+
+    </main>
+
+    <footer class="py-8 px-4 border-t text-center text-sm" style="border-color:var(--border);color:var(--muted-foreground);background:var(--muted);">
+        &copy; 2025 Dr. Diego Sornoza Parrales — <a href="/" class="hover:underline" style="color:var(--primary)">sornoza.com</a>
+    </footer>
+
+<script>
+let apiKey = localStorage.getItem('gemini_key') || '';
+
+function updateKeyUI() {
+    const setup = document.getElementById('api-setup');
+    const status = document.getElementById('key-status');
+    if (apiKey) {
+        setup.style.background = '#f0fdf4'; setup.style.borderColor = '#86efac';
+        status.classList.remove('hidden');
+        status.style.color = '#166534';
+        status.textContent = '✓ API Key configurada. Puedes cambiarla pegando una nueva.';
+    }
+}
+updateKeyUI();
+
+document.getElementById('btn-save-key').addEventListener('click', () => {
+    const val = document.getElementById('api-key-input').value.trim();
+    if (!val) return;
+    apiKey = val; localStorage.setItem('gemini_key', val);
+    document.getElementById('api-key-input').value = '';
+    updateKeyUI();
+});
+
+document.getElementById('btn-generate').addEventListener('click', async () => {
+    const fields = {
+        que: document.getElementById('f-que').value.trim(),
+        quien: document.getElementById('f-quien').value.trim(),
+        donde: document.getElementById('f-donde').value.trim(),
+        cuando: document.getElementById('f-cuando').value.trim(),
+        porq: document.getElementById('f-porq').value.trim(),
+        como: document.getElementById('f-como').value.trim(),
+    };
+    const missing = Object.entries(fields).filter(([,v])=>!v);
+    if (missing.length) {
+        const el = document.getElementById('form-error');
+        const names = {que:'Qué',quien:'Quién',donde:'Dónde',cuando:'Cuándo',porq:'Por qué',como:'Cómo'};
+        el.classList.remove('hidden');
+        el.textContent = `Completa todos los campos. Faltan: ${missing.map(([k])=>names[k]).join(', ')}.`;
+        return;
+    }
+    document.getElementById('form-error').classList.add('hidden');
+    if (!apiKey) { alert('Ingresa tu API Key de Gemini primero.'); return; }
+
+    const btn = document.getElementById('btn-generate');
+    const btnText = document.getElementById('btn-text');
+    btn.disabled = true;
+    btn.style.background = 'var(--primary-dark)';
+    btnText.textContent = 'Generando...';
+
+    const prompt = `Eres un experto en metodología de investigación aplicada en Ecuador. Genera 3 títulos de investigación propositivos para un proyecto de titulación universitaria.
+
+Los títulos DEBEN seguir el estilo propositivo-aplicado de guías de titulación ecuatorianas:
+Ejemplo: "Diseño de ampliación de vía para disminuir la congestión vehicular en la avenida universitaria"
+Estructura: [Propuesta/acción concreta] + para + [problema a resolver] + en + [contexto/beneficiarios] + [período SOLO si aplica]
+
+Datos del estudiante:
+- QUÉ (problema): ${fields.que}
+- QUIÉN (beneficiarios): ${fields.quien}
+- DÓNDE (contexto): ${fields.donde}
+- CUÁNDO (período): ${fields.cuando}
+- POR QUÉ (justificación): ${fields.porq}
+- CÓMO (propuesta): ${fields.como}
+
+Genera 3 títulos. Cada uno debe:
+1. Máximo 25 palabras
+2. Iniciar con verbo de acción o sustantivo propositivo (Diseño, Implementación, Propuesta, Desarrollo, Plan, Modelo, Estrategia...)
+3. Incluir la propuesta concreta del CÓMO
+4. Especificar beneficiarios y lugar
+5. Incluir período SOLO si es relevante (proyectos educativos/sociales sí; obras físicas generalmente no)
+6. Variar en estructura gramatical
+
+Responde ÚNICAMENTE con JSON sin backticks:
+{"titulos":[{"numero":1,"titulo":"...","estructura":"descripción breve de la estructura"},{"numero":2,"titulo":"...","estructura":"..."},{"numero":3,"titulo":"...","estructura":"..."}],"notas":"2-3 observaciones: qué se incluyó, qué se omitió y por qué, consejo para elegir."}`;
+
+    try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,{
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.8,maxOutputTokens:1024} })
+        });
+        if(!res.ok){ const e=await res.json(); throw new Error(e.error?.message||`Error ${res.status}`); }
+        const data = await res.json();
+        let raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        raw = raw.replace(/```json|```/g,'').trim();
+        const parsed = JSON.parse(raw);
+
+        const container = document.getElementById('titles-container');
+        container.innerHTML = '';
+        parsed.titulos.forEach((t, i) => {
+            const div = document.createElement('div');
+            div.className = 'slide-up bg-white rounded-xl p-5';
+            div.style.cssText = `border:1px solid var(--border);box-shadow:var(--shadow-soft);`;
+            div.innerHTML = `
+                <div class="flex items-start gap-3">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm text-white flex-shrink-0 mt-0.5" style="background:var(--primary)">${t.numero}</div>
+                    <div class="flex-1">
+                        <p class="font-semibold leading-snug mb-2" style="color:var(--card-foreground)">${t.titulo}</p>
+                        <p class="text-xs" style="color:var(--muted-foreground)"><span class="font-semibold">Estructura:</span> ${t.estructura}</p>
+                    </div>
+                    <button onclick="copyTitle('${t.titulo.replace(/'/g,"\\'")}',this)" class="p-2 rounded-lg transition-colors flex-shrink-0" style="color:var(--muted-foreground)" title="Copiar">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    </button>
+                </div>`;
+            container.appendChild(div);
+        });
+        document.getElementById('ai-notes').innerHTML = `<span class="font-semibold" style="color:var(--card-foreground)">💡 Observaciones:</span> ${parsed.notas}`;
+        document.getElementById('results').classList.remove('hidden');
+        document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
+    } catch(err) {
+        const el = document.getElementById('form-error');
+        el.classList.remove('hidden');
+        el.textContent = `Error: ${err.message}. Verifica tu API Key y conexión.`;
+    } finally {
+        btn.disabled = false; btn.style.background = 'var(--primary)';
+        btnText.textContent = 'Generar 3 Títulos con IA';
+    }
+});
+
+document.getElementById('btn-regenerate').addEventListener('click',()=>{
+    document.getElementById('results').classList.add('hidden');
+});
+
+function copyTitle(text, btn) {
+    navigator.clipboard.writeText(text).then(()=>{
+        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color:var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>`;
+        setTimeout(()=>{
+            btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>`;
+        },2000);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', ()=> lucide.createIcons());
+</script>
+</body>
+</html>
