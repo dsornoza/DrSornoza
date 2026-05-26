@@ -1,1 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador de Correlación - Sornoza.com</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #06B6D4;
+            --primary-dark: #0E7490;
+            --muted: #F1F5F9;
+            --muted-foreground: #64748B;
+            --border: #E2E8F0;
+            --foreground: #0F172A;
+            --card-foreground: #1E293B;
+            --shadow-soft: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-elevated: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+        }
+        body { font-family: 'Inter', sans-serif; color: var(--foreground); background: var(--muted); }
+        .shadow-soft { box-shadow: var(--shadow-soft); }
+        .shadow-elevated { box-shadow: var(--shadow-elevated); }
+        input[type=range] { -webkit-appearance: none; appearance: none; height: 6px; border-radius: 9999px; background: var(--border); outline: none; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--primary); cursor: pointer; box-shadow: 0 0 0 3px rgba(6,182,212,0.2); border: 2px solid white; }
+        input[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: var(--primary); cursor: pointer; border: 2px solid white; }
+        .info-panel { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+        .info-panel.open { max-height: 600px; }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+        .fade-up { animation: fadeUp 0.3s ease forwards; }
+    </style>
+</head>
+<body class="min-h-screen antialiased">
 
+    <!-- Nav (same as main site) -->
+    <header class="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur" style="border-color: var(--border);">
+        <div class="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
+            <div class="flex items-center gap-2">
+                <i data-lucide="graduation-cap" class="h-5 w-5" style="color:var(--primary)"></i>
+                <span class="text-base font-semibold" style="color:var(--foreground)">sornoza.com</span>
+            </div>
+            <a href="/recursos/" class="text-sm font-medium transition-colors hover:text-cyan-500" style="color:var(--muted-foreground)">
+                ← Recursos
+            </a>
+        </div>
+    </header>
+
+    <main class="container mx-auto max-w-5xl px-4 md:px-8 py-12">
+
+        <!-- Page title -->
+        <div class="mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold mb-2" style="color:var(--foreground)">Visualizador de Correlación</h1>
+            <p style="color:var(--muted-foreground)" class="text-lg">Pearson vs. Spearman — mueve el slider y observa cómo cambia la relación.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Canvas card -->
+            <div class="lg:col-span-2 bg-white rounded-xl shadow-soft p-6" style="border:1px solid var(--border);">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wider mb-0.5" style="color:var(--primary)">Ejemplo</p>
+                        <p class="text-sm font-medium" style="color:var(--card-foreground)">Horas de estudio por semana vs. Calificación final (/100)</p>
+                    </div>
+                    <button id="btn-reset" class="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md border transition-colors hover:bg-gray-50" style="border-color:var(--border);color:var(--muted-foreground)">
+                        <i data-lucide="rotate-ccw" class="h-3 w-3"></i> Reiniciar
+                    </button>
+                </div>
+
+                <canvas id="scatterCanvas" width="560" height="360" class="w-full rounded-lg" style="border:1px solid var(--border);"></canvas>
+
+                <!-- Slider -->
+                <div class="mt-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="text-sm font-medium" style="color:var(--card-foreground)">Intensidad de la correlación</label>
+                        <span id="r-slider-label" class="text-sm font-bold font-mono" style="color:var(--primary)">r = 0.00</span>
+                    </div>
+                    <input id="r-slider" type="range" min="-100" max="100" value="0" step="1" class="w-full">
+                    <div class="flex justify-between text-xs mt-1.5" style="color:var(--muted-foreground)">
+                        <span>−1 (perfecta negativa)</span>
+                        <span>0</span>
+                        <span>+1 (perfecta positiva)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right panel -->
+            <div class="flex flex-col gap-4">
+
+                <!-- Pearson card -->
+                <div class="bg-white rounded-xl shadow-soft p-5" style="border:1px solid var(--border);">
+                    <div class="flex items-start justify-between mb-2">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wider mb-1" style="color:var(--muted-foreground)">Pearson (r)</p>
+                            <p id="pearson-value" class="text-3xl font-bold font-mono" style="color:var(--primary)">0.000</p>
+                        </div>
+                        <span id="pearson-strength" class="text-xs px-2 py-1 rounded-full font-semibold" style="background:var(--muted);color:var(--muted-foreground)">Sin correlación</span>
+                    </div>
+                    <p id="pearson-interp" class="text-xs leading-relaxed mt-2" style="color:var(--muted-foreground)">Mide la relación lineal entre dos variables continuas.</p>
+                </div>
+
+                <!-- Spearman card -->
+                <div class="bg-white rounded-xl shadow-soft p-5" style="border:1px solid var(--border);">
+                    <div class="flex items-start justify-between mb-2">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wider mb-1" style="color:var(--muted-foreground)">Spearman (ρ)</p>
+                            <p id="spearman-value" class="text-3xl font-bold font-mono" style="color:#7c3aed">0.000</p>
+                        </div>
+                        <span id="spearman-strength" class="text-xs px-2 py-1 rounded-full font-semibold" style="background:var(--muted);color:var(--muted-foreground)">Sin correlación</span>
+                    </div>
+                    <p id="spearman-interp" class="text-xs leading-relaxed mt-2" style="color:var(--muted-foreground)">Mide la relación monotónica usando rangos, no valores exactos.</p>
+                </div>
+
+                <!-- When to use -->
+                <div class="bg-white rounded-xl shadow-soft p-5" style="border:1px solid rgba(6,182,212,0.2);">
+                    <button id="btn-toggle-when" class="w-full flex items-center justify-between text-left">
+                        <span class="text-sm font-semibold" style="color:var(--card-foreground)">¿Cuándo usar cada uno?</span>
+                        <i data-lucide="chevron-down" id="chevron-icon" class="h-4 w-4 transition-transform" style="color:var(--primary)"></i>
+                    </button>
+                    <div id="when-panel" class="info-panel">
+                        <div class="mt-4 space-y-3">
+                            <div class="rounded-lg p-3" style="background:var(--muted);">
+                                <p class="text-xs font-bold mb-1.5" style="color:var(--primary)">✓ Usa Pearson cuando:</p>
+                                <ul class="text-xs space-y-1" style="color:var(--muted-foreground)">
+                                    <li>• Ambas variables son continuas (intervalo o razón)</li>
+                                    <li>• La distribución es aproximadamente normal</li>
+                                    <li>• La relación esperada es <strong>lineal</strong></li>
+                                    <li>• Ej: peso vs. talla, temperatura vs. consumo</li>
+                                </ul>
+                            </div>
+                            <div class="rounded-lg p-3" style="background:var(--muted);">
+                                <p class="text-xs font-bold mb-1.5" style="color:#7c3aed">✓ Usa Spearman cuando:</p>
+                                <ul class="text-xs space-y-1" style="color:var(--muted-foreground)">
+                                    <li>• Los datos son ordinales (escalas Likert, rangos)</li>
+                                    <li>• Hay valores atípicos que distorsionan</li>
+                                    <li>• La distribución no es normal</li>
+                                    <li>• La relación es <strong>monotónica</strong> pero no lineal</li>
+                                    <li>• Ej: satisfacción (1-5) vs. desempeño</li>
+                                </ul>
+                            </div>
+                            <div class="rounded-lg p-3 border" style="background:#fffbeb;border-color:#fde68a;">
+                                <p class="text-xs font-bold mb-1" style="color:#92400e;">⚠ Nota para estudios educativos:</p>
+                                <p class="text-xs leading-relaxed" style="color:#78350f;">Con escalas Likert, <strong>Spearman es más apropiado</strong>. Es más robusto con muestras pequeñas o distribuciones asimétricas.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="py-8 px-4 border-t mt-12 text-center text-sm" style="border-color:var(--border);color:var(--muted-foreground);background:var(--muted);">
+        &copy; 2025 Dr. Diego Sornoza Parrales — <a href="/" class="hover:underline" style="color:var(--primary)">sornoza.com</a>
+    </footer>
+
+<script>
+const canvas = document.getElementById('scatterCanvas');
+const ctx = canvas.getContext('2d');
+const slider = document.getElementById('r-slider');
+let points = [];
+
+function generatePoints(r, n = 60) {
+    const pts = [];
+    for (let i = 0; i < n; i++) {
+        const u1 = Math.random(), u2 = Math.random();
+        const z1 = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+        const z2 = Math.sqrt(-2 * Math.log(u1)) * Math.sin(2 * Math.PI * u2);
+        pts.push({
+            x: Math.max(0, Math.min(20, z1 * 3 + 10)),
+            y: Math.max(30, Math.min(100, (r * z1 + Math.sqrt(1 - r * r) * z2) * 12 + 65))
+        });
+    }
+    return pts;
+}
+
+function pearson(pts) {
+    const n = pts.length, mx = pts.reduce((s,p)=>s+p.x,0)/n, my = pts.reduce((s,p)=>s+p.y,0)/n;
+    let num=0, dx2=0, dy2=0;
+    pts.forEach(p=>{ const dx=p.x-mx, dy=p.y-my; num+=dx*dy; dx2+=dx*dx; dy2+=dy*dy; });
+    return num/Math.sqrt(dx2*dy2);
+}
+
+function spearman(pts) {
+    const rank = arr => { const s=[...arr].map((v,i)=>({v,i})).sort((a,b)=>a.v-b.v); const r=new Array(arr.length); s.forEach((x,i)=>r[x.i]=i+1); return r; };
+    const rx=rank(pts.map(p=>p.x)), ry=rank(pts.map(p=>p.y)), n=pts.length;
+    return 1-(6*rx.reduce((s,_,i)=>s+(rx[i]-ry[i])**2,0))/(n*(n*n-1));
+}
+
+function strengthLabel(r) {
+    const a=Math.abs(r);
+    if(a<0.1) return ['Sin correlación','#94a3b8'];
+    if(a<0.3) return ['Débil','#f59e0b'];
+    if(a<0.5) return ['Moderada','#f97316'];
+    if(a<0.7) return ['Moderada-fuerte','#8b5cf6'];
+    if(a<0.9) return ['Fuerte','#3b82f6'];
+    return ['Muy fuerte','#06B6D4'];
+}
+
+function rColor(r) {
+    if(r<-0.5) return '#ef4444';
+    if(r<-0.1) return '#f97316';
+    if(r<0.1)  return '#94a3b8';
+    if(r<0.5)  return '#f59e0b';
+    if(r<0.8)  return '#3b82f6';
+    return '#06B6D4';
+}
+
+function draw() {
+    const W=canvas.width, H=canvas.height;
+    const pad={l:55,r:20,t:20,b:50};
+    const pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,W,H);
+
+    // Grid
+    ctx.strokeStyle='#e2e8f0'; ctx.lineWidth=1;
+    for(let i=0;i<=5;i++){
+        const x=pad.l+(pw/5)*i, y=pad.t+(ph/5)*i;
+        ctx.beginPath(); ctx.moveTo(x,pad.t); ctx.lineTo(x,pad.t+ph); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+pw,y); ctx.stroke();
+    }
+
+    // Axis labels
+    ctx.fillStyle='#94a3b8'; ctx.font='11px Inter, sans-serif'; ctx.textAlign='center';
+    for(let i=0;i<=4;i++) ctx.fillText(i*5+' h', pad.l+(pw/4)*i, H-pad.b+18);
+    ctx.textAlign='right';
+    for(let i=0;i<=4;i++) ctx.fillText(Math.round(30+i*(70/4)), pad.l-8, pad.t+ph-(ph/4)*i+4);
+
+    ctx.fillStyle='#64748b'; ctx.font='12px Inter, sans-serif'; ctx.textAlign='center';
+    ctx.fillText('Horas de estudio por semana', pad.l+pw/2, H-6);
+    ctx.save(); ctx.translate(14,pad.t+ph/2); ctx.rotate(-Math.PI/2);
+    ctx.fillText('Calificación final', 0, 0); ctx.restore();
+
+    if(!points.length) return;
+    const toX=v=>pad.l+((v-0)/20)*pw;
+    const toY=v=>pad.t+ph-((v-30)/70)*ph;
+
+    const n=points.length;
+    const mx=points.reduce((s,p)=>s+p.x,0)/n, my=points.reduce((s,p)=>s+p.y,0)/n;
+    let num=0,den=0;
+    points.forEach(p=>{const dx=p.x-mx; num+=dx*(p.y-my); den+=dx*dx;});
+    const slope=num/den, intercept=my-slope*mx;
+    const pr=pearson(points);
+
+    ctx.strokeStyle=rColor(pr); ctx.lineWidth=2.5; ctx.setLineDash([6,3]);
+    ctx.beginPath(); ctx.moveTo(toX(0),toY(intercept)); ctx.lineTo(toX(20),toY(slope*20+intercept)); ctx.stroke();
+    ctx.setLineDash([]);
+
+    points.forEach(p=>{
+        ctx.beginPath(); ctx.arc(toX(p.x),toY(p.y),5,0,Math.PI*2);
+        ctx.fillStyle='rgba(6,182,212,0.6)'; ctx.fill();
+        ctx.strokeStyle='white'; ctx.lineWidth=1.5; ctx.stroke();
+    });
+
+    const sp=spearman(points);
+    const [pStr,pCol]=strengthLabel(pr);
+    const [sStr,sCol]=strengthLabel(sp);
+
+    document.getElementById('pearson-value').textContent=pr.toFixed(3);
+    document.getElementById('pearson-value').style.color=rColor(pr);
+    document.getElementById('spearman-value').textContent=sp.toFixed(3);
+
+    const pBadge=document.getElementById('pearson-strength');
+    pBadge.textContent=pStr; pBadge.style.background=pCol+'22'; pBadge.style.color=pCol;
+    const sBadge=document.getElementById('spearman-strength');
+    sBadge.textContent=sStr; sBadge.style.background=sCol+'22'; sBadge.style.color=sCol;
+
+    const lbl=document.getElementById('r-slider-label');
+    lbl.textContent=`r = ${pr>=0?'+':''}${pr.toFixed(2)}`; lbl.style.color=rColor(pr);
+
+    const dir=pr>0?'positiva':pr<0?'negativa':'';
+    document.getElementById('pearson-interp').textContent=Math.abs(pr)<0.1
+        ?'No existe relación lineal entre las variables en esta muestra.'
+        :`Relación lineal ${dir} ${pStr.toLowerCase()}: a ${pr>0?'más':'menos'} horas, ${pr>0?'mayor':'menor'} calificación (r = ${pr.toFixed(3)}).`;
+    document.getElementById('spearman-interp').textContent=Math.abs(sp)<0.1
+        ?'No existe relación monotónica entre los rangos de las variables.'
+        :`Por rangos, la tendencia ${dir} es ${sStr.toLowerCase()} (ρ = ${sp.toFixed(3)}). ${Math.abs(pr-sp)>0.1?'La diferencia con Pearson sugiere valores atípicos o distribución no normal.':'Ambos coeficientes son similares: datos bien distribuidos.'}`;
+}
+
+function init(r){ points=generatePoints(r); draw(); }
+
+slider.addEventListener('input',()=>init(parseInt(slider.value)/100));
+document.getElementById('btn-reset').addEventListener('click',()=>{ slider.value=0; init(0); });
+document.getElementById('btn-toggle-when').addEventListener('click',()=>{
+    const p=document.getElementById('when-panel');
+    const c=document.getElementById('chevron-icon');
+    p.classList.toggle('open');
+    c.style.transform=p.classList.contains('open')?'rotate(180deg)':'';
+});
+
+function resizeCanvas(){
+    const w=canvas.parentElement.clientWidth-48;
+    canvas.style.width=w+'px';
+    canvas.style.height=(w*360/560)+'px';
+}
+window.addEventListener('resize',()=>{ resizeCanvas(); draw(); });
+document.addEventListener('DOMContentLoaded',()=>{ lucide.createIcons(); resizeCanvas(); init(0); });
+</script>
+</body>
+</html>
