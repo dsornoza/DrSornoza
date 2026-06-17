@@ -10,14 +10,16 @@
     
     <!-- 2. IMPORT MAP (Le dice al navegador dónde buscar React) -->
     <script type="importmap">
-        {
-            "imports": {
-                "react": "https://esm.sh/react@18.2.0",
-                "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-                "lucide-react": "https://esm.sh/lucide-react@0.292.0"
-            }
+    {
+        "imports": {
+            "react": "https://esm.sh/react@18.2.0",
+            "react/jsx-runtime": "https://esm.sh/react@18.2.0/jsx-runtime",
+            "react/jsx-dev-runtime": "https://esm.sh/react@18.2.0/jsx-dev-runtime",
+            "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+            "lucide-react": "https://esm.sh/lucide-react@0.292.0"
         }
-    </script>
+    }
+</script>
     
     <!-- 3. TRADUCTOR (Babel: convierte React a algo que el navegador entienda) -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
