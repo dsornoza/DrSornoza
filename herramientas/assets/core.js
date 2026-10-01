@@ -96,7 +96,8 @@
     reading: { es: 'Leyendo archivo…', en: 'Reading file…' },
     file_err: { es: 'No se pudo leer el archivo', en: 'Could not read the file' },
     file_trunc: { es: 'Se usaron los primeros {n} caracteres del archivo.', en: 'Only the first {n} characters of the file were used.' },
-    truncated: { es: 'La respuesta se cortó por límite de longitud. Pide una versión más corta o genera por partes.', en: 'The response was cut off by the length limit. Ask for a shorter version or generate in parts.' },
+    stopped: { es: 'Gemini detuvo la respuesta antes de terminar (motivo: {r}). El resultado puede estar incompleto: genera de nuevo o reformula el contenido.', en: 'Gemini stopped the response early (reason: {r}). The result may be incomplete: generate again or rephrase the content.' },
+    truncated: { es: 'La respuesta quedó incompleta (límite de longitud o conexión cortada), aun después de pedir que continuara. Genera de nuevo o hazlo por partes.', en: 'The response was left incomplete (length limit or dropped connection) even after asking it to continue. Generate again or do it in parts.' },
     err_no_key: { es: 'Configura primero tu API Key de Gemini.', en: 'Set your Gemini API key first.' },
     err_key: { es: 'Google rechazó la API Key. Revisa que esté completa y activa.', en: 'Google rejected the API key. Check that it is complete and active.' },
     err_busy: { es: 'Los modelos de Gemini tienen alta demanda en este momento (es temporal). Espera un minuto e inténtalo de nuevo.', en: 'Gemini models are under high demand right now (this is temporary). Wait a minute and try again.' },
@@ -356,16 +357,21 @@
     const tried = new Set([model]);
     const urlFor = (m) => `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(m)}:streamGenerateContent?alt=sse`;
     let url = urlFor(model);
-    const body = JSON.stringify({
+    const base = messages ? messages.map((m) => ({ role: m.role, parts: [{ text: m.text }] })) : [{ role: 'user', parts: [{ text: prompt }] }];
+    let contents = base, total = '', cont = 0;
+    // El límite incluye el "pensamiento" interno de los modelos 2.5/3+; los antiguos no admiten más de 8192
+    const maxTok = (m) => (/gemini-(2\.5|[3-9])|latest/.test(m) ? 32768 : 8192);
+    const bodyFor = () => JSON.stringify({
       ...(system ? { systemInstruction: { parts: [{ text: system }] } } : {}),
-      contents: messages ? messages.map((m) => ({ role: m.role, parts: [{ text: m.text }] })) : [{ role: 'user', parts: [{ text: prompt }] }],
-      generationConfig: { temperature, maxOutputTokens: 16384 },
+      contents,
+      generationConfig: { temperature, maxOutputTokens: maxTok(model) },
     });
+    const CONTINUE = 'Continue exactly where your previous message stopped. Do not repeat anything already written and do not add any preface or comment: write the very next characters of the same document.';
 
     for (let attempt = 0; ; attempt++) {
       let res;
       try {
-        res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key }, body, signal });
+        res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key }, body: bodyFor(), signal });
       } catch (e) {
         if (e.name === 'AbortError') throw e;
         throw apiErr('net');
@@ -409,19 +415,31 @@
         if (o.promptFeedback && o.promptFeedback.blockReason) throw apiErr('blocked');
         const c = o.candidates && o.candidates[0];
         const t = c && c.content && c.content.parts ? c.content.parts.map((p) => p.text || '').join('') : '';
-        if (t) { full += t; onChunk && onChunk(t, full); }
+        if (t) { full += t; onChunk && onChunk(t, total + full); }
         if (c && c.finishReason) finish = c.finishReason;
       };
-      for (;;) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buf += dec.decode(value, { stream: true });
-        let i;
-        while ((i = buf.indexOf('\n')) >= 0) { handle(buf.slice(0, i).replace(/\r$/, '')); buf = buf.slice(i + 1); }
+      try {
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buf += dec.decode(value, { stream: true });
+          let i;
+          while ((i = buf.indexOf('\n')) >= 0) { handle(buf.slice(0, i).replace(/\r$/, '')); buf = buf.slice(i + 1); }
+        }
+        if (buf) handle(buf.replace(/\r$/, ''));
+      } catch (e) {
+        if (e.name === 'AbortError' || e.code === 'blocked') throw e;
+        // conexión cortada a mitad de respuesta: se trata como respuesta incompleta (finish = null)
       }
-      if (buf) handle(buf.replace(/\r$/, ''));
-      if (!full) throw apiErr(finish === 'SAFETY' ? 'blocked' : 'empty');
-      return { text: full, finish };
+      if (!full && !total) throw apiErr(finish === 'SAFETY' ? 'blocked' : 'empty');
+      total += full;
+      // Respuesta incompleta (límite de tokens o corte de conexión): pedimos al modelo que continúe, hasta 2 veces
+      const cut = finish === 'MAX_TOKENS' || !finish;
+      if (cut && full && cont < 2) {
+        cont++; contents = base.concat([{ role: 'model', parts: [{ text: total }] }, { role: 'user', parts: [{ text: CONTINUE }] }]);
+        attempt = -1; continue;
+      }
+      return { text: total, finish: finish || 'CUT' };
     }
   };
 
@@ -797,6 +815,7 @@ ${body}
       try {
         const spec = await cfg.buildPrompt(v, { lang: ST.lang, outLang, outLangName: langName(outLang), t: ST.t });
         state.title = spec.title || ST.t(cfg.title);
+        if (spec.system) spec.system += '\n\nHeadings: if a section heading appears as "A / B" in these instructions, write ONLY the version in the response language as the heading, never both.';
         if (spec.output !== undefined) { // herramienta local: no llama a Gemini
           state.output = spec.output; $('#st-out').classList.remove('hidden'); out.setText(spec.output);
           $('#st-out').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -812,7 +831,7 @@ ${body}
         });
         state.output = preface + r.text;
         out.setStreaming(false); out.setText(state.output);
-        if (r.finish === 'MAX_TOKENS') showError(ST.t('truncated'));
+        if (r.finish && r.finish !== 'STOP') showError(ST.t(['MAX_TOKENS', 'CUT'].includes(r.finish) ? 'truncated' : 'stopped').replace('{r}', r.finish));
         saveHistory(v);
       } catch (err) {
         out.setStreaming(false);

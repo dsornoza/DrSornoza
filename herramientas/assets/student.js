@@ -278,6 +278,7 @@ ${lang ? `Respond in ${lang}.` : 'Respond in the language of the draft.'} Output
           },
         });
         reply.text = r.text;
+        if (r.finish && r.finish !== 'STOP') error = ST.t(['MAX_TOKENS', 'CUT'].includes(r.finish) ? 'truncated' : 'stopped').replace('{r}', r.finish);
       } catch (err) {
         if (!reply.text) { msgs.splice(-2, 2); render.draft = text; } // sin respuesta: devolvemos el mensaje al cuadro
         if (err.name !== 'AbortError') error = err.message;
