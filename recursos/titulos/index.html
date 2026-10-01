@@ -184,7 +184,9 @@
         &copy; 2025 Dr. Diego Sornoza Parrales — <a href="/" class="hover:underline" style="color:var(--primary)">sornoza.com</a>
     </footer>
 
+<script src="/herramientas/assets/core.js"></script>
 <script>
+ST.lang = 'es'; // cliente Gemini compartido con /herramientas (recuperación de modelo, continuación y avisos)
 let apiKey = localStorage.getItem('gemini_key') || '';
 
 function updateKeyUI() {
@@ -259,15 +261,11 @@ Responde ÚNICAMENTE con JSON sin backticks:
 {"titulos":[{"numero":1,"titulo":"...","estructura":"descripción breve de la estructura"},{"numero":2,"titulo":"...","estructura":"..."},{"numero":3,"titulo":"...","estructura":"..."}],"notas":"2-3 observaciones: qué se incluyó, qué se omitió y por qué, consejo para elegir."}`;
 
     try {
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,{
-            method:'POST', headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.8,maxOutputTokens:1024} })
-        });
-        if(!res.ok){ const e=await res.json(); throw new Error(e.error?.message||`Error ${res.status}`); }
-        const data = await res.json();
-        let raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        let raw = (await ST.gemini({ prompt, temperature: 0.8 })).text;
         raw = raw.replace(/```json|```/g,'').trim();
-        const parsed = JSON.parse(raw);
+        let parsed;
+        try { parsed = JSON.parse(raw.slice(raw.indexOf('{'), raw.lastIndexOf('}') + 1)); } catch (e) { parsed = null; }
+        if (!parsed || !Array.isArray(parsed.titulos) || !parsed.titulos.length) throw new Error('Gemini devolvió una respuesta que no se pudo interpretar. Intenta de nuevo.');
 
         const container = document.getElementById('titles-container');
         container.innerHTML = '';
@@ -277,24 +275,24 @@ Responde ÚNICAMENTE con JSON sin backticks:
             div.style.cssText = `border:1px solid var(--border);box-shadow:var(--shadow-soft);`;
             div.innerHTML = `
                 <div class="flex items-start gap-3">
-                    <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm text-white flex-shrink-0 mt-0.5" style="background:var(--primary)">${t.numero}</div>
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm text-white flex-shrink-0 mt-0.5" style="background:var(--primary)">${ST.esc(t.numero)}</div>
                     <div class="flex-1">
-                        <p class="font-semibold leading-snug mb-2" style="color:var(--card-foreground)">${t.titulo}</p>
-                        <p class="text-xs" style="color:var(--muted-foreground)"><span class="font-semibold">Estructura:</span> ${t.estructura}</p>
+                        <p class="font-semibold leading-snug mb-2" style="color:var(--card-foreground)">${ST.esc(t.titulo)}</p>
+                        <p class="text-xs" style="color:var(--muted-foreground)"><span class="font-semibold">Estructura:</span> ${ST.esc(t.estructura)}</p>
                     </div>
-                    <button onclick="copyTitle('${t.titulo.replace(/'/g,"\\'")}',this)" class="p-2 rounded-lg transition-colors flex-shrink-0" style="color:var(--muted-foreground)" title="Copiar">
+                    <button data-copy="${ST.esc(t.titulo)}" class="p-2 rounded-lg transition-colors flex-shrink-0" style="color:var(--muted-foreground)" title="Copiar">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                     </button>
                 </div>`;
             container.appendChild(div);
         });
-        document.getElementById('ai-notes').innerHTML = `<span class="font-semibold" style="color:var(--card-foreground)">💡 Observaciones:</span> ${parsed.notas}`;
+        document.getElementById('ai-notes').innerHTML = `<span class="font-semibold" style="color:var(--card-foreground)">💡 Observaciones:</span> ${ST.esc(parsed.notas || '')}`;
         document.getElementById('results').classList.remove('hidden');
         document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
     } catch(err) {
         const el = document.getElementById('form-error');
         el.classList.remove('hidden');
-        el.textContent = `Error: ${err.message}. Verifica tu API Key y conexión.`;
+        el.textContent = err.message;
     } finally {
         btn.disabled = false; btn.style.background = 'var(--primary)';
         btnText.textContent = 'Generar 3 Títulos con IA';
@@ -313,6 +311,11 @@ function copyTitle(text, btn) {
         },2000);
     });
 }
+
+document.getElementById('titles-container').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-copy]');
+    if (b) copyTitle(b.dataset.copy, b);
+});
 
 document.addEventListener('DOMContentLoaded', ()=> lucide.createIcons());
 </script>

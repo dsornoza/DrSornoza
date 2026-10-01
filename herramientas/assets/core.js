@@ -108,7 +108,10 @@
     err_blocked: { es: 'Gemini bloqueó la respuesta por sus filtros de seguridad. Reformula el contenido.', en: 'Gemini blocked the response with its safety filters. Rephrase the content.' },
     err_empty: { es: 'Gemini no devolvió texto. Intenta de nuevo.', en: 'Gemini returned no text. Try again.' },
     tex_note: { es: 'Documento LaTeX completo; si lo vas a incluir en un libro o tesis, copia solo el cuerpo.', en: 'Full LaTeX document; if it goes into a book or thesis, copy only the body.' },
-    footer: { es: 'Las herramientas funcionan en tu navegador con tu propia API Key de Gemini.', en: 'These tools run in your browser with your own Gemini API key.' },
+    footer: { es: 'Las herramientas funcionan en tu navegador con tu propia API Key de Gemini. Versión beta: revisa siempre lo que genera la IA.', en: 'These tools run in your browser with your own Gemini API key. Beta version: always review what the AI generates.' },
+    beta_title: { es: 'Versión beta · en desarrollo', en: 'Beta version · under development' },
+    beta_text: { es: 'Estas herramientas se están probando y mejorando. Pueden fallar o dar resultados incompletos o imprecisos, y los modelos de IA de Google cambian o se saturan con frecuencia. Revisa siempre lo que genera la IA antes de usarlo con tus estudiantes, y no la uses como única base para decisiones de evaluación.', en: 'These tools are being tested and improved. They may fail or give incomplete or inaccurate results, and Google\'s AI models change or become overloaded often. Always review what the AI generates before using it with students, and do not rely on it alone for grading decisions.' },
+    beta_contact: { es: 'Tus comentarios ayudan a mejorarlas: escríbeme desde el formulario de contacto.', en: 'Your feedback helps improve them: write to me through the contact form.' },
   };
   ST.t = (x) => (typeof x === 'string' ? (S[x] ? S[x][ST.lang] || S[x].es : x) : x ? x[ST.lang] || x.es || '' : '');
   const langName = (l) => (l === 'en' ? 'English' : 'español');
@@ -159,7 +162,7 @@
   ST.toast = (msg) => {
     const d = document.createElement('div');
     d.className = 'st-ok'; d.setAttribute('role', 'status');
-    d.style.cssText = 'position:fixed;right:1rem;bottom:1rem;max-width:22rem;z-index:200;box-shadow:var(--shadow-elevated)';
+    d.style.cssText = 'position:fixed;right:1rem;bottom:1rem;max-width:22rem;z-index:200;box-shadow:0 10px 15px -3px rgba(0,0,0,.1);background:#f0fdf4;border:1px solid #86efac;color:#166534;border-radius:.5rem;padding:.75rem 1rem;font:500 .875rem/1.4 Inter,sans-serif';
     d.textContent = msg; document.body.appendChild(d); setTimeout(() => d.remove(), 8000);
   };
   // Lista los modelos que la key del usuario puede usar con generateContent
@@ -258,6 +261,7 @@
             <a href="${opts.student ? '/' : BASE}" class="flex items-center gap-2 min-w-0">
               <img src="/assets/logo-mark.png" alt="" class="h-7 w-auto">
               <span class="text-sm md:text-base font-semibold truncate">${esc(opts.student ? ST.t({ es: 'Herramienta de estudio con IA', en: 'AI study tool' }) : ST.t('site'))}</span>
+              ${opts.student ? '' : `<span class="st-chip" style="background:#fef3c7;color:#92400e" title="${esc(ST.t('beta_title'))}">BETA</span>`}
             </a>
             <div class="flex items-center gap-2 flex-shrink-0">
               ${opts.catalog || opts.student ? '' : `<a href="${BASE}" class="hidden sm:inline text-sm font-medium" style="color:var(--muted-foreground)">← ${esc(ST.t('catalog'))}</a>`}
@@ -917,6 +921,9 @@ ${body}
           </div>
         </section>
         <main class="container mx-auto max-w-5xl px-4 md:px-8 py-8">
+          <div class="st-beta mb-6" role="note">
+            <strong>${esc(ST.t('beta_title'))}.</strong> ${esc(ST.t('beta_text'))} <a href="/#contact" class="underline font-semibold">${esc(ST.t('beta_contact'))}</a>
+          </div>
           <div class="st-notice mb-6 flex flex-wrap items-center gap-3" data-key-notice>
             <span class="mr-auto">${esc(ST.t('need_key'))}</span>
             <button class="st-btn st-btn-sm st-btn-primary" id="st-open-key">${esc(ST.t('key_set'))}</button>
