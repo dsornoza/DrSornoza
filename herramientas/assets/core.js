@@ -38,6 +38,9 @@
   })();
   ST.BASE = BASE;
 
+  ST.linkEncode = (o) => btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  ST.linkDecode = (s) => JSON.parse(decodeURIComponent(escape(atob(s.replace(/-/g, '+').replace(/_/g, '/')))));
+
   /* ================= Idioma ================= */
   ST.lang = LS.get('sornoza_lang') || ((navigator.language || 'es').toLowerCase().startsWith('en') ? 'en' : 'es');
   const langListeners = [];
@@ -108,6 +111,7 @@
     { id: 'eval', icon: 'clipboard-check', label: { es: 'Evaluación', en: 'Assessment' } },
     { id: 'thesis', icon: 'graduation-cap', label: { es: 'Tesis y artículos', en: 'Theses & papers' } },
     { id: 'data', icon: 'bar-chart-3', label: { es: 'Análisis de datos', en: 'Data analysis' } },
+    { id: 'student', icon: 'users', label: { es: 'Para estudiantes', en: 'For students' } },
   ];
   ST.TOOLS = [
     { id: 'plan-clase', cat: 'plan', icon: 'layout-list', ready: true,
@@ -119,6 +123,12 @@
     { id: 'encuestas', cat: 'data', icon: 'activity', ready: true, badge: { es: 'Cálculo en tu navegador', en: 'Computed in your browser' },
       title: { es: 'Análisis de encuestas Likert', en: 'Likert survey analysis' },
       desc: { es: 'Sube tu Excel o CSV: fiabilidad (α de Cronbach), correlaciones y comparaciones de grupos calculadas con código, y la IA redacta la sección de resultados.', en: 'Upload your Excel or CSV: reliability (Cronbach\'s α), correlations and group comparisons are computed in code, and AI drafts the results section.' } },
+    { id: 'tutor', cat: 'student', icon: 'messages-square', ready: true, badge: { es: 'Enlace para tus estudiantes', en: 'Link for your students' },
+      title: { es: 'Tutor socrático', en: 'Socratic tutor' },
+      desc: { es: 'Crea un enlace a un tutor de IA que guía con preguntas y pistas, sin resolver la tarea. El estudiante usa su propia key de Gemini.', en: 'Create a link to an AI tutor that guides with questions and hints without solving the task. Students use their own Gemini key.' } },
+    { id: 'borrador', cat: 'student', icon: 'file-pen-line', ready: true, badge: { es: 'Enlace para tus estudiantes', en: 'Link for your students' },
+      title: { es: 'Evaluador de borradores', en: 'Draft feedback' },
+      desc: { es: 'Crea un enlace donde el estudiante pega su borrador y recibe retroalimentación formativa según tu rúbrica, sin que la IA reescriba su texto.', en: 'Create a link where students paste a draft and get formative feedback against your rubric, without the AI rewriting their text.' } },
     { id: 'silabo', cat: 'plan', icon: 'book-open', ready: false, title: { es: 'Sílabo', en: 'Syllabus' }, desc: { es: 'Sílabo alineado a resultados de aprendizaje.', en: 'Syllabus aligned to learning outcomes.' } },
     { id: 'resultados', cat: 'plan', icon: 'target', ready: false, title: { es: 'Resultados de aprendizaje', en: 'Learning outcomes' }, desc: { es: 'Redacción medible con taxonomía de Bloom.', en: 'Measurable outcomes using Bloom\'s taxonomy.' } },
     { id: 'banco-preguntas', cat: 'eval', icon: 'list-checks', ready: false, title: { es: 'Banco de preguntas', en: 'Question bank' }, desc: { es: 'Opción múltiple y casos con retroalimentación.', en: 'Multiple choice and case items with feedback.' } },
@@ -183,6 +193,8 @@
     document.querySelectorAll('[data-key-notice]').forEach((n) => n.classList.toggle('hidden', ok));
   }
 
+  ST.updateKeyUi = updateKeyButtons;
+
   /* ================= Estructura de página (header/footer) ================= */
   ST.shell = function (opts) {
     opts = opts || {};
@@ -190,14 +202,14 @@
       document.body.innerHTML = `
         <header class="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur no-print" style="border-color:var(--border)">
           <div class="container mx-auto flex h-16 items-center justify-between gap-3 px-4 md:px-8">
-            <a href="${BASE}" class="flex items-center gap-2 min-w-0">
+            <a href="${opts.student ? '/' : BASE}" class="flex items-center gap-2 min-w-0">
               <img src="/assets/logo-mark.png" alt="" class="h-7 w-auto">
-              <span class="text-sm md:text-base font-semibold truncate">${esc(ST.t('site'))}</span>
+              <span class="text-sm md:text-base font-semibold truncate">${esc(opts.student ? ST.t({ es: 'Herramienta de estudio con IA', en: 'AI study tool' }) : ST.t('site'))}</span>
             </a>
             <div class="flex items-center gap-2 flex-shrink-0">
-              ${opts.catalog ? '' : `<a href="${BASE}" class="hidden sm:inline text-sm font-medium" style="color:var(--muted-foreground)">← ${esc(ST.t('catalog'))}</a>`}
+              ${opts.catalog || opts.student ? '' : `<a href="${BASE}" class="hidden sm:inline text-sm font-medium" style="color:var(--muted-foreground)">← ${esc(ST.t('catalog'))}</a>`}
               <button class="st-btn st-btn-sm" id="st-lang" title="Language / Idioma">${ST.lang === 'es' ? 'EN' : 'ES'}</button>
-              <button class="st-btn st-btn-sm" data-key-btn></button>
+              ${opts.noKey ? '' : '<button class="st-btn st-btn-sm" data-key-btn></button>'}
             </div>
           </div>
         </header>
@@ -285,14 +297,14 @@
   /* ================= Cliente Gemini (streaming) ================= */
   const apiErr = (code, extra) => { const e = new Error(ST.t('err_' + code) + (extra ? ' (' + extra + ')' : '')); e.code = code; return e; };
 
-  ST.gemini = async function ({ system, prompt, temperature = 0.6, signal, onChunk }) {
+  ST.gemini = async function ({ system, prompt, messages, temperature = 0.6, signal, onChunk }) {
     const key = ST.getKey();
     if (!key) throw apiErr('no_key');
     const model = ST.getModel();
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse`;
     const body = JSON.stringify({
       ...(system ? { systemInstruction: { parts: [{ text: system }] } } : {}),
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      contents: messages ? messages.map((m) => ({ role: m.role, parts: [{ text: m.text }] })) : [{ role: 'user', parts: [{ text: prompt }] }],
       generationConfig: { temperature, maxOutputTokens: 16384 },
     });
 
@@ -588,7 +600,7 @@ ${body}
     const customs = {}; // controladores de campos custom (conservan su estado entre re-render)
     let abort = null, out = null, busy = false;
 
-    const shell = ST.shell({});
+    const shell = ST.shell({ student: !!cfg.student, noKey: !!cfg.local });
     const outLangField = { id: '_lang', type: 'select', label: 'out_lang', options: [{ value: 'es', label: { es: 'Español', en: 'Spanish' } }, { value: 'en', label: { es: 'Inglés', en: 'English' } }] };
     const allFields = () => cfg.fields.concat(cfg.noOutLang ? [] : [outLangField]);
     const valOf = (f) => (state.values[f.id] !== undefined ? state.values[f.id] : f.type === 'checkboxes' ? (f.default || []) : f.id === '_lang' ? ST.lang : f.default !== undefined ? f.default : f.type === 'select' ? optVal(f.options[0]) : '');
@@ -624,16 +636,17 @@ ${body}
       main.innerHTML = `
         <main class="container mx-auto max-w-4xl px-4 md:px-8 py-8">
           <div class="mb-6">
-            <a href="${BASE}" class="text-sm sm:hidden" style="color:var(--muted-foreground)">← ${esc(ST.t('catalog'))}</a>
+            ${cfg.student ? '' : `<a href="${BASE}" class="text-sm sm:hidden" style="color:var(--muted-foreground)">← ${esc(ST.t('catalog'))}</a>`}
             <h1 class="text-2xl md:text-3xl font-bold mt-1 flex items-center gap-2"><i data-lucide="${cfg.icon || 'sparkles'}" class="h-7 w-7" style="color:var(--primary)"></i>${esc(t)}</h1>
             <p class="mt-2" style="color:var(--muted-foreground)">${esc(ST.t(cfg.desc))}</p>
           </div>
-          <div class="st-notice mb-4" data-key-notice>${esc(ST.t('need_key'))} <button class="underline font-semibold" id="st-open-key">${esc(ST.t('key_set'))}</button></div>
+          ${cfg.notice ? `<div class="st-card p-4 mb-4"><div class="md-out">${ST.mdToHtml(ST.t(cfg.notice))}</div></div>` : ''}
+          ${cfg.local ? '' : `<div class="st-notice mb-4" data-key-notice>${esc(ST.t('need_key'))} <button class="underline font-semibold" id="st-open-key">${esc(ST.t('key_set'))}</button></div>`}
           <form class="st-card p-5 md:p-6" id="st-form" novalidate>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">${allFields().map(fieldHtml).join('')}</div>
             <div id="st-error" class="st-error mt-4 hidden"></div>
             <div class="flex flex-wrap items-center gap-3 mt-5">
-              <button type="submit" class="st-btn st-btn-primary" id="st-go"><span id="st-go-txt">${esc(ST.t('generate'))}</span></button>
+              <button type="submit" class="st-btn st-btn-primary" id="st-go"><span id="st-go-txt">${esc(ST.t(cfg.submitLabel || 'generate'))}</span></button>
               <button type="button" class="st-btn hidden" id="st-stop">${esc(ST.t('stop'))}</button>
             </div>
             <p class="st-hint mt-3">${esc(ST.t(cfg.privacy || 'privacy'))}</p>
@@ -648,7 +661,7 @@ ${body}
 
     function bind() {
       const form = $('#st-form');
-      $('#st-open-key').onclick = () => openKeyModal();
+      const ok = $('#st-open-key'); if (ok) ok.onclick = () => openKeyModal();
       form.addEventListener('input', (e) => {
         const el = e.target; if (!el.dataset || !el.dataset.f) return;
         if (el.type === 'checkbox') {
@@ -679,7 +692,7 @@ ${body}
       busy = b;
       const go = $('#st-go'); if (!go) return;
       go.disabled = b;
-      $('#st-go-txt').innerHTML = b ? `<span class="st-spin"></span> ${esc(ST.t('generating'))}` : esc(ST.t('generate'));
+      $('#st-go-txt').innerHTML = b ? `<span class="st-spin"></span> ${esc(ST.t('generating'))}` : esc(ST.t(cfg.submitLabel || 'generate'));
       $('#st-stop').classList.toggle('hidden', !b);
     }
     const showError = (m) => { const el = $('#st-error'); if (!el) return; el.textContent = m || ''; el.classList.toggle('hidden', !m); };
@@ -702,7 +715,7 @@ ${body}
 
     async function generate() {
       showError('');
-      if (!ST.getKey()) { openKeyModal(() => ST.getKey() && generate()); return; }
+      if (!cfg.local && !ST.getKey()) { openKeyModal(() => ST.getKey() && generate()); return; }
       const v = collect(), bad = validate(v);
       if (bad) { showError(bad); return; }
       setBusy(true); abort = new AbortController();
@@ -710,8 +723,13 @@ ${body}
       let preface = '', partial = '';
       try {
         const spec = await cfg.buildPrompt(v, { lang: ST.lang, outLang, outLangName: langName(outLang), t: ST.t });
-        preface = spec.preface ? spec.preface + '\n\n' : '';
         state.title = spec.title || ST.t(cfg.title);
+        if (spec.output !== undefined) { // herramienta local: no llama a Gemini
+          state.output = spec.output; $('#st-out').classList.remove('hidden'); out.setText(spec.output);
+          $('#st-out').scrollIntoView({ behavior: 'smooth', block: 'start' });
+          return;
+        }
+        preface = spec.preface ? spec.preface + '\n\n' : '';
         $('#st-out').classList.remove('hidden');
         out.setText(preface); out.setStreaming(true);
         $('#st-out').scrollIntoView({ behavior: 'smooth', block: 'start' });
