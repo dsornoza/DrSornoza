@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Análisis de encuestas Likert — Sornoza.com</title>
+<meta name="description" content="Sube tu Excel o CSV: fiabilidad, correlaciones y comparaciones de grupos calculadas en tu navegador; la IA redacta la sección de resultados.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="../assets/core.css">
+</head>
+<body class="min-h-screen antialiased">
+<script src="../assets/stats.js"></script>
+<script src="../assets/core.js"></script>
+<script>
+const opt = (v, es, en) => ({ value: v, label: { es, en } });
+const esc = ST.esc;
+
+/* ---------- Campo personalizado: carga del archivo y mapeo columnas → dimensiones ---------- */
+const TXT = {
+  file: { es: 'Archivo de respuestas (Excel o CSV, una fila por persona, encabezados en la primera fila)', en: 'Responses file (Excel or CSV, one row per person, headers in the first row)' },
+  upload: { es: 'Subir Excel / CSV', en: 'Upload Excel / CSV' },
+  sheet: { es: 'Hoja', en: 'Sheet' },
+  scale: { es: 'Escala Likert: mínimo', en: 'Likert scale: minimum' },
+  scaleMax: { es: 'máximo', en: 'maximum' },
+  redetect: { es: 'Re-detectar columnas', en: 'Re-detect columns' },
+  col: { es: 'Columna', en: 'Column' }, example: { es: 'Ejemplo', en: 'Example' }, role: { es: 'Rol', en: 'Role' }, dim: { es: 'Dimensión', en: 'Dimension' }, rev: { es: 'Inv.', en: 'Rev.' },
+  item: { es: 'Ítem Likert', en: 'Likert item' }, group: { es: 'Variable de grupo', en: 'Grouping variable' }, ignore: { es: 'Ignorar', en: 'Ignore' },
+  help: { es: 'Revisa la detección automática: marca cada columna como ítem, variable de grupo (sexo, carrera…) o ignorar (nombre, fecha, texto libre). Agrupa los ítems poniendo el mismo nombre de dimensión. «Inv.» recodifica ítems redactados en sentido inverso.', en: 'Review the automatic detection: mark each column as an item, a grouping variable (gender, program…) or ignore (name, date, free text). Group items by giving them the same dimension name. "Rev." recodes reverse-worded items.' },
+  summary: { es: (n, i, d, g) => `${n} casos · ${i} ítems en ${d} dimensión(es) · ${g} variable(s) de grupo`, en: (n, i, d, g) => `${n} cases · ${i} items in ${d} dimension(s) · ${g} grouping variable(s)` },
+  noFile: { es: 'Sube el archivo con las respuestas.', en: 'Upload the responses file.' },
+  fewItems: { es: 'Marca al menos 2 columnas como ítems Likert.', en: 'Mark at least 2 columns as Likert items.' },
+  badScale: { es: 'La escala debe tener mínimo < máximo.', en: 'The scale minimum must be lower than the maximum.' },
+  noDim: { es: 'Todos los ítems necesitan un nombre de dimensión.', en: 'Every item needs a dimension name.' },
+  readErr: { es: 'No se pudo leer el archivo', en: 'Could not read the file' },
+  empty: { es: 'El archivo no tiene hojas con datos.', en: 'The file has no sheets with data.' },
+};
+const tr = (k, lang) => (TXT[k][lang] !== undefined ? TXT[k][lang] : TXT[k].es);
+
+function detect(c) {
+  const { min, max } = c.scale;
+  const n = c.rows.length;
+  c.cols = c.headers.map((h, j) => {
+    const vals = c.rows.map((r) => r[j]).filter((v) => v !== null && v !== undefined && String(v).trim() !== '');
+    const nums = vals.filter((v) => typeof v === 'number' || (typeof v === 'string' && isFinite(Number(v.replace(',', '.')))));
+    const numeric = vals.length && nums.length / vals.length >= 0.9;
+    const inScale = numeric && nums.every((v) => { const x = Number(String(v).replace(',', '.')); return Number.isInteger(x) && x >= min && x <= max; });
+    const distinct = new Set(vals.map(String)).size;
+    let role = 'ignore';
+    if (inScale && vals.length >= 0.5 * n) role = 'item';
+    else if (distinct >= 2 && distinct <= 8 && n >= 10 && distinct / Math.max(vals.length, 1) < 0.5 && !numeric) role = 'group';
+    const m = String(h).match(/^\s*([A-Za-zÁÉÍÓÚáéíóúÑñ]+)[\s_.\-:]*\d+/);
+    return { role, dim: m ? m[1].toUpperCase() : 'D1', reverse: false };
+  });
+}
+
+function loadSheet(c, idx) {
+  c.sheetIdx = idx;
+  const s = c.sheets[idx];
+  c.headers = s.rows[0].map((h, j) => (h === null || String(h).trim() === '' ? 'col' + (j + 1) : String(h).trim()));
+  c.rows = s.rows.slice(1).filter((r) => r.some((v) => v !== null && String(v).trim() !== ''));
+  detect(c);
+}
+
+const datasetField = {
+  id: 'dataset', type: 'custom',
+  render(el, ctx) {
+    const c = ctx.state, lang = ctx.lang;
+    c.scale = c.scale || { min: 1, max: 5 };
+    const T = (k) => tr(k, lang);
+    const draw = () => {
+      let html = `<label class="st-label">${esc(T('file'))} *</label>
+        <div class="flex flex-wrap items-center gap-2">
+          <label class="st-btn st-btn-sm cursor-pointer"><input type="file" class="hidden" data-ds-file accept=".xlsx,.xls,.csv,.tsv,.txt"> ${esc(T('upload'))}</label>
+          ${c.fileName ? `<span class="text-sm">${esc(c.fileName)}</span>` : ''}
+          ${c.sheets && c.sheets.length > 1 ? `<label class="text-sm">${esc(T('sheet'))}: <select class="st-input" style="width:auto;display:inline-block" data-ds-sheet>${c.sheets.map((s, i) => `<option value="${i}" ${i === c.sheetIdx ? 'selected' : ''}>${esc(s.name)}</option>`).join('')}</select></label>` : ''}
+          <span class="text-sm" data-ds-msg style="color:var(--muted-foreground)">${esc(c.msg || '')}</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 mt-3 text-sm">
+          ${esc(T('scale'))} <input type="number" class="st-input" style="width:4.5rem" data-ds-min value="${c.scale.min}">
+          ${esc(T('scaleMax'))} <input type="number" class="st-input" style="width:4.5rem" data-ds-max value="${c.scale.max}">
+          ${c.rows ? `<button type="button" class="st-btn st-btn-sm" data-ds-redetect>${esc(T('redetect'))}</button>` : ''}
+        </div>`;
+      if (c.rows) {
+        const items = c.cols.filter((x) => x.role === 'item'), dims = new Set(items.map((x) => x.dim)), groups = c.cols.filter((x) => x.role === 'group');
+        html += `<p class="st-hint mt-3">${esc(T('help'))}</p>
+          <p class="text-sm font-semibold mt-2" data-ds-summary>${esc(T('summary')(c.rows.length, items.length, dims.size, groups.length))}</p>
+          <div class="mt-2 border rounded-lg overflow-auto" style="border-color:var(--border);max-height:22rem">
+          <table class="w-full text-sm"><thead class="sticky top-0" style="background:var(--muted)"><tr>
+            ${['col', 'example', 'role', 'dim', 'rev'].map((k) => `<th class="text-left px-2 py-2">${esc(T(k))}</th>`).join('')}</tr></thead><tbody>
+          ${c.headers.map((h, j) => {
+            const col = c.cols[j], ex = (c.rows.find((r) => r[j] !== null && r[j] !== undefined) || [])[j];
+            return `<tr class="border-t" style="border-color:var(--border)">
+              <td class="px-2 py-1 font-medium">${esc(h.slice(0, 48))}</td>
+              <td class="px-2 py-1" style="color:var(--muted-foreground)">${esc(String(ex === undefined ? '' : ex).slice(0, 24))}</td>
+              <td class="px-2 py-1"><select class="st-input" style="padding:.25rem .4rem" data-ds-role="${j}">
+                ${['item', 'group', 'ignore'].map((r) => `<option value="${r}" ${col.role === r ? 'selected' : ''}>${esc(T(r))}</option>`).join('')}</select></td>
+              <td class="px-2 py-1"><input class="st-input" style="padding:.25rem .4rem;width:8rem" data-ds-dim="${j}" value="${esc(col.dim)}" ${col.role === 'item' ? '' : 'disabled'}></td>
+              <td class="px-2 py-1"><input type="checkbox" data-ds-rev="${j}" ${col.reverse ? 'checked' : ''} ${col.role === 'item' ? '' : 'disabled'}></td></tr>`;
+          }).join('')}</tbody></table></div>`;
+      }
+      el.innerHTML = html;
+    };
+    const summary = () => {
+      const items = c.cols.filter((x) => x.role === 'item');
+      const s = el.querySelector('[data-ds-summary]');
+      if (s) s.textContent = T('summary')(c.rows.length, items.length, new Set(items.map((x) => x.dim)).size, c.cols.filter((x) => x.role === 'group').length);
+    };
+    if (!el.dataset.bound) {
+      el.dataset.bound = '1';
+      el.addEventListener('change', async (e) => {
+        const t = e.target;
+        if (t.matches('[data-ds-file]') && t.files[0]) {
+          c.msg = '…'; draw();
+          try {
+            c.sheets = await ST.readTable(t.files[0]);
+            if (!c.sheets.length) throw new Error(tr('empty', ST.lang));
+            c.fileName = t.files[0].name; c.msg = '';
+            loadSheet(c, 0);
+          } catch (err) { c.rows = null; c.msg = tr('readErr', ST.lang) + ': ' + err.message; }
+          draw();
+        } else if (t.matches('[data-ds-sheet]')) { loadSheet(c, +t.value); draw(); }
+        else if (t.matches('[data-ds-min]')) c.scale.min = +t.value;
+        else if (t.matches('[data-ds-max]')) c.scale.max = +t.value;
+        else if (t.matches('[data-ds-role]')) {
+          const j = +t.dataset.dsRole; c.cols[j].role = t.value;
+          el.querySelector(`[data-ds-dim="${j}"]`).disabled = t.value !== 'item';
+          el.querySelector(`[data-ds-rev="${j}"]`).disabled = t.value !== 'item';
+          summary();
+        } else if (t.matches('[data-ds-rev]')) c.cols[+t.dataset.dsRev].reverse = t.checked;
+      });
+      el.addEventListener('input', (e) => {
+        const t = e.target;
+        if (t.matches('[data-ds-dim]')) { c.cols[+t.dataset.dsDim].dim = t.value.trim(); summary(); }
+      });
+      el.addEventListener('click', (e) => { if (e.target.closest('[data-ds-redetect]')) { detect(c); draw(); } });
+    }
+    draw();
+  },
+  validate(c, lang) {
+    if (!c || !c.rows) return tr('noFile', lang);
+    if (!(c.scale.min < c.scale.max)) return tr('badScale', lang);
+    const items = c.cols.filter((x) => x.role === 'item');
+    if (items.length < 2) return tr('fewItems', lang);
+    if (items.some((x) => !x.dim)) return tr('noDim', lang);
+    return '';
+  },
+  get(c) {
+    if (!c || !c.rows) return null;
+    return {
+      rows: c.rows, scale: c.scale, fileName: c.fileName,
+      items: c.cols.map((x, j) => ({ col: j, name: c.headers[j], dim: x.dim, reverse: x.reverse, role: x.role })).filter((x) => x.role === 'item'),
+      groups: c.cols.map((x, j) => ({ col: j, name: c.headers[j], role: x.role })).filter((x) => x.role === 'group'),
+    };
+  },
+};
+
+/* ---------- Definición de la herramienta ---------- */
+const round = (k, v) => (typeof v === 'number' ? Math.round(v * 1000) / 1000 : v);
+
+ST.mountTool({
+  id: 'encuestas',
+  icon: 'activity',
+  title: { es: 'Análisis de encuestas Likert', en: 'Likert survey analysis' },
+  desc: {
+    es: 'Los números (α de Cronbach, correlaciones, comparaciones de grupos) se calculan con código en tu navegador. La IA solo redacta la interpretación a partir de esos resultados; tus datos crudos no se envían a Google.',
+    en: 'The numbers (Cronbach\'s α, correlations, group comparisons) are computed in code in your browser. AI only drafts the interpretation from those results; your raw data is never sent to Google.',
+  },
+  temperature: 0.3,
+  privacy: {
+    es: 'A Google (Gemini) solo se envían los resultados estadísticos calculados y el contexto que escribas arriba; las filas de tu archivo no salen de tu navegador. Revisa siempre el texto generado.',
+    en: 'Only the computed statistics and the context you type above are sent to Google (Gemini); the rows of your file never leave your browser. Always review the generated text.',
+  },
+  fields: [
+    datasetField,
+    { id: 'instrument', type: 'text', label: { es: 'Instrumento o modelo teórico', en: 'Instrument or theoretical model' }, placeholder: { es: 'Ej.: SERVQUAL, UTAUT, TAM', en: 'E.g.: SERVQUAL, UTAUT, TAM' } },
+    { id: 'population', type: 'text', label: { es: 'Población y muestra', en: 'Population and sample' }, placeholder: { es: 'Ej.: estudiantes de Administración, muestreo por conveniencia', en: 'E.g.: Business students, convenience sampling' } },
+    { id: 'objective', type: 'textarea', rows: 3, label: { es: 'Objetivo o preguntas de investigación', en: 'Objective or research questions' } },
+    { id: 'include', type: 'checkboxes', label: { es: 'Redactar además', en: 'Also write' }, default: ['limitaciones'], options: [
+      opt('discusion', 'Pistas para la discusión', 'Discussion pointers'),
+      opt('limitaciones', 'Limitaciones y alertas sobre los datos', 'Limitations and data alerts') ] },
+  ],
+
+  buildPrompt(v, ctx) {
+    const d = v.dataset;
+    const res = LikertStats.analyze({ rows: d.rows, scale: d.scale, items: d.items, groups: d.groups });
+    const preface = '# ' + ctx.t({ es: 'Resultados calculados (verificables)', en: 'Computed results (verifiable)' }) + '\n\n' + LikertStats.toMarkdown(res, ctx.outLang) + '\n---';
+    const inc = v.include || [];
+    const system = `You are a quantitative research methodologist who writes the Results section of academic papers in APA 7 style. You are given statistics already computed by deterministic code. STRICT RULES: use ONLY the numbers provided; never recompute, round differently, invent, or add statistics that are not in the data; if something is not in the data say it was not analysed. Report p-values in APA format (p < .001; exact otherwise). Do not claim causality. Output only Markdown (no HTML, no code fences). Respond entirely in ${ctx.outLangName}.`;
+    const prompt = `Context
+- Instrument / model: ${v.instrument || '(not specified)'}
+- Population and sample: ${v.population || '(not specified)'}
+- Objective / research questions: ${v.objective || '(not specified)'}
+- Likert scale: ${d.scale.min}–${d.scale.max}; N = ${res.n}
+
+Computed statistics (JSON):
+${JSON.stringify({ integrity: res.integrity, reliability: res.dimStats.map(({ alphaIfDeleted, ...r }) => r), globalAlpha: res.globalAlpha, correlations: res.correlations, comparisons: res.comparisons }, round)}
+
+Write, in this order:
+1. "## Resultados / Results" with APA-style prose organised by subsections: (a) data preparation and integrity, (b) reliability of each dimension (interpret α: < .60 weak, .60–.69 questionable, .70–.79 acceptable, ≥ .80 good), (c) descriptive results by dimension (highlight the highest and lowest means), (d) relationships between dimensions (Spearman; interpret magnitude), (e) group differences if present (report both tests and effect sizes; state whether parametric and non-parametric tests agree). Refer to the tables above by their titles instead of copying them.
+${inc.includes('discusion') ? '2. "## Pistas para la discusión / Discussion pointers": 4–6 bullets connecting the findings to the stated objective and to the instrument\'s theory, without citing specific papers.\n' : ''}${inc.includes('limitaciones') ? '3. "## Limitaciones y alertas / Limitations and alerts": data-quality issues visible in the integrity check (missing values, straight-lining, duplicates, low α, small groups) and concrete next steps.\n' : ''}`;
+    return { system, prompt, preface, title: `${ctx.t({ es: 'Encuesta', en: 'Survey' })} — ${d.fileName || ''}`.trim() };
+  },
+});
+</script>
+</body>
+</html>
