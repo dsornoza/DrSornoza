@@ -66,7 +66,12 @@
     key_close: { es: 'Cerrar', en: 'Close' },
     model: { es: 'Modelo de Gemini', en: 'Gemini model' },
     model_custom: { es: 'Otro (escribir nombre)…', en: 'Other (type name)…' },
-    model_hint: { es: 'Si Google retira un modelo, elige otro de la lista o escribe su nombre.', en: 'If Google retires a model, pick another one or type its name.' },
+    model_hint: { es: 'Si Google retira un modelo, la página busca otro automáticamente. También puedes detectar los disponibles para tu key.', en: 'If Google retires a model, the page finds another one automatically. You can also detect the ones available for your key.' },
+    model_detect: { es: 'Detectar modelos disponibles', en: 'Detect available models' },
+    model_detecting: { es: 'Consultando a Google…', en: 'Asking Google…' },
+    model_found: { es: '{n} modelos disponibles para tu key. Elige uno y pulsa Guardar.', en: '{n} models available for your key. Pick one and press Save.' },
+    model_none: { es: 'Google no devolvió modelos compatibles para esta key.', en: 'Google returned no compatible models for this key.' },
+    model_switched: { es: 'El modelo anterior ya no está disponible. Se cambió automáticamente a {m}.', en: 'The previous model is no longer available. Switched automatically to {m}.' },
     need_key: { es: 'Para usar esta herramienta necesitas tu API Key de Gemini (gratuita).', en: 'To use this tool you need your (free) Gemini API key.' },
     generate: { es: 'Generar', en: 'Generate' },
     generating: { es: 'Generando…', en: 'Generating…' },
@@ -95,7 +100,7 @@
     err_no_key: { es: 'Configura primero tu API Key de Gemini.', en: 'Set your Gemini API key first.' },
     err_key: { es: 'Google rechazó la API Key. Revisa que esté completa y activa.', en: 'Google rejected the API key. Check that it is complete and active.' },
     err_quota: { es: 'Se alcanzó el límite de uso gratuito de Gemini. Espera un momento o cambia de modelo (p. ej. flash-lite).', en: 'The free Gemini usage limit was reached. Wait a moment or switch model (e.g. flash-lite).' },
-    err_model: { es: 'Ese modelo no está disponible. Elige otro en la configuración de la API Key.', en: 'That model is not available. Pick another one in the API key settings.' },
+    err_model: { es: 'Ese modelo no está disponible para tu key. Abre la configuración de la API Key y pulsa «Detectar modelos disponibles».', en: 'That model is not available for your key. Open the API key settings and press “Detect available models”.' },
     err_net: { es: 'No se pudo conectar con Gemini. Revisa tu conexión.', en: 'Could not reach Gemini. Check your connection.' },
     err_blocked: { es: 'Gemini bloqueó la respuesta por sus filtros de seguridad. Reformula el contenido.', en: 'Gemini blocked the response with its safety filters. Rephrase the content.' },
     err_empty: { es: 'Gemini no devolvió texto. Intenta de nuevo.', en: 'Gemini returned no text. Try again.' },
@@ -139,7 +144,38 @@
   ];
 
   /* ================= API Key y modelo ================= */
-  const MODELS = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.5-pro'];
+  const MODELS = ['gemini-flash-latest', 'gemini-flash-lite-latest', 'gemini-pro-latest', 'gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.5-pro'];
+  const EXCLUDE = /(image|tts|embedding|live|audio|robotics|computer|native|aqa|learnlm|gemma|imagen|veo|thinking-exp)/i;
+  // Puntaje para elegir el mejor modelo de texto: Flash estable > Flash-Lite > Pro; versión más alta; evita preview/exp
+  const modelScore = (id) => {
+    if (EXCLUDE.test(id)) return -1;
+    const v = id.match(/gemini-(\d+(?:\.\d+)?)/);
+    return (/lite/.test(id) ? 200 : /flash/.test(id) ? 300 : /pro/.test(id) ? 100 : 0) + (v ? parseFloat(v[1]) * 10 : 0) - (/preview|exp/.test(id) ? 50 : 0);
+  };
+  const pickModel = (ids, current) => ids.filter((id) => id !== current && modelScore(id) >= 0).sort((a, b) => modelScore(b) - modelScore(a))[0] || null;
+  ST.toast = (msg) => {
+    const d = document.createElement('div');
+    d.className = 'st-ok'; d.setAttribute('role', 'status');
+    d.style.cssText = 'position:fixed;right:1rem;bottom:1rem;max-width:22rem;z-index:200;box-shadow:var(--shadow-elevated)';
+    d.textContent = msg; document.body.appendChild(d); setTimeout(() => d.remove(), 8000);
+  };
+  // Lista los modelos que la key del usuario puede usar con generateContent
+  ST.listModels = async function (key, signal) {
+    const ids = []; let token = '';
+    for (let i = 0; i < 5; i++) {
+      let res;
+      try { res = await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=100' + (token ? '&pageToken=' + encodeURIComponent(token) : ''), { headers: { 'x-goog-api-key': key }, signal }); }
+      catch (e) { if (e.name === 'AbortError') throw e; throw new Error(ST.t('err_net')); }
+      if (!res.ok) {
+        let msg = ''; try { msg = (await res.json()).error.message || ''; } catch (e) { /* sin cuerpo */ }
+        throw new Error([400, 401, 403].includes(res.status) ? ST.t('err_key') : msg || 'HTTP ' + res.status);
+      }
+      const j = await res.json();
+      (j.models || []).forEach((m) => { if ((m.supportedGenerationMethods || []).includes('generateContent') && /^models\/gemini-/.test(m.name)) ids.push(m.name.replace(/^models\//, '')); });
+      token = j.nextPageToken; if (!token) break;
+    }
+    return ids;
+  };
   ST.getKey = () => LS.get('gemini_key', '') || ''; // misma clave que usa recursos/titulos
   ST.getModel = () => LS.get('st_model', MODELS[0]);
 
@@ -160,7 +196,8 @@
           <option value="__custom" ${isCustom ? 'selected' : ''}>${esc(ST.t('model_custom'))}</option>
         </select>
         <input id="st-model-custom" class="st-input mt-2 ${isCustom ? '' : 'hidden'}" placeholder="gemini-…" value="${isCustom ? esc(cur) : ''}">
-        <p class="st-hint">${esc(ST.t('model_hint'))}</p>
+        <button type="button" class="st-btn st-btn-sm mt-2" id="st-detect">${esc(ST.t('model_detect'))}</button>
+        <p class="st-hint" id="st-model-msg">${esc(ST.t('model_hint'))}</p>
         <div class="flex flex-wrap gap-2 mt-4 justify-end">
           <button class="st-btn" id="st-key-remove">${esc(ST.t('key_remove'))}</button>
           <button class="st-btn" id="st-key-close">${esc(ST.t('key_close'))}</button>
@@ -171,6 +208,19 @@
     const close = () => bg.remove();
     const sel = $('#st-model', bg), custom = $('#st-model-custom', bg);
     sel.onchange = () => custom.classList.toggle('hidden', sel.value !== '__custom');
+    const msg = $('#st-model-msg', bg);
+    $('#st-detect', bg).onclick = async () => {
+      const k = $('#st-key', bg).value.trim() || ST.getKey();
+      msg.style.color = ''; msg.textContent = ST.t('model_detecting');
+      try {
+        const ids = (await ST.listModels(k)).filter((id) => modelScore(id) >= 0).sort((a, b) => modelScore(b) - modelScore(a));
+        if (!ids.length) throw new Error(ST.t('model_none'));
+        const chosen = sel.value === '__custom' ? custom.value.trim() : sel.value, keep = ids.includes(chosen) ? chosen : ids[0];
+        sel.innerHTML = ids.map((m) => `<option value="${esc(m)}" ${m === keep ? 'selected' : ''}>${esc(m)}</option>`).join('') + `<option value="__custom">${esc(ST.t('model_custom'))}</option>`;
+        custom.classList.add('hidden');
+        msg.textContent = ST.t('model_found').replace('{n}', ids.length);
+      } catch (e) { msg.style.color = '#991b1b'; msg.textContent = e.message; }
+    };
     $('#st-key-close', bg).onclick = close;
     bg.addEventListener('mousedown', (e) => { if (e.target === bg) close(); });
     $('#st-key-remove', bg).onclick = () => { LS.del('gemini_key'); close(); updateKeyButtons(); onDone && onDone(); };
@@ -300,8 +350,9 @@
   ST.gemini = async function ({ system, prompt, messages, temperature = 0.6, signal, onChunk }) {
     const key = ST.getKey();
     if (!key) throw apiErr('no_key');
-    const model = ST.getModel();
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse`;
+    let model = ST.getModel(), switched = false;
+    const urlFor = (m) => `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(m)}:streamGenerateContent?alt=sse`;
+    let url = urlFor(model);
     const body = JSON.stringify({
       ...(system ? { systemInstruction: { parts: [{ text: system }] } } : {}),
       contents: messages ? messages.map((m) => ({ role: m.role, parts: [{ text: m.text }] })) : [{ role: 'user', parts: [{ text: prompt }] }],
@@ -321,7 +372,16 @@
         let msg = '';
         try { msg = (await res.json()).error.message || ''; } catch (e) { /* sin cuerpo */ }
         if (res.status === 429) throw apiErr('quota');
-        if (res.status === 404) throw apiErr('model', model);
+        if (res.status === 404) {
+          // El modelo ya no existe para esta key: buscamos uno vigente, lo guardamos y reintentamos una vez
+          if (!switched) {
+            switched = true;
+            let alt = null;
+            try { alt = pickModel(await ST.listModels(key, signal), model); } catch (e) { if (e.name === 'AbortError') throw e; }
+            if (alt) { model = alt; url = urlFor(alt); LS.set('st_model', alt); ST.toast(ST.t('model_switched').replace('{m}', alt)); continue; }
+          }
+          throw apiErr('model', model);
+        }
         if (res.status === 401 || res.status === 403 || /API key/i.test(msg)) throw apiErr('key');
         const e = new Error(msg || 'HTTP ' + res.status); e.code = 'http'; throw e;
       }
