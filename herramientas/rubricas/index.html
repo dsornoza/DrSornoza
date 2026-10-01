@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador de rúbricas — Sornoza.com</title>
+<meta name="description" content="Genera rúbricas analíticas, holísticas o listas de cotejo con pesos y puntajes; exporta a Excel y LaTeX.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="../assets/core.css">
+</head>
+<body class="min-h-screen antialiased">
+<script src="../assets/core.js"></script>
+<script>
+const opt = (v, es, en) => ({ value: v, label: { es, en } });
+
+ST.mountTool({
+  id: 'rubricas',
+  icon: 'table-properties',
+  title: { es: 'Generador de rúbricas', en: 'Rubric generator' },
+  desc: {
+    es: 'Crea rúbricas con criterios, niveles de desempeño, pesos y puntajes a partir de la descripción de tu actividad. Exporta a Excel o LaTeX.',
+    en: 'Create rubrics with criteria, performance levels, weights and scores from your activity description. Export to Excel or LaTeX.',
+  },
+  temperature: 0.5,
+  fields: [
+    { id: 'product', type: 'text', required: true, label: { es: 'Producto o actividad a evaluar', en: 'Product or activity to assess' }, placeholder: { es: 'Ej.: Ensayo argumentativo, exposición oral, informe de laboratorio', en: 'E.g.: Argumentative essay, oral presentation, lab report' } },
+    { id: 'course', type: 'text', label: { es: 'Asignatura y nivel', en: 'Course and level' }, placeholder: { es: 'Ej.: Ética profesional, 3.er ciclo', en: 'E.g.: Professional Ethics, year 2' } },
+    { id: 'description', type: 'textarea', rows: 5, label: { es: 'Descripción de la actividad (consigna)', en: 'Activity description (prompt)' },
+      hint: { es: 'Pega la consigna que recibirán los estudiantes, o sube el archivo abajo.', en: 'Paste the instructions students will receive, or upload the file below.' } },
+    { id: 'file', type: 'file', label: { es: 'O sube la consigna (PDF/Word/texto)', en: 'Or upload the instructions (PDF/Word/text)' } },
+    { id: 'type', type: 'select', label: { es: 'Tipo de rúbrica', en: 'Rubric type' }, options: [
+      opt('analitica', 'Analítica (criterios × niveles)', 'Analytic (criteria × levels)'),
+      opt('holistica', 'Holística (una descripción por nivel)', 'Holistic (one description per level)'),
+      opt('cotejo', 'Lista de cotejo (cumple / no cumple)', 'Checklist (met / not met)') ] },
+    { id: 'levels', type: 'select', label: { es: 'Niveles de desempeño', en: 'Performance levels' }, default: '4', options: [
+      opt('3', '3 niveles', '3 levels'), opt('4', '4 niveles', '4 levels'), opt('5', '5 niveles', '5 levels') ] },
+    { id: 'criteria', type: 'number', label: { es: 'Número de criterios', en: 'Number of criteria' }, default: 5, min: 2, max: 10 },
+    { id: 'points', type: 'number', label: { es: 'Puntaje total', en: 'Total score' }, default: 10, min: 1, max: 1000 },
+    { id: 'must', type: 'textarea', rows: 3, label: { es: 'Criterios que deben aparecer (opcional)', en: 'Criteria that must appear (optional)' }, hint: { es: 'Uno por línea. La IA completará el resto.', en: 'One per line. AI will complete the rest.' } },
+    { id: 'extras', type: 'checkboxes', label: { es: 'Incluir', en: 'Include' }, default: ['pesos', 'estudiante'], options: [
+      opt('pesos', 'Pesos por criterio', 'Weights per criterion'),
+      opt('ia', 'Criterio de uso transparente de IA', 'Transparent AI-use criterion'),
+      opt('estudiante', 'Versión para estudiantes (lenguaje claro)', 'Student-friendly version'),
+      opt('calibracion', 'Notas de calibración para el docente', 'Calibration notes for the instructor') ] },
+  ],
+
+  buildPrompt(v, ctx) {
+    const ex = v.extras || [];
+    const desc = [v.description, v.file ? v.file.text : ''].filter(Boolean).join('\n\n');
+    if (!desc.trim()) throw new Error(ctx.t({ es: 'Escribe o sube la descripción de la actividad.', en: 'Write or upload the activity description.' }));
+    const system = `You are an assessment specialist for university teaching. You write rubrics that are observable, non-overlapping, measurable and aligned with the task. Avoid vague words such as "good" or "adequate" without anchors; describe observable evidence. Output only Markdown (no HTML, no code fences). Every table cell must be on a single line (no line breaks inside cells). Respond entirely in ${ctx.outLangName}.`;
+    const kind = {
+      analitica: `an ANALYTIC rubric as ONE Markdown table: first column = criterion${ex.includes('pesos') ? ' with its weight (%)' : ''}; then one column per performance level (highest level first), each cell with an observable descriptor and its point range; final column "Max points".`,
+      holistica: `a HOLISTIC rubric as ONE Markdown table with columns: Level | Score range | Description (overall descriptor covering the whole product).`,
+      cotejo: `a CHECKLIST as ONE Markdown table with columns: # | Indicator (observable, yes/no) | Points | Met (☐).`,
+    }[v.type];
+    const prompt = `Create ${kind}
+
+Parameters:
+- Product / activity: ${v.product}
+- Course and level: ${v.course || '(not specified)'}
+- Performance levels: ${v.levels} (name them clearly, e.g., Excellent / Good / Developing / Beginning, translated)
+- Number of criteria: ${v.criteria}${v.type === 'holistica' ? ' (ignore for holistic)' : ''}
+- Total score: ${v.points} points. The maximum points of all criteria must add up exactly to ${v.points}.${ex.includes('pesos') ? ' Weights must add up to 100%.' : ''}
+${v.must ? `- Criteria that must be included:\n${v.must}\n` : ''}${ex.includes('ia') ? '- Include one criterion about transparent and ethical use of generative AI (disclosure of tools used and critical verification of outputs).\n' : ''}
+Activity description:
+"""
+${desc}
+"""
+
+Output structure:
+1. "# " title with the product name.
+2. A one-sentence purpose of the rubric.
+3. "## Rubrica / Rubric": the table.
+4. "## Cálculo de la nota / Scoring": 2–3 lines explaining how to compute the final grade.
+${ex.includes('estudiante') ? '5. "## Versión para estudiantes / Student version": a short bullet list in plain, second-person language of what a top-level product looks like, per criterion.\n' : ''}${ex.includes('calibracion') ? '6. "## Notas de calibración / Calibration notes": common scoring pitfalls and how to resolve borderline cases between adjacent levels.\n' : ''}`;
+    return { system, prompt, title: `${ctx.t({ es: 'Rúbrica', en: 'Rubric' })} — ${v.product}` };
+  },
+});
+</script>
+</body>
+</html>

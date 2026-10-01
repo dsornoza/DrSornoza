@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plan de clase — Sornoza.com</title>
+<meta name="description" content="Genera un plan de clase universitario con resultados de aprendizaje, cronograma, actividades activas y evaluación formativa.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="../assets/core.css">
+</head>
+<body class="min-h-screen antialiased">
+<script src="../assets/core.js"></script>
+<script>
+const opt = (v, es, en) => ({ value: v, label: { es, en } });
+
+ST.mountTool({
+  id: 'plan-clase',
+  icon: 'layout-list',
+  title: { es: 'Plan de clase', en: 'Lesson plan' },
+  desc: {
+    es: 'Diseña una sesión universitaria completa: resultados de aprendizaje medibles, cronograma, actividades de aprendizaje activo y evaluación formativa.',
+    en: 'Design a complete university session: measurable learning outcomes, timeline, active-learning activities and formative assessment.',
+  },
+  temperature: 0.7,
+  fields: [
+    { id: 'course', type: 'text', required: true, label: { es: 'Asignatura / curso', en: 'Course' }, placeholder: { es: 'Ej.: Metodología de la Investigación', en: 'E.g.: Research Methods' } },
+    { id: 'topic', type: 'text', required: true, label: { es: 'Tema de la sesión', en: 'Session topic' }, placeholder: { es: 'Ej.: Tipos de muestreo probabilístico', en: 'E.g.: Probability sampling' } },
+    { id: 'program', type: 'text', label: { es: 'Carrera / programa', en: 'Degree program' }, placeholder: { es: 'Ej.: Administración de Empresas', en: 'E.g.: Business Administration' } },
+    { id: 'level', type: 'select', label: { es: 'Nivel', en: 'Level' }, options: [
+      opt('inicial', 'Pregrado – ciclos iniciales', 'Undergraduate – early years'),
+      opt('intermedio', 'Pregrado – ciclos intermedios', 'Undergraduate – middle years'),
+      opt('avanzado', 'Pregrado – ciclos finales', 'Undergraduate – final years'),
+      opt('posgrado', 'Posgrado', 'Graduate') ] },
+    { id: 'minutes', type: 'number', label: { es: 'Duración (minutos)', en: 'Duration (minutes)' }, default: 90, min: 20, max: 300 },
+    { id: 'students', type: 'number', label: { es: 'Número de estudiantes', en: 'Number of students' }, default: 30, min: 1, max: 500 },
+    { id: 'modality', type: 'select', label: { es: 'Modalidad', en: 'Modality' }, options: [
+      opt('presencial', 'Presencial', 'In person'), opt('virtual', 'Virtual sincrónica', 'Online synchronous'), opt('hibrida', 'Híbrida', 'Hybrid') ] },
+    { id: 'method', type: 'select', label: { es: 'Enfoque didáctico', en: 'Teaching approach' }, options: [
+      opt('mixto', 'Aprendizaje activo (mezcla adecuada)', 'Active learning (best mix)'),
+      opt('abp', 'Aprendizaje basado en problemas', 'Problem-based learning'),
+      opt('invertida', 'Aula invertida', 'Flipped classroom'),
+      opt('casos', 'Estudio de casos', 'Case study'),
+      opt('proyectos', 'Aprendizaje basado en proyectos', 'Project-based learning'),
+      opt('magistral', 'Clase magistral dialogada', 'Interactive lecture') ] },
+    { id: 'outcomes', type: 'textarea', label: { es: 'Resultados de aprendizaje de la asignatura (opcional)', en: 'Course learning outcomes (optional)' }, rows: 3,
+      hint: { es: 'Si los pegas, el plan se alineará con ellos; si no, se proponen.', en: 'If you paste them the plan will be aligned to them; otherwise they are proposed.' } },
+    { id: 'resources', type: 'text', span: 'full', label: { es: 'Recursos disponibles (opcional)', en: 'Available resources (optional)' }, placeholder: { es: 'Ej.: proyector, laboratorio de cómputo, Moodle, celulares', en: 'E.g.: projector, computer lab, LMS, phones' } },
+    { id: 'syllabus', type: 'file', label: { es: 'Sílabo o material de contexto (opcional, PDF/Word/texto)', en: 'Syllabus or context material (optional, PDF/Word/text)' } },
+    { id: 'include', type: 'checkboxes', label: { es: 'Incluir', en: 'Include' }, default: ['formativa', 'inclusion', 'autonomo'], options: [
+      opt('formativa', 'Evaluación formativa', 'Formative assessment'),
+      opt('inclusion', 'Adaptaciones e inclusión', 'Adaptations and inclusion'),
+      opt('ia', 'Uso ético de IA por los estudiantes', 'Ethical student use of AI'),
+      opt('autonomo', 'Trabajo autónomo / tarea', 'Independent work / homework') ] },
+  ],
+
+  buildPrompt(v, ctx) {
+    const inc = v.include || [];
+    const lv = { inicial: 'early undergraduate', intermedio: 'mid-program undergraduate', avanzado: 'final-year undergraduate', posgrado: 'graduate' }[v.level];
+    const system = `You are an expert in university pedagogy and instructional design (constructive alignment, Bloom's revised taxonomy, active learning), familiar with Latin American higher education. Write practical, realistic plans that a professor can run tomorrow. Never invent bibliographic references: if readings are useful, describe the type of source to look for and mark it "verify before use". Output only Markdown (no HTML, no code fences). Respond entirely in ${ctx.outLangName}.`;
+    const prompt = `Design a lesson plan with these parameters:
+
+- Course: ${v.course}
+- Session topic: ${v.topic}
+- Program: ${v.program || '(not specified)'}
+- Level: ${lv}
+- Duration: ${v.minutes} minutes
+- Students: ${v.students}
+- Modality: ${v.modality}
+- Teaching approach: ${v.method}
+- Available resources: ${v.resources || '(not specified)'}
+${v.outcomes ? `- Course learning outcomes to align with:\n${v.outcomes}\n` : ''}${v.syllabus ? `\nContext material provided by the professor (use it to stay aligned with the course; do not copy it):\n"""\n${v.syllabus.text}\n"""\n` : ''}
+Required structure (Markdown, use these section headings translated to ${ctx.outLangName}):
+1. "# " title line with course and topic.
+2. "## Ficha / Overview": a compact table (course, topic, level, duration, modality, number of students).
+3. "## Resultados de aprendizaje de la sesión / Session learning outcomes": 2–4 measurable outcomes, each starting with a Bloom verb and tagged with its cognitive level.
+4. "## Cronograma / Timeline": ONE Markdown table whose rows add up to exactly ${v.minutes} minutes, with columns: Minutes | Phase | Teacher activity | Student activity | Resources. Open with an activation hook and close with a synthesis. Keep cell text on a single line (no line breaks inside cells).
+5. "## Actividad principal / Core activity": step-by-step instructions, grouping strategy suitable for ${v.students} students, expected products.
+${inc.includes('formativa') ? '6. "## Evaluación formativa / Formative assessment": 2–3 quick checks for understanding (e.g., exit ticket, cold-call questions) with example items and what a good answer looks like.\n' : ''}${inc.includes('inclusion') ? '7. "## Adaptaciones e inclusión / Adaptations and inclusion": scaffolds for students who struggle, extensions for advanced students, and accessibility considerations for the modality.\n' : ''}${inc.includes('ia') ? '8. "## Uso ético de IA / Ethical use of AI": how students may and may not use generative AI in this session, with a transparency requirement.\n' : ''}${inc.includes('autonomo') ? '9. "## Trabajo autónomo / Independent work": a short task (with estimated time) that prepares the next session.\n' : ''}10. "## Anticipar dificultades / Anticipated difficulties": 3 likely misconceptions or logistics problems and how to respond.
+
+Be specific to the topic (real examples, concrete questions), not generic.`;
+    return { system, prompt, title: `${v.course} — ${v.topic}` };
+  },
+});
+</script>
+</body>
+</html>
