@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sílabo — Sornoza.com</title>
+<meta name="description" content="Genera un sílabo universitario alineado a resultados de aprendizaje, con cronograma semanal y sistema de evaluación.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="../assets/core.css">
+</head>
+<body class="min-h-screen antialiased">
+<script src="../assets/core.js"></script>
+<script>
+const opt = (v, es, en) => ({ value: v, label: { es, en } });
+const LEVELS = [
+  opt('inicial', 'Pregrado – ciclos iniciales', 'Undergraduate – early years'),
+  opt('intermedio', 'Pregrado – ciclos intermedios', 'Undergraduate – middle years'),
+  opt('avanzado', 'Pregrado – ciclos finales', 'Undergraduate – final years'),
+  opt('posgrado', 'Posgrado', 'Graduate')];
+const LEVEL_EN = { inicial: 'early undergraduate', intermedio: 'mid-program undergraduate', avanzado: 'final-year undergraduate', posgrado: 'graduate' };
+ST.mountTool({
+  id: 'silabo', icon: 'book-open',
+  title: { es: 'Sílabo', en: 'Syllabus' },
+  desc: { es: 'Genera un sílabo universitario alineado a resultados de aprendizaje: contenidos por unidad, cronograma semanal, evaluación y política de IA.', en: 'Generate a university syllabus aligned to learning outcomes: units, weekly schedule, assessment and AI policy.' },
+  temperature: 0.6,
+  fields: [
+    { id: 'course', type: 'text', required: true, label: { es: 'Asignatura', en: 'Course' }, placeholder: { es: 'Ej.: Metodología de la Investigación', en: 'E.g.: Research Methods' } },
+    { id: 'program', type: 'text', label: { es: 'Carrera / programa', en: 'Degree program' } },
+    { id: 'level', type: 'select', label: { es: 'Nivel', en: 'Level' }, options: LEVELS },
+    { id: 'modality', type: 'select', label: { es: 'Modalidad', en: 'Modality' }, options: [opt('presencial', 'Presencial', 'In person'), opt('virtual', 'Virtual', 'Online'), opt('hibrida', 'Híbrida', 'Hybrid')] },
+    { id: 'hours', type: 'number', label: { es: 'Horas totales de la asignatura', en: 'Total course hours' }, default: 64, min: 8, max: 400 },
+    { id: 'weeks', type: 'number', label: { es: 'Semanas de clase', en: 'Teaching weeks' }, default: 16, min: 4, max: 24 },
+    { id: 'framework', type: 'text', span: 'full', label: { es: 'Marco normativo o institucional (opcional)', en: 'Regulatory or institutional framework (optional)' }, placeholder: { es: 'Ej.: Reglamento de Régimen Académico (CES, Ecuador); componentes docencia, práctica y autónomo', en: 'E.g.: Institutional academic regulations; contact, practice and independent hours' } },
+    { id: 'outcomes', type: 'textarea', rows: 3, label: { es: 'Resultados de aprendizaje de la asignatura (opcional)', en: 'Course learning outcomes (optional)' }, hint: { es: 'Si no los das, se proponen.', en: 'If you leave it empty they are proposed.' } },
+    { id: 'contents', type: 'textarea', rows: 3, label: { es: 'Temas o unidades que quieres cubrir (opcional)', en: 'Topics or units you want to cover (optional)' } },
+    { id: 'assessment', type: 'text', span: 'full', label: { es: 'Distribución de la evaluación deseada (opcional)', en: 'Desired assessment weighting (optional)' }, placeholder: { es: 'Ej.: Parciales 30 %, trabajos 30 %, proyecto final 40 %', en: 'E.g.: Midterms 30%, assignments 30%, final project 40%' } },
+    { id: 'base', type: 'file', label: { es: 'Sílabo anterior para actualizar (opcional, PDF/Word/texto)', en: 'Previous syllabus to update (optional, PDF/Word/text)' } },
+    { id: 'include', type: 'checkboxes', label: { es: 'Incluir', en: 'Include' }, default: ['schedule', 'assessment', 'ai', 'readings'], options: [
+      opt('schedule', 'Cronograma semanal', 'Weekly schedule'), opt('assessment', 'Sistema de evaluación', 'Assessment system'),
+      opt('ai', 'Política de uso de IA', 'AI-use policy'), opt('integrity', 'Integridad académica', 'Academic integrity'),
+      opt('readings', 'Orientación para la bibliografía', 'Reading guidance')] },
+  ],
+  buildPrompt(v, ctx) {
+    const inc = v.include || [];
+    const system = `You are an expert in curriculum design for higher education (constructive alignment, Bloom's revised taxonomy), familiar with Latin American academic regulations. Produce a realistic, ready-to-adapt syllabus. NEVER invent bibliographic references, ISBNs, DOIs or authors' works: for readings, give search terms and source types and mark them "verify existence and edition". Output only Markdown (no HTML, no code fences). Table cells must be single-line. Respond entirely in ${ctx.outLangName}.`;
+    const prompt = `Create a syllabus with these parameters:
+- Course: ${v.course}
+- Program: ${v.program || '(not specified)'}
+- Level: ${LEVEL_EN[v.level]}
+- Modality: ${v.modality}
+- Total hours: ${v.hours}; teaching weeks: ${v.weeks}
+- Framework: ${v.framework || '(not specified)'}
+- Desired assessment weighting: ${v.assessment || '(propose one)'}
+${v.outcomes ? `- Course learning outcomes to use:\n${v.outcomes}\n` : '- Learning outcomes: propose 3–5 measurable outcomes (Bloom verbs).\n'}${v.contents ? `- Topics requested:\n${v.contents}\n` : ''}${v.base ? `\nPrevious syllabus (update and improve it; do not copy its flaws):\n"""\n${v.base.text}\n"""\n` : ''}
+Structure (headings translated to ${ctx.outLangName}):
+1. "# " title and a general-data table (course, program, level, modality, hours, weeks).
+2. "## Descripción de la asignatura": 1 short paragraph on purpose and place in the curriculum.
+3. "## Resultados de aprendizaje": measurable outcomes.
+4. "## Contenidos por unidad": 3–5 units with topics and the outcomes each unit serves.
+${inc.includes('schedule') ? `5. "## Cronograma semanal": ONE table with exactly ${v.weeks} rows: Week | Unit / topic | Outcome | Activities | Assessment / deliverable.\n` : ''}6. "## Metodología": active-learning strategies suited to the modality.
+${inc.includes('assessment') ? '7. "## Sistema de evaluación": ONE table (Component | Description | Weight %) whose weights add up to exactly 100 %, plus the passing criteria.\n' : ''}${inc.includes('ai') ? '8. "## Política de uso de IA": what is allowed, what is not, how to declare use; tied to assessment types.\n' : ''}${inc.includes('integrity') ? '9. "## Integridad académica": short, concrete.\n' : ''}${inc.includes('readings') ? '10. "## Orientación para la bibliografía": per unit, 2–3 search terms and source types (textbooks, review articles, databases). Mark everything "verify before use". Do not name specific books or papers.\n' : ''}`;
+    return { system, prompt, title: `${ctx.t({ es: 'Sílabo', en: 'Syllabus' })} — ${v.course}` };
+  },
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matriz de consistencia — Sornoza.com</title>
+<meta name="description" content="Alinea problema, objetivos, hipótesis, variables, método e instrumentos en una matriz de consistencia.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="../assets/core.css">
+</head>
+<body class="min-h-screen antialiased">
+<script src="../assets/core.js"></script>
+<script>
+const opt = (v, es, en) => ({ value: v, label: { es, en } });
+const LEVELS = [
+  opt('inicial', 'Pregrado – ciclos iniciales', 'Undergraduate – early years'),
+  opt('intermedio', 'Pregrado – ciclos intermedios', 'Undergraduate – middle years'),
+  opt('avanzado', 'Pregrado – ciclos finales', 'Undergraduate – final years'),
+  opt('posgrado', 'Posgrado', 'Graduate')];
+const LEVEL_EN = { inicial: 'early undergraduate', intermedio: 'mid-program undergraduate', avanzado: 'final-year undergraduate', posgrado: 'graduate' };
+ST.mountTool({
+  id: 'matriz-consistencia', icon: 'grid-3x3',
+  title: { es: 'Matriz de consistencia', en: 'Consistency matrix' },
+  desc: { es: 'Alinea problema, objetivos, hipótesis o supuestos, variables, método e instrumentos en una matriz de consistencia y detecta incoherencias. Exporta a Excel o LaTeX.', en: 'Align problem, objectives, hypotheses or assumptions, variables, method and instruments in a consistency matrix and detect inconsistencies. Export to Excel or LaTeX.' },
+  temperature: 0.4,
+  fields: [
+    { id: 'title', type: 'text', required: true, span: 'full', label: { es: 'Título o tema de la investigación', en: 'Research title or topic' } },
+    { id: 'problem', type: 'textarea', rows: 3, required: true, label: { es: 'Problema o pregunta de investigación', en: 'Research problem or question' } },
+    { id: 'approach', type: 'select', label: { es: 'Enfoque', en: 'Approach' }, options: [opt('cuanti', 'Cuantitativo', 'Quantitative'), opt('cuali', 'Cualitativo', 'Qualitative'), opt('mixto', 'Mixto', 'Mixed methods')] },
+    { id: 'scope', type: 'select', label: { es: 'Alcance / diseño', en: 'Scope / design' }, options: [opt('exploratorio', 'Exploratorio', 'Exploratory'), opt('descriptivo', 'Descriptivo', 'Descriptive'), opt('correlacional', 'Correlacional', 'Correlational'), opt('explicativo', 'Explicativo / causal', 'Explanatory / causal'), opt('propositivo', 'Propositivo / proyecto', 'Propositional / project')] },
+    { id: 'nspec', type: 'number', label: { es: 'Objetivos específicos', en: 'Specific objectives' }, default: 3, min: 1, max: 6 },
+    { id: 'population', type: 'text', label: { es: 'Población o contexto (opcional)', en: 'Population or context (optional)' } },
+    { id: 'objectives', type: 'textarea', rows: 4, label: { es: 'Objetivos, hipótesis o variables que ya tienes (opcional)', en: 'Objectives, hypotheses or variables you already have (optional)' }, hint: { es: 'Se revisan y se alinean con lo demás; no se descartan sin explicar.', en: 'They are reviewed and aligned with the rest; not discarded without explanation.' } },
+    { id: 'instruments', type: 'text', span: 'full', label: { es: 'Técnicas o instrumentos previstos (opcional)', en: 'Planned techniques or instruments (optional)' } },
+  ],
+  buildPrompt(v, ctx) {
+    const approach = { cuanti: 'quantitative', cuali: 'qualitative', mixto: 'mixed-methods' }[v.approach];
+    const system = `You are a research-methods advisor who supervises theses. You build consistency matrices in which every element is vertically aligned (problem → objective → hypothesis/assumption → variables or categories → method → instrument → analysis). Use infinitive verbs for objectives; hypotheses only for quantitative or explanatory/correlational designs (qualitative studies use research questions/assumptions); make every specific objective answer one specific problem. Output only Markdown (no HTML, no code fences); table cells single-line. Respond entirely in ${ctx.outLangName}.`;
+    const prompt = `Title/topic: ${v.title}
+Problem / research question: ${v.problem}
+Approach: ${approach}. Scope/design: ${v.scope}.
+Population/context: ${v.population || '(not specified)'}
+Planned instruments: ${v.instruments || '(propose suitable ones)'}
+Number of specific objectives: ${v.nspec}
+${v.objectives ? `Existing material to respect and align:\n${v.objectives}\n` : ''}
+Produce, with headings translated to ${ctx.outLangName}:
+1. "## Matriz de consistencia": ONE table with a "General" row followed by one row per specific objective, columns: Level | Problem | Objective | Hypothesis / assumption | Variables or categories | Method (design, population, sample) | Technique / instrument | Analysis.
+2. "## Operacionalización de variables": a table (Variable or category | Definition | Dimensions | Indicators | Instrument item type) — skip hypotheses/variables rows that do not apply to a qualitative design and use categories instead.
+3. "## Chequeo de coherencia": a bullet list of any misalignment detected (verb vs. scope, objective without instrument, hypothesis without variables, sample vs. population, etc.) and how it was resolved, or what the researcher must decide.`;
+    return { system, prompt, title: `${ctx.t({ es: 'Matriz', en: 'Matrix' })} — ${v.title.slice(0, 60)}` };
+  },
+});
+</script>
+</body>
+</html>

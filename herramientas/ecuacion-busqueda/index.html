@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ecuación de búsqueda — Sornoza.com</title>
+<meta name="description" content="Construye ecuaciones de búsqueda con operadores booleanos para Scopus, Web of Science, PubMed y otras bases.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="../assets/core.css">
+</head>
+<body class="min-h-screen antialiased">
+<script src="../assets/core.js"></script>
+<script>
+const opt = (v, es, en) => ({ value: v, label: { es, en } });
+const LEVELS = [
+  opt('inicial', 'Pregrado – ciclos iniciales', 'Undergraduate – early years'),
+  opt('intermedio', 'Pregrado – ciclos intermedios', 'Undergraduate – middle years'),
+  opt('avanzado', 'Pregrado – ciclos finales', 'Undergraduate – final years'),
+  opt('posgrado', 'Posgrado', 'Graduate')];
+const LEVEL_EN = { inicial: 'early undergraduate', intermedio: 'mid-program undergraduate', avanzado: 'final-year undergraduate', posgrado: 'graduate' };
+ST.mountTool({
+  id: 'ecuacion-busqueda', icon: 'search',
+  title: { es: 'Ecuación de búsqueda', en: 'Search string' },
+  desc: { es: 'Convierte tu pregunta de investigación en conceptos, sinónimos y ecuaciones booleanas con la sintaxis de cada base de datos. Debes ejecutarlas y validarlas tú.', en: 'Turn your research question into concepts, synonyms and Boolean strings with each database\'s syntax. You must run and validate them yourself.' },
+  temperature: 0.3,
+  fields: [
+    { id: 'question', type: 'textarea', rows: 3, required: true, label: { es: 'Pregunta o tema de investigación', en: 'Research question or topic' }, placeholder: { es: 'Ej.: Uso de realidad virtual y aumentada en la industria de la construcción', en: 'E.g.: Use of virtual and augmented reality in the construction industry' } },
+    { id: 'concepts', type: 'textarea', rows: 3, label: { es: 'Conceptos o palabras clave que ya tienes (opcional)', en: 'Concepts or keywords you already have (optional)' } },
+    { id: 'dbs', type: 'checkboxes', label: { es: 'Bases de datos', en: 'Databases' }, default: ['scopus', 'wos'], options: [opt('scopus', 'Scopus', 'Scopus'), opt('wos', 'Web of Science', 'Web of Science'), opt('pubmed', 'PubMed', 'PubMed'), opt('eric', 'ERIC', 'ERIC'), opt('scielo', 'SciELO', 'SciELO')] },
+    { id: 'years', type: 'text', label: { es: 'Rango de años (opcional)', en: 'Year range (optional)' }, placeholder: { es: 'Ej.: 2015–2025', en: 'E.g.: 2015–2025' } },
+    { id: 'doctypes', type: 'text', label: { es: 'Tipos de documento / idiomas (opcional)', en: 'Document types / languages (optional)' }, placeholder: { es: 'Ej.: artículos y revisiones; inglés y español', en: 'E.g.: articles and reviews; English and Spanish' } },
+    { id: 'include', type: 'checkboxes', label: { es: 'Incluir', en: 'Include' }, default: ['variants', 'criteria'], options: [opt('variants', 'Variante amplia y variante estricta', 'Broad and narrow variants'), opt('criteria', 'Criterios de inclusión/exclusión (PRISMA)', 'Inclusion/exclusion criteria (PRISMA)'), opt('explain', 'Explicar cada operador', 'Explain each operator')] },
+  ],
+  buildPrompt(v, ctx) {
+    const inc = v.include || [], dbs = v.dbs || [];
+    const syntax = { scopus: 'Scopus: TITLE-ABS-KEY(...) with PUBYEAR > / < , DOCTYPE(ar OR re), LANGUAGE(...)', wos: 'Web of Science: TS=(...) with PY=(yyyy-yyyy), DT=(Article OR Review), LA=(...)', pubmed: 'PubMed: ("term"[tiab] OR "MeSH term"[MeSH Terms]) with date filter [dp]', eric: 'ERIC: title:(...) OR abstract:(...) with pubyear', scielo: 'SciELO: ti:(...) OR ab:(...) with year_cluster / la filters' };
+    const system = `You are a research librarian who designs systematic search strategies. Use correct Boolean logic, parentheses, quotation marks for phrases, truncation (*) only when safe, and field codes valid for each database. You cannot run the searches and do not know the number of results: never invent counts, and tell the user to validate each string and record the date of search. Controlled vocabulary (e.g., MeSH) only where it actually exists for that database. Output only Markdown (no HTML). Put every search string inside a fenced code block. Respond entirely in ${ctx.outLangName}; the search terms themselves should be in the languages needed to retrieve the literature.`;
+    const prompt = `Research question/topic: ${v.question}
+${v.concepts ? `Concepts/keywords already identified: ${v.concepts}\n` : ''}Databases: ${dbs.join(', ') || 'scopus'}
+Year range: ${v.years || '(none)'}. Document types / languages: ${v.doctypes || '(none)'}.
+Syntax reminders: ${dbs.map((d) => syntax[d]).join(' | ')}
+
+Produce, with headings translated to ${ctx.outLangName}:
+1. "## Conceptos": ONE table (Concept | Synonyms and variants (EN/ES) | Controlled terms if applicable | Notes). Use a PICO-like or concept-block approach: combine synonyms with OR inside each block, blocks with AND.
+2. "## Ecuaciones por base de datos": for each database a code block with the full string${inc.includes('variants') ? ', in two versions: broad (high recall) and narrow (high precision)' : ''}.
+${inc.includes('explain') ? '3. "## Cómo leer la ecuación": brief explanation of each operator and field code used.\n' : ''}${inc.includes('criteria') ? '4. "## Criterios de inclusión y exclusión": a table (Criterion | Include | Exclude) suitable for a PRISMA screening protocol.\n' : ''}5. "## Antes de ejecutar": a short checklist (pilot the search with 3 known relevant papers, check that they are retrieved, record the search date and the number of results, export in a format compatible with your reference manager).`;
+    return { system, prompt, title: `${ctx.t({ es: 'Ecuación de búsqueda', en: 'Search string' })} — ${v.question.slice(0, 50)}` };
+  },
+});
+</script>
+</body>
+</html>

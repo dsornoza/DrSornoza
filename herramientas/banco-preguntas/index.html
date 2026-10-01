@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banco de preguntas — Sornoza.com</title>
+<meta name="description" content="Genera preguntas de opción múltiple, verdadero/falso, respuesta corta y casos con clave y retroalimentación.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="../assets/core.css">
+</head>
+<body class="min-h-screen antialiased">
+<script src="../assets/core.js"></script>
+<script>
+const opt = (v, es, en) => ({ value: v, label: { es, en } });
+const LEVELS = [
+  opt('inicial', 'Pregrado – ciclos iniciales', 'Undergraduate – early years'),
+  opt('intermedio', 'Pregrado – ciclos intermedios', 'Undergraduate – middle years'),
+  opt('avanzado', 'Pregrado – ciclos finales', 'Undergraduate – final years'),
+  opt('posgrado', 'Posgrado', 'Graduate')];
+const LEVEL_EN = { inicial: 'early undergraduate', intermedio: 'mid-program undergraduate', avanzado: 'final-year undergraduate', posgrado: 'graduate' };
+ST.mountTool({
+  id: 'banco-preguntas', icon: 'list-checks',
+  title: { es: 'Banco de preguntas', en: 'Question bank' },
+  desc: { es: 'Genera ítems de evaluación con clave de respuestas, nivel de Bloom y retroalimentación, a partir de un tema o de tu propio material. La clave se exporta a Excel.', en: 'Generate assessment items with answer key, Bloom level and feedback from a topic or your own material. The key exports to Excel.' },
+  temperature: 0.7,
+  fields: [
+    { id: 'course', type: 'text', required: true, label: { es: 'Asignatura', en: 'Course' } },
+    { id: 'topic', type: 'text', required: true, label: { es: 'Tema', en: 'Topic' } },
+    { id: 'count', type: 'number', label: { es: 'Número de preguntas', en: 'Number of items' }, default: 10, min: 1, max: 40 },
+    { id: 'options', type: 'select', label: { es: 'Opciones por pregunta (opción múltiple)', en: 'Options per item (multiple choice)' }, default: '4', options: [opt('3', '3', '3'), opt('4', '4', '4'), opt('5', '5', '5')] },
+    { id: 'difficulty', type: 'select', label: { es: 'Dificultad', en: 'Difficulty' }, default: 'mixed', options: [opt('easy', 'Básica', 'Basic'), opt('mixed', 'Mixta', 'Mixed'), opt('hard', 'Alta', 'Hard')] },
+    { id: 'bloom', type: 'select', label: { es: 'Procesos cognitivos', en: 'Cognitive processes' }, default: 'mixed', options: [opt('low', 'Recordar y comprender', 'Remember and understand'), opt('mixed', 'Mixto (hasta analizar)', 'Mixed (up to analyse)'), opt('high', 'Aplicar, analizar y evaluar', 'Apply, analyse and evaluate')] },
+    { id: 'types', type: 'checkboxes', label: { es: 'Tipos de pregunta', en: 'Item types' }, default: ['mcq'], options: [opt('mcq', 'Opción múltiple', 'Multiple choice'), opt('tf', 'Verdadero/falso con justificación', 'True/false with justification'), opt('short', 'Respuesta corta', 'Short answer'), opt('case', 'Caso breve + preguntas', 'Short case + questions')] },
+    { id: 'source', type: 'textarea', rows: 5, label: { es: 'Material base (opcional)', en: 'Source material (optional)' }, hint: { es: 'Si lo pegas o subes, las preguntas se basan SOLO en ese material.', en: 'If you paste or upload it, items are based ONLY on that material.' } },
+    { id: 'file', type: 'file', label: { es: 'O sube el material (PDF/Word/texto)', en: 'Or upload the material (PDF/Word/text)' } },
+    { id: 'include', type: 'checkboxes', label: { es: 'Incluir', en: 'Include' }, default: ['feedback', 'distractors'], options: [opt('feedback', 'Retroalimentación por pregunta', 'Feedback per item'), opt('distractors', 'Explicar por qué fallan los distractores', 'Explain why distractors fail')] },
+  ],
+  buildPrompt(v, ctx) {
+    const inc = v.include || [], src = [v.source, v.file ? v.file.text : ''].filter(Boolean).join('\n\n');
+    const system = `You are an assessment specialist who writes high-quality exam items. Rules: exactly one defensible correct answer; plausible distractors based on real misconceptions; no "all/none of the above"; avoid negative stems; options of similar length and parallel grammar; distribute the correct answer position evenly; no clues in the stem; items must be independent. Output only Markdown (no HTML, no code fences). Respond entirely in ${ctx.outLangName}.`;
+    const prompt = `Write ${v.count} assessment items.
+Course: ${v.course}. Topic: ${v.topic}.
+Item types (distribute sensibly): ${(v.types || ['mcq']).join(', ')}. Multiple-choice options: ${v.options}.
+Difficulty: ${v.difficulty}. Cognitive processes: ${v.bloom}.
+${src ? `Base every item ONLY on this material; do not add facts that are not in it:\n"""\n${src}\n"""\n` : 'No source material was given: use well-established, textbook-level knowledge and avoid niche facts you are unsure about.'}
+Format (headings translated to ${ctx.outLangName}):
+1. "## Preguntas": numbered items. Write each stem as a paragraph starting with the bold number (e.g. "**1.** ..."). Put EVERY answer option as its own bullet "- **A.** text" so each shows on its own line. For short-answer and case items, no options.
+2. "## Clave y metadatos": ONE table: # | Type | Bloom level | Difficulty | Correct answer | ${inc.includes('feedback') ? 'Feedback / rationale' : 'Rationale (one line)'}${inc.includes('distractors') ? ' (include why each wrong option fails)' : ''}. Cells on a single line.`;
+    return { system, prompt, title: `${ctx.t({ es: 'Banco', en: 'Question bank' })} — ${v.course}: ${v.topic}` };
+  },
+});
+</script>
+</body>
+</html>

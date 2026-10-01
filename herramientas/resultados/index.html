@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resultados de aprendizaje — Sornoza.com</title>
+<meta name="description" content="Redacta resultados de aprendizaje medibles con taxonomía de Bloom, evidencias y actividades alineadas.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="../assets/core.css">
+</head>
+<body class="min-h-screen antialiased">
+<script src="../assets/core.js"></script>
+<script>
+const opt = (v, es, en) => ({ value: v, label: { es, en } });
+const LEVELS = [
+  opt('inicial', 'Pregrado – ciclos iniciales', 'Undergraduate – early years'),
+  opt('intermedio', 'Pregrado – ciclos intermedios', 'Undergraduate – middle years'),
+  opt('avanzado', 'Pregrado – ciclos finales', 'Undergraduate – final years'),
+  opt('posgrado', 'Posgrado', 'Graduate')];
+const LEVEL_EN = { inicial: 'early undergraduate', intermedio: 'mid-program undergraduate', avanzado: 'final-year undergraduate', posgrado: 'graduate' };
+ST.mountTool({
+  id: 'resultados', icon: 'target',
+  title: { es: 'Resultados de aprendizaje', en: 'Learning outcomes' },
+  desc: { es: 'Redacta resultados de aprendizaje medibles con la taxonomía de Bloom, con su evidencia de logro, actividad e instrumento de evaluación; o mejora los que ya tienes.', en: 'Write measurable learning outcomes with Bloom\'s taxonomy, with evidence, activity and assessment instrument; or improve existing ones.' },
+  temperature: 0.5,
+  fields: [
+    { id: 'course', type: 'text', required: true, label: { es: 'Asignatura', en: 'Course' } },
+    { id: 'unit', type: 'text', required: true, label: { es: 'Unidad o tema', en: 'Unit or topic' } },
+    { id: 'level', type: 'select', label: { es: 'Nivel', en: 'Level' }, options: LEVELS },
+    { id: 'count', type: 'number', label: { es: 'Cuántos resultados', en: 'How many outcomes' }, default: 4, min: 1, max: 10 },
+    { id: 'profile', type: 'text', span: 'full', label: { es: 'Perfil de egreso o competencia a la que aporta (opcional)', en: 'Graduate profile or competency it feeds (optional)' } },
+    { id: 'domains', type: 'checkboxes', label: { es: 'Dominios', en: 'Domains' }, default: ['cog', 'proc'], options: [opt('cog', 'Cognitivo (saber)', 'Cognitive (knowing)'), opt('proc', 'Procedimental (hacer)', 'Procedural (doing)'), opt('att', 'Actitudinal (ser)', 'Attitudinal (being)')] },
+    { id: 'existing', type: 'textarea', rows: 4, label: { es: 'Resultados existentes para mejorar (opcional)', en: 'Existing outcomes to improve (optional)' }, hint: { es: 'Uno por línea. Se diagnostican y se reescriben.', en: 'One per line. They are diagnosed and rewritten.' } },
+  ],
+  buildPrompt(v, ctx) {
+    const system = `You are an expert in outcome-based curriculum design. Every learning outcome must be learner-centred, observable, measurable, use ONE Bloom (revised) verb, and be achievable at the stated level; avoid vague verbs such as "know", "understand", "be aware of". Output only Markdown (no HTML, no code fences); table cells must be single-line. Respond entirely in ${ctx.outLangName}.`;
+    const prompt = `Course: ${v.course}
+Unit/topic: ${v.unit}
+Level: ${LEVEL_EN[v.level]}
+Graduate profile / competency: ${v.profile || '(not specified)'}
+Domains to cover: ${(v.domains || []).join(', ') || 'cognitive'}
+Number of outcomes to produce: ${v.count}
+${v.existing ? `\nExisting outcomes to diagnose and improve:\n${v.existing}\n` : ''}
+Produce, with headings translated to ${ctx.outLangName}:
+${v.existing ? '1. "## Diagnóstico": a table (Original outcome | Problem found | Improved version) for each existing outcome.\n2.' : '1.'} "## Resultados de aprendizaje propuestos": a numbered list of ${v.count} outcomes, each starting with "Al finalizar la unidad, el estudiante será capaz de…" (translated) + one Bloom verb.
+${v.existing ? '3.' : '2.'} "## Alineación": ONE table with columns: # | Bloom level | Verb | Evidence of achievement | Suggested activity | Assessment instrument.
+${v.existing ? '4.' : '3.'} "## Verificación de calidad": a short checklist applied to the outcomes (observable, measurable, single verb, level-appropriate, assessable in the time available) with any caveat.`;
+    return { system, prompt, title: `${ctx.t({ es: 'Resultados', en: 'Outcomes' })} — ${v.course}: ${v.unit}` };
+  },
+});
+</script>
+</body>
+</html>
