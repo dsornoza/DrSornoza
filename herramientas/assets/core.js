@@ -99,6 +99,8 @@
     truncated: { es: 'La respuesta se cortó por límite de longitud. Pide una versión más corta o genera por partes.', en: 'The response was cut off by the length limit. Ask for a shorter version or generate in parts.' },
     err_no_key: { es: 'Configura primero tu API Key de Gemini.', en: 'Set your Gemini API key first.' },
     err_key: { es: 'Google rechazó la API Key. Revisa que esté completa y activa.', en: 'Google rejected the API key. Check that it is complete and active.' },
+    err_busy: { es: 'Los modelos de Gemini tienen alta demanda en este momento (es temporal). Espera un minuto e inténtalo de nuevo.', en: 'Gemini models are under high demand right now (this is temporary). Wait a minute and try again.' },
+    model_trying: { es: 'El modelo {a} está saturado o sin cuota. Probando con {b}…', en: 'Model {a} is overloaded or out of quota. Trying {b}…' },
     err_quota: { es: 'Se alcanzó el límite de uso gratuito de Gemini. Espera un momento o cambia de modelo (p. ej. flash-lite).', en: 'The free Gemini usage limit was reached. Wait a moment or switch model (e.g. flash-lite).' },
     err_model: { es: 'Ese modelo no está disponible para tu key. Abre la configuración de la API Key y pulsa «Detectar modelos disponibles».', en: 'That model is not available for your key. Open the API key settings and press “Detect available models”.' },
     err_net: { es: 'No se pudo conectar con Gemini. Revisa tu conexión.', en: 'Could not reach Gemini. Check your connection.' },
@@ -350,7 +352,8 @@
   ST.gemini = async function ({ system, prompt, messages, temperature = 0.6, signal, onChunk }) {
     const key = ST.getKey();
     if (!key) throw apiErr('no_key');
-    let model = ST.getModel(), switched = false;
+    let model = ST.getModel(), switched = false, knownIds = null;
+    const tried = new Set([model]);
     const urlFor = (m) => `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(m)}:streamGenerateContent?alt=sse`;
     let url = urlFor(model);
     const body = JSON.stringify({
@@ -369,9 +372,19 @@
       }
       if (!res.ok) {
         if ((res.status === 429 || res.status === 503) && attempt < 2) { await sleep(2500 * (attempt + 1), signal); continue; }
+        if ((res.status === 429 || res.status === 503) && tried.size < 4) {
+          // Saturado o sin cuota tras reintentar: la demanda y la cuota son por modelo, así que probamos otro (sin guardarlo)
+          if (!knownIds) { try { knownIds = await ST.listModels(key, signal); } catch (e) { if (e.name === 'AbortError') throw e; knownIds = []; } }
+          const alt = knownIds.filter((id) => !tried.has(id) && modelScore(id) >= 0).sort((a, b) => modelScore(b) - modelScore(a))[0];
+          if (alt) {
+            ST.toast(ST.t('model_trying').replace('{a}', model).replace('{b}', alt));
+            tried.add(alt); model = alt; url = urlFor(alt); attempt = 1; continue; // un solo intento más por modelo alterno
+          }
+        }
         let msg = '';
         try { msg = (await res.json()).error.message || ''; } catch (e) { /* sin cuerpo */ }
         if (res.status === 429) throw apiErr('quota');
+        if (res.status === 503) throw apiErr('busy');
         if (res.status === 404) {
           // El modelo ya no existe para esta key: buscamos uno vigente, lo guardamos y reintentamos una vez
           if (!switched) {
