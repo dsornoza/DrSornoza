@@ -249,6 +249,17 @@ function calcBloque(b) {
     return { filas, puntos: filas.reduce((a, f) => a + f.puntos, 0), excede: b.tope !== undefined && ingresadas > b.tope, ingresadas, computadas };
 }
 
+// Explica qué proyectos se computaron y cuáles se omitieron cuando se supera el tope.
+function explicarTope(b, calc) {
+    const rol = it => { const m = it.nombre.match(/\(([^)]+)\)/); return m ? m[1] : it.nombre; };
+    const lista = fn => calc.filas.filter(f => fn(f) > 0).sort((x, y) => y.it.pts - x.it.pts)
+        .map(f => `${fn(f)} como ${rol(f.it)} (${f.it.pts} pts c/u)`).join(", ");
+    const omitidos = lista(f => f.ingresada - f.computada);
+    return `Ingresaste ${calc.ingresadas} proyectos, pero el instructivo reconoce un máximo de ${b.tope}. ` +
+        `Se priorizaron los de mayor puntaje: ${lista(f => f.computada)}. ` +
+        `No se computaron: ${omitidos}.`;
+}
+
 function calcTodo() {
     const ind = CONFIG.indicadores.map(i => {
         const bloques = i.bloques.map(calcBloque);
@@ -341,7 +352,7 @@ function update(save) {
             });
             const note = document.querySelector(`[data-cap="${i.def.id}-${bi}"]`);
             if (calc.excede) {
-                note.textContent = `Ingresaste ${calc.ingresadas} proyectos; solo se computan ${calc.computadas}, priorizando los de mayor puntaje.`;
+                note.textContent = explicarTope(b, calc);
                 note.classList.remove("hidden");
             } else note.classList.add("hidden");
         });
@@ -486,7 +497,17 @@ async function generarPdf() {
             columnStyles: { 1: { halign: "center", cellWidth: 24 }, 2: { halign: "center", cellWidth: 38 }, 3: { halign: "center", cellWidth: 22 } },
             didParseCell: d => { if (d.section === "head" && d.column.index > 0) d.cell.styles.halign = "center"; }
         });
-        y = doc.lastAutoTable.finalY + 8;
+        y = doc.lastAutoTable.finalY + 3;
+
+        i.def.bloques.forEach((b, bi) => {
+            if (!i.bloques[bi].excede) return;
+            const lines = doc.splitTextToSize(`Nota (${b.titulo}): ${explicarTope(b, i.bloques[bi])}`, W - 2 * M);
+            if (y + lines.length * 4 > H - 22) { doc.addPage(); y = 20; }
+            doc.setFont("helvetica", "italic").setFontSize(8.5).setTextColor(146, 64, 14);
+            doc.text(lines, M, y + 3);
+            y += lines.length * 4 + 3;
+        });
+        y += 5;
     });
 
     // Estímulos
