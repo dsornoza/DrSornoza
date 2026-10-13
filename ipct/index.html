@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>Simulador IPCT — Sornoza.com</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        :root {
+            --primary: #06B6D4;
+            --primary-dark: #0E7490;
+            --muted: #F1F5F9;
+            --muted-foreground: #64748B;
+            --border: #E2E8F0;
+            --foreground: #0F172A;
+            --card-foreground: #1E293B;
+            --shadow-soft: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+        }
+        body { font-family: 'Inter', sans-serif; color: var(--foreground); background: var(--muted); }
+        .card { background: #fff; border: 1px solid var(--border); border-radius: 0.75rem; box-shadow: var(--shadow-soft); }
+        .qty { width: 5rem; text-align: center; border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.4rem 0.5rem; font-weight: 600; background: #fff; }
+        .qty:focus { outline: 2px solid var(--primary); outline-offset: 0; border-color: var(--primary); }
+        .field { width: 100%; border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.6rem 0.75rem; background: #fff; }
+        .field:focus { outline: 2px solid var(--primary); border-color: var(--primary); }
+        .row-active { background: rgba(6,182,212,0.06); }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; font-weight: 600; font-size: .875rem; padding: .65rem 1rem; border-radius: .5rem; transition: all .2s; cursor: pointer; }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-ghost { border: 1px solid var(--border); background: #fff; color: var(--card-foreground); }
+        .btn-ghost:hover { border-color: var(--primary); color: var(--primary-dark); }
+        .bar { height: .5rem; border-radius: 9999px; background: var(--border); overflow: hidden; }
+        .bar > span { display: block; height: 100%; background: var(--primary); transition: width .3s ease; }
+        .cap-note { font-size: .75rem; color: #B45309; }
+    </style>
+</head>
+<body class="min-h-screen antialiased">
+
+    <header class="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur" style="border-color:var(--border);">
+        <div class="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
+            <div class="flex items-center gap-2">
+                <img src="/assets/logo-mark.png" alt="Diego Sornoza Parrales" class="h-7 w-auto">
+                <span class="text-base font-semibold">Dr. Diego Sornoza Parrales</span>
+            </div>
+            <a href="/" class="text-sm font-medium transition-colors hover:text-cyan-500" style="color:var(--muted-foreground)">← Inicio</a>
+        </div>
+    </header>
+
+    <section class="py-10 md:py-14 px-4 md:px-8 bg-white border-b" style="border-color:var(--border);">
+        <div class="container mx-auto max-w-4xl text-center">
+            <h1 class="text-3xl md:text-4xl font-bold mb-3">Simulador del IPCT</h1>
+            <p class="text-lg max-w-2xl mx-auto" style="color:var(--muted-foreground)">
+                Índice de Producción Científica y Tecnológica del personal académico. Ingresa las cantidades y obtén el puntaje, el nivel y un reporte en PDF.
+            </p>
+        </div>
+    </section>
+
+    <main class="container mx-auto max-w-6xl px-4 md:px-8 py-8">
+
+        <!-- Datos del evaluado -->
+        <section class="card p-5 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="md:col-span-2">
+                    <label for="profName" class="block text-sm font-semibold mb-1">Nombre del profesor evaluado</label>
+                    <input id="profName" type="text" class="field" placeholder="Nombres y apellidos" autocomplete="off">
+                </div>
+                <div>
+                    <label for="evalYear" class="block text-sm font-semibold mb-1">Año de evaluación</label>
+                    <input id="evalYear" type="text" inputmode="numeric" maxlength="4" class="field" placeholder="2025" autocomplete="off">
+                </div>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+
+            <!-- Criterios -->
+            <div id="sections" class="lg:col-span-2 space-y-6"></div>
+
+            <!-- Resumen -->
+            <aside class="lg:sticky lg:top-24 space-y-4">
+                <div class="card p-5">
+                    <p class="text-xs font-semibold uppercase tracking-wide" style="color:var(--muted-foreground)">IPCT total</p>
+                    <div class="flex items-end gap-3 mt-1">
+                        <span id="total" class="text-5xl font-extrabold" style="color:var(--primary-dark)">0</span>
+                        <span id="level" class="mb-1.5 text-sm font-bold px-3 py-1 rounded-full text-white" style="background:var(--muted-foreground)">Sin nivel</span>
+                    </div>
+                    <p class="text-xs mt-1" style="color:var(--muted-foreground)">IPCT = Ii + IiD + IVs</p>
+
+                    <div class="mt-5">
+                        <div class="bar"><span id="progress" style="width:0%"></span></div>
+                        <p id="progressText" class="text-sm mt-2" style="color:var(--muted-foreground)"></p>
+                    </div>
+
+                    <div class="mt-5 space-y-3" id="breakdown"></div>
+
+                    <div class="mt-5 pt-4 border-t" style="border-color:var(--border)">
+                        <p class="text-xs font-semibold uppercase tracking-wide mb-2" style="color:var(--muted-foreground)">Estímulos del nivel (Art. 8)</p>
+                        <ul id="stimuli" class="text-sm space-y-1.5 list-disc pl-5"></ul>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <button id="btnPdf" class="btn btn-primary"><i data-lucide="file-down" class="h-4 w-4"></i> Generar PDF</button>
+                    <button id="btnReset" class="btn btn-ghost"><i data-lucide="rotate-ccw" class="h-4 w-4"></i> Limpiar</button>
+                </div>
+            </aside>
+        </div>
+
+        <p class="text-xs mt-8 max-w-3xl" style="color:var(--muted-foreground)">
+            Simulador referencial; no constituye el cálculo oficial. Los puntajes, topes y niveles corresponden a la Reforma del Instructivo para el reconocimiento y estímulo al personal académico y estudiantes con actividades de investigación, desarrollo, innovación y vinculación con la sociedad de la UNESUM (aprobada por el OCS el 4 de marzo de 2022, SE Nº ROCS-05-Nº-12-2022). La valoración oficial corresponde a la Dirección de Investigación y al Consejo Científico.
+        </p>
+    </main>
+
+<script>
+/* ============================================================
+   CONFIGURACIÓN — editar aquí si el reglamento se actualiza
+   ============================================================ */
+const CONFIG = {
+    fuente: "Reforma del Instructivo para el reconocimiento y estímulo al personal académico y estudiantes con actividades de investigación, desarrollo, innovación y vinculación con la sociedad de la UNESUM (OCS, 4 de marzo de 2022; SE Nº ROCS-05-Nº-12-2022)",
+
+    // Niveles de mayor a menor (Art. 5)
+    niveles: [
+        { min: 50, nombre: "Nivel 1" },
+        { min: 40, nombre: "Nivel 2" },
+        { min: 30, nombre: "Nivel 3" },
+        { min: 20, nombre: "Nivel 4" }
+    ],
+    sinNivel: "Sin nivel",
+
+    // Estímulos por nivel (Art. 8)
+    estimulos: {
+        "Nivel 1": [
+            "Fondos hasta $2.500 USD para capacitaciones, estancias o pasantías en centros de investigación a nivel internacional.",
+            "Fondos hasta $1.500 USD para difundir resultados en eventos científicos a nivel internacional."
+        ],
+        "Nivel 2": [
+            "Fondos hasta $2.000 USD para capacitaciones, estancias o pasantías en centros de investigación a nivel internacional.",
+            "Fondos hasta $1.500 USD para difundir resultados en eventos científicos a nivel internacional."
+        ],
+        "Nivel 3": [
+            "Fondos hasta $1.500 USD para difundir resultados en eventos científicos a nivel internacional."
+        ],
+        "Nivel 4": [
+            "Reconocimiento público al mérito científico por parte del Vicerrectorado Académico y la Dirección de Investigación."
+        ]
+    },
+
+    // Indicadores. Un bloque con "tope" solo computa ese número de proyectos
+    // (se priorizan las funciones de mayor puntaje).
+    indicadores: [
+        {
+            id: "Ii", nombre: "Indicador de Investigación (Ii)", total: "Total Ii",
+            bloques: [
+                { titulo: "Artículos publicados (WOS, Scopus y bases regionales)", items: [
+                    { id: "q1", nombre: "Artículos Q1", pts: 6 },
+                    { id: "q2", nombre: "Artículos Q2", pts: 5 },
+                    { id: "q3", nombre: "Artículos Q3", pts: 4 },
+                    { id: "q4", nombre: "Artículos Q4", pts: 3 },
+                    { id: "scielo", nombre: "Artículos SciELO", pts: 2 },
+                    { id: "latindex", nombre: "Artículos Latindex, Redalyc y otros", pts: 2 }
+                ]},
+                { titulo: "Ponencias en eventos científicos", items: [
+                    { id: "pon_rev", nombre: "Ponencias publicadas en revista", pts: 2 },
+                    { id: "pon_mem", nombre: "Ponencias publicadas en libro de memorias", pts: 1 }
+                ]},
+                { titulo: "Proyectos de investigación externos (financiamiento externo)", tope: 3, items: [
+                    { id: "pe_dir", nombre: "Proyectos externos (director)", pts: 10 },
+                    { id: "pe_pri", nombre: "Proyectos externos (investigador principal)", pts: 8 },
+                    { id: "pe_inv", nombre: "Proyectos externos (investigador)", pts: 4 }
+                ]},
+                { titulo: "Proyectos de investigación internos (financiamiento interno)", tope: 3, items: [
+                    { id: "pi_dir", nombre: "Proyectos internos (director)", pts: 8 },
+                    { id: "pi_pri", nombre: "Proyectos internos (investigador principal)", pts: 6 },
+                    { id: "pi_inv", nombre: "Proyectos internos (investigador)", pts: 4 }
+                ]},
+                { titulo: "Libros arbitrados y publicados", items: [
+                    { id: "lib_inv", nombre: "Libros de resultados de investigación", pts: 5 },
+                    { id: "lib_aca", nombre: "Libros académicos", pts: 2 }
+                ]},
+                { titulo: "Otras actividades de investigación", items: [
+                    { id: "comites", nombre: "Participación en comités o consejos editoriales", pts: 3 },
+                    { id: "premios", nombre: "Premios o reconocimientos", pts: 2 },
+                    { id: "revisor", nombre: "Revisor de artículos", pts: 1 },
+                    { id: "red", nombre: "Miembro de red o asociación científica", pts: 1 }
+                ]},
+                { titulo: "Tutoría o dirección de tesis", items: [
+                    { id: "tesis_doc", nombre: "Tesis de doctorado", pts: 3 },
+                    { id: "tesis_mi", nombre: "Tesis de maestría de investigación", pts: 2 },
+                    { id: "tesis_mp", nombre: "Tesis de maestría profesionalizante", pts: 1 }
+                ]}
+            ]
+        },
+        {
+            id: "IiD", nombre: "Indicador de Innovación y Desarrollo (IiD)", total: "Total IiD",
+            bloques: [
+                { titulo: "Registro de patentes", items: [
+                    { id: "patentes", nombre: "Patentes registradas en el SENADI", pts: 6 }
+                ]}
+            ]
+        },
+        {
+            id: "IVs", nombre: "Indicador de Vinculación (IVs)", total: "Total IVs",
+            bloques: [
+                { titulo: "Proyectos de vinculación con la sociedad", tope: 2, items: [
+                    { id: "v_dir", nombre: "Proyectos de vinculación (director)", pts: 3 },
+                    { id: "v_par", nombre: "Proyectos de vinculación (participante)", pts: 2 }
+                ]}
+            ]
+        }
+    ]
+};
+
+/* ============================================================
+   LÓGICA
+   ============================================================ */
+const STORAGE_KEY = "ipct-simulador-v1";
+const state = { nombre: "", anio: "", cant: {} };
+
+function store(save) {
+    try {
+        if (save) localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        else {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (raw) {
+                const s = JSON.parse(raw);
+                state.nombre = typeof s.nombre === "string" ? s.nombre : "";
+                state.anio = typeof s.anio === "string" ? s.anio : "";
+                state.cant = s.cant && typeof s.cant === "object" ? s.cant : {};
+            }
+        }
+    } catch (e) { /* almacenamiento no disponible */ }
+}
+
+const qty = id => { const n = parseInt(state.cant[id], 10); return Number.isFinite(n) && n > 0 ? n : 0; };
+
+// Calcula un bloque: devuelve filas con cantidad ingresada, cantidad computada y puntos.
+function calcBloque(b) {
+    let restante = b.tope === undefined ? Infinity : b.tope;
+    const orden = [...b.items].sort((x, y) => y.pts - x.pts);
+    const comp = {};
+    orden.forEach(it => { const c = Math.min(qty(it.id), restante); comp[it.id] = c; restante -= c; });
+    const filas = b.items.map(it => ({ it, ingresada: qty(it.id), computada: comp[it.id], puntos: comp[it.id] * it.pts }));
+    const ingresadas = filas.reduce((a, f) => a + f.ingresada, 0);
+    const computadas = filas.reduce((a, f) => a + f.computada, 0);
+    return { filas, puntos: filas.reduce((a, f) => a + f.puntos, 0), excede: b.tope !== undefined && ingresadas > b.tope, ingresadas, computadas };
+}
+
+function calcTodo() {
+    const ind = CONFIG.indicadores.map(i => {
+        const bloques = i.bloques.map(calcBloque);
+        return { def: i, bloques, puntos: bloques.reduce((a, b) => a + b.puntos, 0) };
+    });
+    const total = ind.reduce((a, i) => a + i.puntos, 0);
+    return { ind, total, nivel: nivelDe(total) };
+}
+
+function nivelDe(total) {
+    const n = CONFIG.niveles.find(n => total >= n.min);
+    return n ? n.nombre : CONFIG.sinNivel;
+}
+
+function siguienteNivel(total) {
+    // Menor umbral que aún no se alcanza
+    const faltan = CONFIG.niveles.filter(n => total < n.min).sort((a, b) => a.min - b.min);
+    return faltan[0] || null;
+}
+
+/* ---------- Render ---------- */
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+
+function buildSections() {
+    const root = document.getElementById("sections");
+    root.innerHTML = CONFIG.indicadores.map(i => `
+        <section class="card overflow-hidden">
+            <div class="px-5 py-4 flex items-center justify-between" style="background:var(--foreground);color:#fff;">
+                <h2 class="font-bold text-base md:text-lg">${esc(i.nombre)}</h2>
+                <span class="text-sm font-semibold" style="color:#67E8F9"><span data-total="${i.id}">0</span> pts</span>
+            </div>
+            ${i.bloques.map((b, bi) => `
+                <div class="px-5 pt-4 pb-1">
+                    <div class="flex items-baseline justify-between gap-3 flex-wrap">
+                        <h3 class="text-sm font-bold" style="color:var(--card-foreground)">${esc(b.titulo)}</h3>
+                        ${b.tope !== undefined ? `<span class="text-xs" style="color:var(--muted-foreground)">Se computan máximo ${b.tope} proyectos</span>` : ""}
+                    </div>
+                    <p class="cap-note hidden mt-1" data-cap="${i.id}-${bi}"></p>
+                </div>
+                <div class="px-3 pb-3">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="text-left text-xs uppercase tracking-wide" style="color:var(--muted-foreground)">
+                                <th class="px-2 py-2 font-semibold">Criterio</th>
+                                <th class="px-2 py-2 font-semibold text-center whitespace-nowrap">Pts/unidad</th>
+                                <th class="px-2 py-2 font-semibold text-center">Cantidad</th>
+                                <th class="px-2 py-2 font-semibold text-right">Puntos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${b.items.map(it => `
+                            <tr data-row="${it.id}" class="border-t" style="border-color:var(--border)">
+                                <td class="px-2 py-2.5">${esc(it.nombre)}</td>
+                                <td class="px-2 py-2.5 text-center" style="color:var(--muted-foreground)">${it.pts}</td>
+                                <td class="px-2 py-2.5 text-center">
+                                    <input class="qty" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" data-id="${it.id}" value="" placeholder="0" aria-label="Cantidad: ${esc(it.nombre)}">
+                                </td>
+                                <td class="px-2 py-2.5 text-right font-semibold" data-pts="${it.id}">0</td>
+                            </tr>`).join("")}
+                        </tbody>
+                    </table>
+                </div>`).join("")}
+        </section>`).join("");
+
+    root.querySelectorAll(".qty").forEach(inp => {
+        const v = state.cant[inp.dataset.id];
+        if (v) inp.value = v;
+        inp.addEventListener("input", () => {
+            const digits = inp.value.replace(/\D/g, "").replace(/^0+(?=\d)/, "");
+            inp.value = digits;
+            state.cant[inp.dataset.id] = digits;
+            update(true);
+        });
+        inp.addEventListener("focus", () => inp.select());
+    });
+}
+
+function update(save) {
+    const r = calcTodo();
+
+    r.ind.forEach(i => {
+        document.querySelector(`[data-total="${i.def.id}"]`).textContent = i.puntos;
+        i.def.bloques.forEach((b, bi) => {
+            const calc = i.bloques[bi];
+            calc.filas.forEach(f => {
+                const cell = document.querySelector(`[data-pts="${f.it.id}"]`);
+                const row = document.querySelector(`[data-row="${f.it.id}"]`);
+                cell.textContent = f.puntos;
+                row.classList.toggle("row-active", f.ingresada > 0);
+            });
+            const note = document.querySelector(`[data-cap="${i.def.id}-${bi}"]`);
+            if (calc.excede) {
+                note.textContent = `Ingresaste ${calc.ingresadas} proyectos; solo se computan ${calc.computadas}, priorizando los de mayor puntaje.`;
+                note.classList.remove("hidden");
+            } else note.classList.add("hidden");
+        });
+    });
+
+    document.getElementById("total").textContent = r.total;
+    const lvl = document.getElementById("level");
+    lvl.textContent = r.nivel;
+    lvl.style.background = r.nivel === CONFIG.sinNivel ? "var(--muted-foreground)" : "var(--primary)";
+
+    const sig = siguienteNivel(r.total);
+    const bar = document.getElementById("progress");
+    const txt = document.getElementById("progressText");
+    if (sig) {
+        // Barra desde el umbral anterior al siguiente nivel (o desde 0)
+        const prev = CONFIG.niveles.filter(n => n.min < sig.min).sort((a, b) => b.min - a.min)[0];
+        const desde = prev ? prev.min : 0;
+        bar.style.width = Math.min(100, Math.max(0, ((r.total - desde) / (sig.min - desde)) * 100)) + "%";
+        txt.textContent = `Te faltan ${sig.min - r.total} puntos para alcanzar el ${sig.nombre} (${sig.min} pts).`;
+    } else {
+        bar.style.width = "100%";
+        txt.textContent = "Has alcanzado el nivel máximo.";
+    }
+
+    document.getElementById("breakdown").innerHTML = r.ind.map(i => {
+        const pct = r.total > 0 ? (i.puntos / r.total) * 100 : 0;
+        return `<div>
+            <div class="flex justify-between text-sm"><span class="font-medium">${esc(i.def.id)}</span><span class="font-semibold">${i.puntos} pts</span></div>
+            <div class="bar mt-1"><span style="width:${pct}%"></span></div>
+        </div>`;
+    }).join("");
+
+    const est = CONFIG.estimulos[r.nivel];
+    document.getElementById("stimuli").innerHTML = est
+        ? est.map(e => `<li>${esc(e)}</li>`).join("")
+        : `<li style="list-style:none;margin-left:-1.25rem;color:var(--muted-foreground)">Se requieren al menos ${CONFIG.niveles[CONFIG.niveles.length - 1].min} puntos para acceder a un nivel.</li>`;
+
+    if (save) store(true);
+}
+
+/* ---------- PDF ---------- */
+function loadLogo() {
+    return new Promise(resolve => {
+        const img = new Image();
+        img.onload = () => {
+            try {
+                const c = document.createElement("canvas");
+                c.width = img.naturalWidth; c.height = img.naturalHeight;
+                c.getContext("2d").drawImage(img, 0, 0);
+                resolve({ data: c.toDataURL("image/png"), w: img.naturalWidth, h: img.naturalHeight });
+            } catch (e) { resolve(null); }
+        };
+        img.onerror = () => resolve(null);
+        img.src = "/assets/logo-mark.png";
+    });
+}
+
+async function generarPdf() {
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+        alert("No se pudo cargar el generador de PDF. Revisa tu conexión e inténtalo de nuevo.");
+        return;
+    }
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: "mm", format: "a4" });
+    const r = calcTodo();
+    const W = doc.internal.pageSize.getWidth();
+    const H = doc.internal.pageSize.getHeight();
+    const M = 15;
+    const cyan = [6, 182, 212], dark = [15, 23, 42], gray = [100, 116, 139];
+
+    const nombre = state.nombre.trim() || "No especificado";
+    const anio = state.anio.trim() || "No especificado";
+    const fecha = new Date().toLocaleDateString("es-EC", { year: "numeric", month: "long", day: "numeric" });
+
+    // Cabecera
+    const logo = await loadLogo();
+    let x = M;
+    if (logo) {
+        const h = 12, w = h * logo.w / logo.h;
+        doc.addImage(logo.data, "PNG", M, 12, w, h);
+        x = M + w + 4;
+    }
+    doc.setTextColor(...dark).setFont("helvetica", "bold").setFontSize(12);
+    doc.text("Dr. Diego Sornoza Parrales", x, 18);
+    doc.setFont("helvetica", "normal").setFontSize(9).setTextColor(...gray);
+    doc.text("sornoza.com", x, 23);
+    doc.setDrawColor(...cyan).setLineWidth(0.6).line(M, 28, W - M, 28);
+
+    doc.setTextColor(...dark).setFont("helvetica", "bold").setFontSize(16);
+    doc.text("Reporte de simulación del IPCT", M, 38);
+    doc.setFont("helvetica", "normal").setFontSize(10).setTextColor(...gray);
+    doc.text("Índice de Producción Científica y Tecnológica — UNESUM", M, 44);
+
+    // Datos
+    doc.setTextColor(...dark).setFontSize(10);
+    doc.setFont("helvetica", "bold"); doc.text("Profesor evaluado:", M, 54);
+    doc.setFont("helvetica", "normal"); doc.text(nombre, M + 38, 54);
+    doc.setFont("helvetica", "bold"); doc.text("Año de evaluación:", M, 60);
+    doc.setFont("helvetica", "normal"); doc.text(anio, M + 38, 60);
+    doc.setFont("helvetica", "bold"); doc.text("Fecha del reporte:", M, 66);
+    doc.setFont("helvetica", "normal"); doc.text(fecha, M + 38, 66);
+
+    // Resultado
+    doc.setFillColor(241, 245, 249).roundedRect(M, 72, W - 2 * M, 22, 2, 2, "F");
+    doc.setFont("helvetica", "bold").setFontSize(10).setTextColor(...gray);
+    doc.text("IPCT TOTAL", M + 6, 80);
+    doc.setFontSize(24).setTextColor(14, 116, 144);
+    doc.text(String(r.total), M + 6, 90);
+    doc.setFontSize(10).setTextColor(...gray);
+    doc.text("NIVEL", M + 60, 80);
+    doc.setFontSize(18).setTextColor(...dark);
+    doc.text(r.nivel, M + 60, 90);
+    doc.setFontSize(9).setFont("helvetica", "normal").setTextColor(...gray);
+    const partes = r.ind.map(i => `${i.def.id}: ${i.puntos}`).join("   |   ");
+    doc.text(partes, W - M - 6, 90, { align: "right" });
+
+    let y = 102;
+
+    // Tablas por indicador
+    r.ind.forEach(i => {
+        const body = [];
+        i.bloques.forEach(b => b.filas.forEach(f => {
+            if (f.ingresada > 0) {
+                const cant = f.ingresada !== f.computada ? `${f.ingresada} (computan ${f.computada})` : String(f.ingresada);
+                body.push([f.it.nombre, String(f.it.pts), cant, String(f.puntos)]);
+            }
+        }));
+        if (!body.length) body.push([{ content: "Sin actividades registradas", colSpan: 4, styles: { textColor: gray, fontStyle: "italic" } }]);
+        body.push([
+            { content: i.def.total, colSpan: 3, styles: { fontStyle: "bold", halign: "right" } },
+            { content: String(i.puntos), styles: { fontStyle: "bold" } }
+        ]);
+
+        doc.autoTable({
+            startY: y,
+            margin: { left: M, right: M, bottom: 20 },
+            head: [[i.def.nombre, "Pts/unidad", "Cantidad", "Puntos"]],
+            body,
+            theme: "grid",
+            styles: { font: "helvetica", fontSize: 9, cellPadding: 2, lineColor: [226, 232, 240], textColor: dark },
+            headStyles: { fillColor: dark, textColor: 255, fontStyle: "bold" },
+            columnStyles: { 1: { halign: "center", cellWidth: 24 }, 2: { halign: "center", cellWidth: 38 }, 3: { halign: "center", cellWidth: 22 } },
+            didParseCell: d => { if (d.section === "head" && d.column.index > 0) d.cell.styles.halign = "center"; }
+        });
+        y = doc.lastAutoTable.finalY + 8;
+    });
+
+    // Estímulos
+    const est = CONFIG.estimulos[r.nivel];
+    const need = 12 + (est ? est.length * 12 : 8);
+    if (y + need > H - 22) { doc.addPage(); y = 20; }
+    doc.setFont("helvetica", "bold").setFontSize(11).setTextColor(...dark);
+    doc.text(`Estímulos del ${r.nivel === CONFIG.sinNivel ? "nivel (ninguno alcanzado)" : r.nivel} (Art. 8)`, M, y);
+    y += 6;
+    doc.setFont("helvetica", "normal").setFontSize(9.5);
+    if (est) {
+        est.forEach(e => {
+            const lines = doc.splitTextToSize("• " + e, W - 2 * M - 4);
+            doc.text(lines, M + 2, y);
+            y += lines.length * 5 + 1;
+        });
+    } else {
+        const lines = doc.splitTextToSize(`Se requieren al menos ${CONFIG.niveles[CONFIG.niveles.length - 1].min} puntos para acceder a un nivel.`, W - 2 * M);
+        doc.text(lines, M, y);
+        y += lines.length * 5;
+    }
+
+    // Pie en todas las páginas
+    const total = doc.internal.getNumberOfPages();
+    for (let p = 1; p <= total; p++) {
+        doc.setPage(p);
+        doc.setDrawColor(226, 232, 240).setLineWidth(0.3).line(M, H - 20, W - M, H - 20);
+        doc.setFont("helvetica", "normal").setFontSize(7).setTextColor(...gray);
+        const nota = doc.splitTextToSize("Reporte referencial generado con el simulador de sornoza.com; no constituye el cálculo oficial. Fuente: " + CONFIG.fuente + ".", W - 2 * M - 20);
+        doc.text(nota, M, H - 16);
+        doc.text(`Página ${p} de ${total}`, W - M, H - 16, { align: "right" });
+    }
+
+    const slug = (state.nombre.trim() || "profesor").normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-|-$/g, "").toLowerCase() || "profesor";
+    doc.save(`IPCT-${slug}.pdf`);
+}
+
+/* ---------- Inicio ---------- */
+store(false);
+buildSections();
+
+const nameEl = document.getElementById("profName");
+const yearEl = document.getElementById("evalYear");
+nameEl.value = state.nombre;
+yearEl.value = state.anio;
+nameEl.addEventListener("input", () => { state.nombre = nameEl.value; store(true); });
+yearEl.addEventListener("input", () => { yearEl.value = yearEl.value.replace(/\D/g, ""); state.anio = yearEl.value; store(true); });
+
+document.getElementById("btnPdf").addEventListener("click", generarPdf);
+document.getElementById("btnReset").addEventListener("click", () => {
+    if (!confirm("¿Borrar todas las cantidades y los datos del profesor?")) return;
+    state.nombre = ""; state.anio = ""; state.cant = {};
+    nameEl.value = ""; yearEl.value = "";
+    document.querySelectorAll(".qty").forEach(i => i.value = "");
+    update(true);
+});
+
+update(false);
+if (window.lucide) lucide.createIcons();
+</script>
+</body>
+</html>
