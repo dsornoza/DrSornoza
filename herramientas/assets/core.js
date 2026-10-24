@@ -149,6 +149,7 @@
     { id: 'retroalimentacion', cat: 'eval', icon: 'message-square-text', ready: true, title: { es: 'Retroalimentación a trabajos', en: 'Feedback on student work' }, desc: { es: 'Comentarios según tu rúbrica.', en: 'Comments based on your rubric.' } },
     { id: 'matriz-consistencia', cat: 'thesis', icon: 'grid-3x3', ready: true, title: { es: 'Matriz de consistencia', en: 'Consistency matrix' }, desc: { es: 'Problema, objetivos, hipótesis y método alineados.', en: 'Aligned problem, objectives, hypotheses and method.' } },
     { id: 'ecuacion-busqueda', cat: 'thesis', icon: 'search', ready: true, title: { es: 'Ecuación de búsqueda', en: 'Search string' }, desc: { es: 'Scopus y Web of Science con sinónimos y operadores.', en: 'Scopus and Web of Science with synonyms and operators.' } },
+    { id: 'titulos', cat: 'thesis', icon: 'sparkles', ready: true, title: { es: 'Generador de títulos', en: 'Title generator' }, desc: { es: 'Técnica 5W+1H: 3 títulos propositivos para tu proyecto de titulación.', en: '5W+1H technique: 3 propositional titles for your degree project.' } },
     { id: 'revisor-redaccion', cat: 'thesis', icon: 'pen-line', ready: true, title: { es: 'Revisor de redacción académica', en: 'Academic writing reviewer' }, desc: { es: 'Claridad, coherencia y estilo APA 7 en avances de tesis.', en: 'Clarity, coherence and APA 7 style in thesis drafts.' } },
   ];
 
@@ -185,7 +186,7 @@
     }
     return ids;
   };
-  ST.getKey = () => LS.get('gemini_key', '') || ''; // misma clave que usa recursos/titulos
+  ST.getKey = () => LS.get('gemini_key', '') || ''; // clave única compartida por todas las herramientas
   ST.getModel = () => LS.get('st_model', MODELS[0]);
 
   function openKeyModal(onDone) {
