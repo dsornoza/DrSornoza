@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instrucciones claras para tareas — Sornoza.com</title>
+<meta name="description" content="Convierte la descripción de una tarea en instrucciones claras y listas para pegar en Classroom, Moodle u otro aula virtual.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="../assets/core.css">
+</head>
+<body class="min-h-screen antialiased">
+<script src="../assets/core.js"></script>
+<script>
+const opt = (v, es, en) => ({ value: v, label: { es, en } });
+const LEVELS = [
+  opt('inicial', 'Pregrado – ciclos iniciales', 'Undergraduate – early years'),
+  opt('intermedio', 'Pregrado – ciclos intermedios', 'Undergraduate – middle years'),
+  opt('avanzado', 'Pregrado – ciclos finales', 'Undergraduate – final years'),
+  opt('posgrado', 'Posgrado', 'Graduate')];
+const LEVEL_EN = { inicial: 'early undergraduate', intermedio: 'mid-program undergraduate', avanzado: 'final-year undergraduate', posgrado: 'graduate' };
+ST.mountTool({
+  id: 'instrucciones-claras', icon: 'list-ordered',
+  title: { es: 'Instrucciones claras para tareas', en: 'Clear task directions' },
+  desc: { es: 'Convierte la descripción de una tarea o actividad en instrucciones breves y fáciles de seguir, listas para pegar en la descripción de la tarea de tu aula virtual (Google Classroom, Moodle, Canvas, Teams, etc.).', en: 'Turn the description of a task or activity into concise, easy-to-follow directions, ready to paste into the task description of your LMS (Google Classroom, Moodle, Canvas, Teams, etc.).' },
+  temperature: 0.4,
+  fields: [
+    { id: 'task', type: 'textarea', rows: 6, required: true, label: { es: 'Descripción de la tarea o actividad', en: 'Task or activity description' }, hint: { es: 'Escríbela como te salga, aunque sea desordenada: qué deben hacer, qué entregar, con qué criterios.', en: 'Write it however it comes, even if messy: what they must do, what to submit, with which criteria.' } },
+    { id: 'level', type: 'select', label: { es: 'Nivel', en: 'Level' }, options: LEVELS },
+    { id: 'lms', type: 'select', label: { es: 'Dónde la vas a pegar', en: 'Where you will paste it' }, options: [opt('classroom', 'Google Classroom (texto sencillo)', 'Google Classroom (plain text)'), opt('moodle', 'Moodle / Canvas (admite formato)', 'Moodle / Canvas (supports formatting)'), opt('teams', 'Microsoft Teams (texto sencillo)', 'Microsoft Teams (plain text)'), opt('general', 'Otro o documento', 'Other or document')] },
+    { id: 'include', type: 'checkboxes', label: { es: 'Incluir', en: 'Include' }, default: ['purpose', 'steps', 'deliverable', 'criteria'], options: [opt('purpose', 'Propósito de la tarea', 'Purpose of the task'), opt('steps', 'Pasos numerados', 'Numbered steps'), opt('deliverable', 'Qué entregar y en qué formato', 'What to submit and format'), opt('criteria', 'Cómo se evaluará', 'How it will be assessed'), opt('checklist', 'Lista de verificación antes de entregar', 'Pre-submission checklist'), opt('ai', 'Nota sobre uso de IA', 'Note on AI use')] },
+    { id: 'extra', type: 'text', span: 'full', label: { es: 'Fecha, extensión o datos fijos (opcional)', en: 'Deadline, length or fixed details (optional)' }, placeholder: { es: 'Ej.: entrega el viernes 23:59, máximo 5 páginas, en PDF', en: 'E.g.: due Friday 11:59 pm, max 5 pages, PDF' } },
+  ],
+  buildPrompt(v, ctx) {
+    const inc = v.include || [];
+    const plain = v.lms === 'classroom' || v.lms === 'teams';
+    const system = `You write assignment directions for university students: short sentences, one action per step, concrete verbs, no jargon, no ambiguity. Use ONLY the information the professor gave; never invent deadlines, page limits, weights, links or requirements: if something important is missing, put a placeholder in [square brackets]. ${plain ? 'The target LMS shows PLAIN TEXT only: do NOT use Markdown symbols (no #, **, tables or backticks). Use UPPERCASE labels for sections, numbers "1." for steps and a hyphen "-" for bullets.' : 'The target LMS accepts formatting: use Markdown with short headings, numbered steps and bullets (no tables).'} Output only the ready-to-paste directions, with no preface or comments, except a final line starting "Nota:" (translated) listing any placeholders to complete. Respond entirely in ${ctx.outLangName}.`;
+    const prompt = `Rewrite this task as clear directions.
+- Student level: ${LEVEL_EN[v.level]}
+${v.extra ? `- Fixed details: ${v.extra}\n` : ''}
+Professor's description:
+"""
+${v.task}
+"""
+
+Include, in this order and with section labels translated to ${ctx.outLangName}:
+${inc.includes('purpose') ? '- PURPOSE: one or two sentences on what students will achieve and why.\n' : ''}${inc.includes('steps') ? '- STEPS: numbered, one action each.\n' : ''}${inc.includes('deliverable') ? '- WHAT TO SUBMIT: file type, length, naming, where and when (placeholder if unknown).\n' : ''}${inc.includes('criteria') ? '- HOW IT WILL BE ASSESSED: 3–5 short bullets taken from the description (do not invent weights).\n' : ''}${inc.includes('checklist') ? '- BEFORE YOU SUBMIT: a 4–6 item checklist.\n' : ''}${inc.includes('ai') ? '- USE OF AI: one or two neutral sentences asking students to follow the course policy and declare any AI use (placeholder for the policy if not given).\n' : ''}`;
+    return { system, prompt, title: `${ctx.t({ es: 'Instrucciones', en: 'Directions' })} — ${v.task.slice(0, 50)}` };
+  },
+});
+</script>
+</body>
+</html>

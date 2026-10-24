@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Metas SMART — Sornoza.com</title>
+<meta name="description" content="Convierte una meta general en una meta específica, medible, alcanzable, relevante y con plazo, con pasos de seguimiento.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="../assets/core.css">
+</head>
+<body class="min-h-screen antialiased">
+<script src="../assets/core.js"></script>
+<script>
+const opt = (v, es, en) => ({ value: v, label: { es, en } });
+const LEVELS = [
+  opt('inicial', 'Pregrado – ciclos iniciales', 'Undergraduate – early years'),
+  opt('intermedio', 'Pregrado – ciclos intermedios', 'Undergraduate – middle years'),
+  opt('avanzado', 'Pregrado – ciclos finales', 'Undergraduate – final years'),
+  opt('posgrado', 'Posgrado', 'Graduate')];
+const LEVEL_EN = { inicial: 'early undergraduate', intermedio: 'mid-program undergraduate', avanzado: 'final-year undergraduate', posgrado: 'graduate' };
+ST.mountTool({
+  id: 'meta-smart', icon: 'target',
+  title: { es: 'Metas SMART', en: 'SMART goals' },
+  desc: { es: 'Convierte una meta general en una meta específica, medible, alcanzable, relevante y con plazo (SMART): útil para planes de mejora, tutorías, proyectos de titulación o metas docentes.', en: 'Turn a general goal into a Specific, Measurable, Achievable, Relevant and Time-bound (SMART) goal: useful for improvement plans, tutoring, degree projects or teaching goals.' },
+  temperature: 0.5,
+  fields: [
+    { id: 'student', type: 'text', label: { es: 'Nombre del estudiante o persona (opcional)', en: 'Student or person name (optional)' }, hint: { es: 'Puedes dejarlo vacío o usar solo iniciales.', en: 'You can leave it empty or use initials only.' } },
+    { id: 'horizon', type: 'text', label: { es: 'Plazo disponible', en: 'Time available' }, placeholder: { es: 'Ej.: un semestre, 8 semanas, hasta el 15 de diciembre', en: 'E.g.: one semester, 8 weeks, until December 15' } },
+    { id: 'goals', type: 'textarea', rows: 4, required: true, span: 'full', label: { es: 'Meta(s) general(es)', en: 'General goal(s)' }, placeholder: { es: 'Ej.: mejorar su redacción académica; terminar el marco teórico de la tesis…', en: 'E.g.: improve academic writing; finish the thesis theoretical framework…' } },
+    { id: 'outcomes', type: 'textarea', rows: 3, span: 'full', label: { es: 'Resultado(s) esperado(s)', en: 'Expected outcome(s)' }, hint: { es: 'Cómo sabrías que se logró.', en: 'How you would know it was achieved.' } },
+    { id: 'steps', type: 'select', label: { es: 'Incluir pasos detallados', en: 'Include detailed steps' }, options: [opt('si', 'Sí', 'Yes'), opt('no', 'No', 'No')] },
+  ],
+  buildPrompt(v, ctx) {
+    const system = `You help teachers write SMART goals (Specific, Measurable, Achievable, Relevant, Time-bound). Keep goals realistic, observable and in the person's control; use measurable indicators that can be checked (counts, rubric levels, deliverables, dates), never vague ones. If a key detail (baseline, deadline, resources) is missing, use a reasonable assumption and mark it "(assumption)", or a [placeholder]. Output only Markdown (no HTML, no code fences). Respond entirely in ${ctx.outLangName}.`;
+    const prompt = `Write SMART goals.
+- Person: ${v.student || '(not named)'}
+- Time available: ${v.horizon || '(propose a sensible one)'}
+- General goal(s):
+${v.goals}
+${v.outcomes ? `- Expected outcome(s):\n${v.outcomes}\n` : ''}
+For each general goal use the heading "## Meta N" (translated) and then:
+1. The goal written as ONE clear sentence ("Meta SMART").
+2. A table with rows Specific, Measurable, Achievable, Relevant, Time-bound (columns: Criterion | How this goal meets it); single-line cells.
+${v.steps === 'si' ? '3. "Pasos y fechas" (translated): 4–6 numbered steps with approximate timing and a check-in point.\n4. "Indicadores de seguimiento" (translated): 2–3 bullets.\n' : '3. "Indicadores de seguimiento" (translated): 2–3 bullets.\n'}`;
+    return { system, prompt, title: `${ctx.t({ es: 'Meta SMART', en: 'SMART goal' })} — ${v.goals.slice(0, 50)}` };
+  },
+});
+</script>
+</body>
+</html>
