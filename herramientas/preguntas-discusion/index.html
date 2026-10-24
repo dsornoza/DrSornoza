@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preguntas para discusión — Sornoza.com</title>
+<meta name="description" content="Preguntas, dilemas y repreguntas para generar discusiones significativas en clase.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="../assets/core.css">
+</head>
+<body class="min-h-screen antialiased">
+<script src="../assets/core.js"></script>
+<script>
+const opt = (v, es, en) => ({ value: v, label: { es, en } });
+const LEVELS = [
+  opt('inicial', 'Pregrado – ciclos iniciales', 'Undergraduate – early years'),
+  opt('intermedio', 'Pregrado – ciclos intermedios', 'Undergraduate – middle years'),
+  opt('avanzado', 'Pregrado – ciclos finales', 'Undergraduate – final years'),
+  opt('posgrado', 'Posgrado', 'Graduate')];
+const LEVEL_EN = { inicial: 'early undergraduate', intermedio: 'mid-program undergraduate', avanzado: 'final-year undergraduate', posgrado: 'graduate' };
+ST.mountTool({
+  id: 'preguntas-discusion', icon: 'messages-square',
+  title: { es: 'Preguntas para discusión', en: 'Discussion prompts' },
+  desc: { es: 'Genera preguntas, dilemas y repreguntas para provocar discusiones significativas en clase, ordenadas por nivel de exigencia cognitiva, con consejos para facilitarlas.', en: 'Generate questions, dilemmas and follow-up probes to stimulate meaningful class discussions, ordered by cognitive demand, with facilitation tips.' },
+  temperature: 0.8,
+  fields: [
+    { id: 'topic', type: 'text', required: true, span: 'full', label: { es: 'Tema', en: 'Topic' } },
+    { id: 'level', type: 'select', label: { es: 'Nivel', en: 'Level' }, options: LEVELS },
+    { id: 'count', type: 'number', label: { es: 'Cuántas preguntas', en: 'How many questions' }, default: 6, min: 3, max: 12 },
+    { id: 'modality', type: 'select', label: { es: 'Dónde se discute', en: 'Where it is discussed' }, options: [opt('aula', 'En el aula (plenaria o grupos)', 'In class (whole group or small groups)'), opt('foro', 'Foro en línea', 'Online forum')] },
+    { id: 'context', type: 'textarea', rows: 3, label: { es: 'Contexto o lectura previa (opcional)', en: 'Context or prior reading (optional)' } },
+  ],
+  buildPrompt(v, ctx) {
+    const system = `You are an expert in dialogic teaching and facilitation in higher education. You write discussion prompts that are open-ended, genuinely debatable, and tied to the discipline; no yes/no questions and no questions with a single factual answer. Include professional or ethical dilemmas when natural. Do not state contested claims as facts. Output only Markdown (no HTML, no code fences). Respond entirely in ${ctx.outLangName}.`;
+    const prompt = `Create discussion prompts.
+- Topic: ${v.topic}
+- Level: ${LEVEL_EN[v.level]}
+- Number of main questions: ${v.count}
+- Setting: ${v.modality === 'foro' ? 'asynchronous online forum (each prompt should invite a reasoned post and a reply to a peer)' : 'in-person class (whole group or small groups)'}
+${v.context ? `- Context / prior reading: ${v.context}\n` : ''}
+Structure (headings translated to ${ctx.outLangName}):
+1. "## Preguntas para discutir": the main questions grouped under three subheadings by cognitive demand: understand/explain, analyze/compare, evaluate/decide (distribute them sensibly).
+2. "## Dilema o caso breve": one short realistic dilemma from the professional field, with 2 guiding questions.
+3. "## Repreguntas": 5 follow-up probes that deepen any answer (evidence, assumptions, alternatives, consequences).
+4. "## Cómo facilitar": 3 short tips for running this discussion${v.modality === 'foro' ? ' in a forum' : ''}.`;
+    return { system, prompt, title: `${ctx.t({ es: 'Discusión', en: 'Discussion' })} — ${v.topic.slice(0, 60)}` };
+  },
+});
+</script>
+</body>
+</html>

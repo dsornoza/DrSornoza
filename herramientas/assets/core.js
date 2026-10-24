@@ -127,6 +127,7 @@
     { id: 'eval', icon: 'clipboard-check', label: { es: 'Evaluación', en: 'Assessment' } },
     { id: 'thesis', icon: 'graduation-cap', label: { es: 'Tesis y artículos', en: 'Theses & papers' } },
     { id: 'data', icon: 'bar-chart-3', label: { es: 'Análisis de datos', en: 'Data analysis' } },
+    { id: 'admin', icon: 'briefcase', label: { es: 'Gestión docente', en: 'Teaching admin' } },
     { id: 'student', icon: 'users', label: { es: 'Para estudiantes', en: 'For students' } },
   ];
   ST.TOOLS = [
@@ -155,6 +156,12 @@
     { id: 'matriz-consistencia', cat: 'thesis', icon: 'grid-3x3', ready: true, title: { es: 'Matriz de consistencia', en: 'Consistency matrix' }, desc: { es: 'Problema, objetivos, hipótesis y método alineados.', en: 'Aligned problem, objectives, hypotheses and method.' } },
     { id: 'ecuacion-busqueda', cat: 'thesis', icon: 'search', ready: true, title: { es: 'Ecuación de búsqueda', en: 'Search string' }, desc: { es: 'Scopus y Web of Science con sinónimos y operadores.', en: 'Scopus and Web of Science with synonyms and operators.' } },
     { id: 'titulos', cat: 'thesis', icon: 'sparkles', ready: true, title: { es: 'Generador de títulos', en: 'Title generator' }, desc: { es: 'Técnica 5W+1H: 3 títulos propositivos para tu proyecto de titulación.', en: '5W+1H technique: 3 propositional titles for your degree project.' } },
+    { id: 'gancho-inicio', cat: 'plan', icon: 'zap', ready: true, title: { es: 'Gancho de inicio de clase', en: 'Lesson hook' }, desc: { es: 'Ideas para abrir tu clase captando la atención y conectando con el tema.', en: 'Ways to open your class, grabbing attention and connecting with the topic.' } },
+    { id: 'contexto-real', cat: 'plan', icon: 'globe', ready: true, title: { es: 'Contexto real y relevancia', en: 'Real-world context' }, desc: { es: 'Conecta un tema con aplicaciones reales y con la vida de tus estudiantes.', en: 'Connect a topic with real applications and your students\' lives.' } },
+    { id: 'texto-adaptado', cat: 'plan', icon: 'file-text', ready: true, title: { es: 'Texto adaptado', en: 'Adapted text' }, desc: { es: 'Fragmenta, cambia el nivel de lectura o reescribe un texto sin perder su significado.', en: 'Split, change the reading level of, or rewrite a text without losing its meaning.' } },
+    { id: 'preguntas-discusion', cat: 'plan', icon: 'messages-square', ready: true, title: { es: 'Preguntas para discusión', en: 'Discussion prompts' }, desc: { es: 'Preguntas, dilemas y repreguntas para discusiones significativas en clase.', en: 'Questions, dilemmas and follow-ups for meaningful class discussions.' } },
+    { id: 'ticket-salida', cat: 'eval', icon: 'ticket', ready: true, title: { es: 'Ticket de salida', en: 'Exit ticket' }, desc: { es: 'Preguntas rápidas de cierre con respuestas esperadas y qué hacer con los resultados.', en: 'Quick closing questions with expected answers and what to do with the results.' } },
+    { id: 'carta-recomendacion', cat: 'admin', icon: 'mail', ready: true, title: { es: 'Carta de recomendación', en: 'Recommendation letter' }, desc: { es: 'Carta personalizada a partir de lo que sabes del estudiante, sin inventar logros.', en: 'Personalized letter from what you know about the student, without inventing achievements.' } },
     { id: 'revisor-redaccion', cat: 'thesis', icon: 'pen-line', ready: true, title: { es: 'Revisor de redacción académica', en: 'Academic writing reviewer' }, desc: { es: 'Claridad, coherencia y estilo APA 7 en avances de tesis.', en: 'Clarity, coherence and APA 7 style in thesis drafts.' } },
   ];
 
