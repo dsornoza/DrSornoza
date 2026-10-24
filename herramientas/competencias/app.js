@@ -208,14 +208,14 @@
       </main>`;
     bind();
     paintCoherence();
-    ST.updateKeyUi && ST.updateKeyUi();
+    ST.access.refreshUi();
     ST.refreshIcons();
     setBusy(busy);
   }
 
   function bind() {
     const root = document.getElementById('st-main');
-    const key = document.getElementById('st-open-key'); if (key) key.onclick = () => ST.openKeyModal();
+    const key = document.getElementById('st-open-key'); if (key) key.onclick = () => ST.access.openSetup();
     root.querySelectorAll('[data-f]').forEach((el) => el.addEventListener('input', () => { S.data[el.dataset.f] = el.value; saveSoon(); }));
     const on = (id, fn) => { const el = document.getElementById(id); if (el) el.onclick = fn; };
     on('cp-gen', generateDraft);

@@ -173,6 +173,10 @@
     { id: 'revisor-redaccion', cat: 'thesis', icon: 'pen-line', ready: true, title: { es: 'Revisor de redacción académica', en: 'Academic writing reviewer' }, desc: { es: 'Claridad, coherencia y estilo APA 7 en avances de tesis.', en: 'Clarity, coherence and APA 7 style in thesis drafts.' } },
   ];
 
+  // Toda interacción con el acceso a la IA (key, cuenta, cuota, generación) pasa por ST.access (assets/access.js).
+  // Las funciones ST.getKey / ST.gemini / ST.openKeyModal de abajo son el "controlador de key propia" que usa ese módulo.
+  const A = () => { if (!ST.access) throw new Error('Falta <script src=".../assets/access.js"> después de core.js'); return ST.access; };
+
   /* ================= API Key y modelo ================= */
   const MODELS = ['gemini-flash-latest', 'gemini-flash-lite-latest', 'gemini-pro-latest', 'gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.5-pro'];
   const EXCLUDE = /(image|tts|embedding|live|audio|robotics|computer|native|aqa|learnlm|gemma|imagen|veo|thinking-exp)/i;
@@ -308,8 +312,8 @@
           ${esc(ST.t('footer'))}<br>&copy; ${new Date().getFullYear()} Dr. Diego Sornoza Parrales — <a href="/" class="hover:underline" style="color:var(--primary)">sornoza.com</a>
         </footer>`;
       $('#st-lang').onclick = () => ST.setLang(ST.lang === 'es' ? 'en' : 'es');
-      document.querySelectorAll('[data-key-btn]').forEach((b) => (b.onclick = () => openKeyModal()));
-      updateKeyButtons();
+      document.querySelectorAll('[data-key-btn]').forEach((b) => (b.onclick = () => A().openSetup()));
+      A().refreshUi();
       return $('#st-main');
     };
     return render;
@@ -829,12 +833,12 @@ ${body}
         </main>`;
       main.querySelectorAll('[data-custom]').forEach((el) => { const f = cfg.fields.find((x) => x.id === el.dataset.custom); customs[f.id] = customs[f.id] || {}; f.render(el, { lang: ST.lang, state: customs[f.id], t: ST.t }); });
       out = createOutput($('#st-out'), { text: state.output, getTitle: () => state.title || t, onChange: (x) => (state.output = x) });
-      updateKeyButtons(); refreshIcons(); bind(); renderHistory(); setBusy(busy);
+      A().refreshUi(); refreshIcons(); bind(); renderHistory(); setBusy(busy);
     }
 
     function bind() {
       const form = $('#st-form');
-      const ok = $('#st-open-key'); if (ok) ok.onclick = () => openKeyModal();
+      const ok = $('#st-open-key'); if (ok) ok.onclick = () => A().openSetup();
       form.addEventListener('input', (e) => {
         const el = e.target; if (!el.dataset || !el.dataset.f) return;
         if (el.type === 'checkbox') {
@@ -897,7 +901,7 @@ ${body}
 
     async function generate() {
       showError('');
-      if (!cfg.local && !ST.getKey()) { openKeyModal(() => ST.getKey() && generate()); return; }
+      if (!cfg.local && !A().isReady()) { A().ensureReady(() => generate()); return; }
       const v = collect(), bad = validate(v);
       if (bad) { showError(bad); return; }
       setBusy(true); abort = new AbortController();
@@ -916,7 +920,7 @@ ${body}
         $('#st-out').classList.remove('hidden');
         out.setText(preface); out.setStreaming(true);
         $('#st-out').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        const r = await ST.gemini({
+        const r = await A().generate({
           system: spec.system, prompt: spec.prompt, temperature: cfg.temperature === undefined ? 0.6 : cfg.temperature, signal: abort.signal,
           onChunk: (_, full) => { partial = full; out.setText(preface + full); },
         });
@@ -1022,11 +1026,11 @@ ${body}
           <div class="grid grid-cols-1 md:grid-cols-2 gap-5">${list.map(card).join('') || `<p style="color:var(--muted-foreground)">—</p>`}</div>
           <p class="mt-8 text-sm" style="color:var(--muted-foreground)">${ST.lang === 'es' ? 'Más recursos sin IA:' : 'More resources without AI:'} <a class="underline" style="color:var(--primary-dark)" href="/recursos/">/recursos</a></p>
         </main>`;
-      $('#st-open-key').onclick = () => openKeyModal();
+      $('#st-open-key').onclick = () => A().openSetup();
       main.querySelectorAll('[data-cat]').forEach((b) => (b.onclick = () => { filter = b.dataset.cat; render(); }));
       const q = $('#st-q');
       q.oninput = () => { query = q.value.trim().toLowerCase(); const pos = q.selectionStart; render(); const n = $('#st-q'); n.focus(); n.setSelectionRange(pos, pos); };
-      updateKeyButtons(); refreshIcons();
+      A().refreshUi(); refreshIcons();
     };
     ST.onLang(render);
     document.documentElement.lang = ST.lang;

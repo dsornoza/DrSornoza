@@ -243,7 +243,7 @@ ${lang ? `Respond in ${lang}.` : 'Respond in the language of the draft.'} Output
           <p class="st-hint mt-3">${esc(SAFE[ST.lang])}</p>
         </main>`;
       const box = document.getElementById('chat-msgs'); box.scrollTop = box.scrollHeight;
-      document.getElementById('st-open-key').onclick = () => ST.openKeyModal();
+      document.getElementById('st-open-key').onclick = () => ST.access.openSetup();
       const ta = document.getElementById('chat-in');
       ta.value = render.draft || ''; ta.oninput = () => (render.draft = ta.value);
       ta.onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); send(); } };
@@ -254,7 +254,7 @@ ${lang ? `Respond in ${lang}.` : 'Respond in the language of the draft.'} Output
         const md = `# ${T('Conversación con el tutor de IA', 'Conversation with the AI tutor')} — ${cfg.course}\n\n` + msgs.map((m) => `**${m.role === 'user' ? T('Estudiante', 'Student') : 'Tutor IA'}:**\n\n${m.text}`).join('\n\n---\n\n') + '\n';
         ST.download('conversacion-tutor-' + new Date().toISOString().slice(0, 10) + '.md', md, 'text/markdown;charset=utf-8');
       };
-      ST.updateKeyUi && ST.updateKeyUi();
+      ST.access.refreshUi();
       ST.refreshIcons();
     }
 
@@ -262,14 +262,14 @@ ${lang ? `Respond in ${lang}.` : 'Respond in the language of the draft.'} Output
       const ta = document.getElementById('chat-in');
       const text = ta.value.trim();
       if (!text || busy || turns() >= cfg.maxTurns) return;
-      if (!ST.getKey()) { ST.openKeyModal(() => ST.getKey() && send()); return; }
+      if (!ST.access.isReady()) { ST.access.ensureReady(() => send()); return; }
       error = ''; render.draft = '';
       msgs.push({ role: 'user', text });
       const reply = { role: 'model', text: '', pending: true };
       msgs.push(reply); busy = true; abort = new AbortController(); render();
       try {
         const history = msgs.slice(0, -1).slice(-30).map((m) => ({ role: m.role, text: m.text }));
-        const r = await ST.gemini({
+        const r = await ST.access.generate({
           system: tutorSystem(cfg), messages: history, temperature: 0.5, signal: abort.signal,
           onChunk: (_, full) => {
             reply.text = full;

@@ -12,8 +12,14 @@
  *   ST.access.describe()            -> { mode, ready, label:{es,en}, usage? }   // para mostrar el estado en pantalla
  *   ST.access.isReady()             -> boolean
  *   ST.access.ensureReady(onReady)  -> si no hay acceso, abre el flujo de configuración y llama onReady() al terminar
- *   ST.access.generate({ system, messages:[{role:'user'|'model', text}], temperature, signal, onChunk(chunk, fullText) })
+ *   ST.access.generate({ system, messages:[{role:'user'|'model', text}] | prompt, temperature, signal, onChunk(chunk, fullText) })
  *                                   -> Promise<{ text, finish }>; lanza Error con mensaje legible para el docente
+ *   ST.access.openSetup(onDone)     -> abre la pantalla para configurar el acceso (hoy: modal de la API key; después: cuenta/cuota)
+ *   ST.access.refreshUi()           -> actualiza el botón del encabezado y los avisos de "falta configurar acceso" de la página
+ *
+ * Regla: las herramientas y páginas NO llaman a ST.gemini, ST.getKey, ST.openKeyModal ni ST.updateKeyUi; solo a ST.access.
+ * (Esas funciones, definidas en core.js, son el controlador de "key propia" que este módulo usa por dentro.)
+ * Cada página debe cargar este archivo justo después de core.js.
  */
 (function () {
   'use strict';
@@ -44,5 +50,9 @@
     generate(opts) {
       return ST.gemini(opts);
     },
+
+    openSetup(onDone) { ST.openKeyModal(onDone); },
+
+    refreshUi() { ST.updateKeyUi && ST.updateKeyUi(); },
   };
 })();
