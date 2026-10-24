@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contexto real y relevancia — Sornoza.com</title>
+<meta name="description" content="Conecta un tema con ejemplos y aplicaciones reales y con la vida y los intereses de tus estudiantes.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="../assets/core.css">
+</head>
+<body class="min-h-screen antialiased">
+<script src="../assets/core.js"></script>
+<script>
+const opt = (v, es, en) => ({ value: v, label: { es, en } });
+const LEVELS = [
+  opt('inicial', 'Pregrado – ciclos iniciales', 'Undergraduate – early years'),
+  opt('intermedio', 'Pregrado – ciclos intermedios', 'Undergraduate – middle years'),
+  opt('avanzado', 'Pregrado – ciclos finales', 'Undergraduate – final years'),
+  opt('posgrado', 'Posgrado', 'Graduate')];
+const LEVEL_EN = { inicial: 'early undergraduate', intermedio: 'mid-program undergraduate', avanzado: 'final-year undergraduate', posgrado: 'graduate' };
+ST.mountTool({
+  id: 'contexto-real', icon: 'globe',
+  title: { es: 'Contexto real y relevancia', en: 'Real-world context' },
+  desc: { es: 'Conecta un tema con ejemplos y aplicaciones del mundo real y con la vida, la carrera y los intereses de tus estudiantes, para que le encuentren sentido.', en: 'Connect a topic with real-world examples and applications and with your students\' lives, careers and interests, so they find it meaningful.' },
+  temperature: 0.8,
+  fields: [
+    { id: 'topics', type: 'textarea', rows: 3, required: true, label: { es: 'Tema(s)', en: 'Topic(s)' }, hint: { es: 'Uno por línea si son varios.', en: 'One per line if several.' } },
+    { id: 'level', type: 'select', label: { es: 'Nivel', en: 'Level' }, options: LEVELS },
+    { id: 'goals', type: 'textarea', rows: 3, label: { es: 'Objetivo(s) de aprendizaje (opcional)', en: 'Learning objective(s) (optional)' } },
+    { id: 'profile', type: 'textarea', rows: 3, span: 'full', label: { es: 'Perfil de la clase (opcional)', en: 'Class profile (optional)' }, hint: { es: 'Carrera, región o ciudad, intereses, trabajos que suelen tener, recursos. Si lo dejas vacío, los ejemplos serán generales.', en: 'Degree program, region or city, interests, typical jobs, resources. If empty, examples will be general.' } },
+    { id: 'include', type: 'checkboxes', label: { es: 'Incluir', en: 'Include' }, default: ['apps', 'bridge', 'activity'], options: [opt('apps', 'Aplicaciones reales', 'Real-world applications'), opt('bridge', 'Frases puente para la clase', 'Bridging phrases for class'), opt('activity', 'Mini-actividad', 'Mini-activity')] },
+  ],
+  buildPrompt(v, ctx) {
+    const inc = v.include || [];
+    const system = `You help university teachers make content relevant to students. Offer concrete, plausible examples from professional practice, local context (only if the class profile gives a place) and everyday life. NEVER invent statistics, studies, company cases, laws or quotes; if an example depends on real data, describe it generically or mark it "verify before using". Prefer examples a student could verify or observe themselves. Output only Markdown (no HTML, no code fences). Respond entirely in ${ctx.outLangName}.`;
+    const prompt = `Topics:
+${v.topics}
+- Level: ${LEVEL_EN[v.level]}
+${v.goals ? `- Learning objectives: ${v.goals}\n` : ''}- Class profile: ${v.profile || '(not specified: keep examples general)'}
+
+For each topic use the heading "## <topic>" and then:
+${inc.includes('apps') ? '- "### Aplicaciones reales" (translated): 3 examples: one professional, one from daily life or the local context, one current or emerging; each in 1–2 sentences explaining the link to the concept.\n' : ''}${inc.includes('bridge') ? '- "### Frases puente" (translated): 2 sentences the teacher can say to connect the topic to the students\' lives.\n' : ''}${inc.includes('activity') ? '- "### Mini-actividad" (translated): a 5–10 minute activity where students find or apply the connection (steps and what to collect).\n' : ''}`;
+    return { system, prompt, title: `${ctx.t({ es: 'Contexto real', en: 'Real-world context' })} — ${v.topics.split('\n')[0].slice(0, 50)}` };
+  },
+});
+</script>
+</body>
+</html>

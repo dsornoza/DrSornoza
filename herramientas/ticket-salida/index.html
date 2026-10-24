@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ticket de salida — Sornoza.com</title>
+<meta name="description" content="Preguntas rápidas de cierre de clase para comprobar la comprensión, con respuestas esperadas y qué hacer con los resultados.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="../assets/core.css">
+</head>
+<body class="min-h-screen antialiased">
+<script src="../assets/core.js"></script>
+<script>
+const opt = (v, es, en) => ({ value: v, label: { es, en } });
+const LEVELS = [
+  opt('inicial', 'Pregrado – ciclos iniciales', 'Undergraduate – early years'),
+  opt('intermedio', 'Pregrado – ciclos intermedios', 'Undergraduate – middle years'),
+  opt('avanzado', 'Pregrado – ciclos finales', 'Undergraduate – final years'),
+  opt('posgrado', 'Posgrado', 'Graduate')];
+const LEVEL_EN = { inicial: 'early undergraduate', intermedio: 'mid-program undergraduate', avanzado: 'final-year undergraduate', posgrado: 'graduate' };
+ST.mountTool({
+  id: 'ticket-salida', icon: 'ticket',
+  title: { es: 'Ticket de salida', en: 'Exit ticket' },
+  desc: { es: 'Crea preguntas rápidas de cierre de clase para comprobar si tus estudiantes comprendieron, con las respuestas esperadas y qué hacer según los resultados.', en: 'Create quick end-of-lesson questions to check understanding, with expected answers and what to do depending on the results.' },
+  temperature: 0.6,
+  fields: [
+    { id: 'topic', type: 'text', required: true, span: 'full', label: { es: 'Tema u objetivo de aprendizaje de la lección', en: 'Lesson topic or learning objective' } },
+    { id: 'level', type: 'select', label: { es: 'Nivel', en: 'Level' }, options: LEVELS },
+    { id: 'count', type: 'number', label: { es: 'Número de preguntas', en: 'Number of questions' }, default: 3, min: 1, max: 6 },
+    { id: 'format', type: 'select', label: { es: 'Formato', en: 'Format' }, options: [opt('mixto', 'Mixto (recomendado)', 'Mixed (recommended)'), opt('seleccion', 'Opción múltiple', 'Multiple choice'), opt('abierta', 'Respuesta breve', 'Short answer')] },
+    { id: 'file', type: 'file', label: { es: 'Material de la lección (opcional, PDF/Word/texto)', en: 'Lesson material (optional, PDF/Word/text)' }, hint: { es: 'Plan, guía o apuntes: las preguntas se basan en lo que realmente viste.', en: 'Plan, guide or notes: the questions are based on what you actually covered.' } },
+  ],
+  buildPrompt(v, ctx) {
+    const system = `You are an assessment expert for higher education. You write exit tickets: very short formative checks (3–5 minutes) that reveal whether students reached the lesson objective and surface typical misconceptions. Questions must be unambiguous, answerable in the time, and aligned to the objective; mix recall with at least one application or reasoning item when the format allows. Output only Markdown (no HTML, no code fences). Respond entirely in ${ctx.outLangName}.`;
+    const fmt = { mixto: 'a mix of formats', seleccion: 'multiple choice only (4 options, one correct, plausible distractors based on common misconceptions)', abierta: 'short-answer only' }[v.format];
+    const prompt = `Create an exit ticket.
+- Topic / objective: ${v.topic}
+- Level: ${LEVEL_EN[v.level]}
+- Number of questions: ${v.count}; format: ${fmt}
+${v.file ? `\nLesson material to base the questions on:\n"""\n${v.file.text}\n"""\n` : ''}
+Structure (headings translated to ${ctx.outLangName}):
+1. "## Ticket de salida": the questions the student will see, numbered, ready to copy to paper or an LMS form.
+2. "## Respuestas esperadas": for each question, the correct answer or what a good answer includes, and the misconception it detects.
+3. "## Qué hacer con los resultados": 3 bullets: what to do if most students fail, if about half fail, and if most succeed.`;
+    return { system, prompt, title: `${ctx.t({ es: 'Ticket de salida', en: 'Exit ticket' })} — ${v.topic.slice(0, 60)}` };
+  },
+});
+</script>
+</body>
+</html>

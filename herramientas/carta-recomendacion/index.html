@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carta de recomendación — Sornoza.com</title>
+<meta name="description" content="Redacta una carta de recomendación personalizada a partir de lo que sabes del estudiante, sin inventar logros.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="../assets/core.css">
+</head>
+<body class="min-h-screen antialiased">
+<script src="../assets/core.js"></script>
+<script>
+const opt = (v, es, en) => ({ value: v, label: { es, en } });
+const LEVELS = [
+  opt('inicial', 'Pregrado – ciclos iniciales', 'Undergraduate – early years'),
+  opt('intermedio', 'Pregrado – ciclos intermedios', 'Undergraduate – middle years'),
+  opt('avanzado', 'Pregrado – ciclos finales', 'Undergraduate – final years'),
+  opt('posgrado', 'Posgrado', 'Graduate')];
+const LEVEL_EN = { inicial: 'early undergraduate', intermedio: 'mid-program undergraduate', avanzado: 'final-year undergraduate', posgrado: 'graduate' };
+ST.mountTool({
+  id: 'carta-recomendacion', icon: 'mail',
+  title: { es: 'Carta de recomendación', en: 'Recommendation letter' },
+  desc: { es: 'Redacta una carta de recomendación personalizada a partir de lo que tú sabes del estudiante. Solo usa los hechos que escribas: lo que falte queda entre [corchetes] para que lo completes.', en: 'Write a personalized recommendation letter from what you know about the student. It uses only the facts you provide: anything missing is left in [brackets] for you to complete.' },
+  privacy: { es: 'El nombre del estudiante es opcional y, si lo escribes, se envía a Google (Gemini) con tu key. Puedes dejarlo en blanco y escribirlo después en la carta. Revisa siempre la carta antes de firmarla: la responsabilidad de lo que afirma es tuya.', en: 'The student name is optional and, if you enter it, it is sent to Google (Gemini) with your key. You can leave it blank and add it to the letter afterwards. Always review the letter before signing it: you are responsible for what it states.' },
+  temperature: 0.6,
+  fields: [
+    { id: 'student', type: 'text', label: { es: 'Nombre del estudiante (opcional)', en: 'Student name (optional)' } },
+    { id: 'purpose', type: 'text', required: true, span: 'full', label: { es: 'Para qué se usará la carta', en: 'What the letter is for' }, placeholder: { es: 'Ej.: beca de maestría en el extranjero, postulación laboral, práctica preprofesional…', en: 'E.g.: overseas master\'s scholarship, job application, internship…' } },
+    { id: 'tone', type: 'select', label: { es: 'Tono', en: 'Tone' }, options: [opt('formal', 'Formal', 'Formal'), opt('calido', 'Formal y cercano', 'Formal and warm')] },
+    { id: 'relation', type: 'textarea', rows: 3, required: true, label: { es: 'Cómo conoces al estudiante', en: 'How you know the student' }, hint: { es: 'Asignaturas, tiempo, proyectos o tesis que dirigiste, tu cargo.', en: 'Courses, time, projects or thesis you supervised, your role.' } },
+    { id: 'strengths', type: 'textarea', rows: 6, required: true, label: { es: 'Cualidades y logros', en: 'Qualities and achievements' }, hint: { es: 'Cuanto más concreto (notas, proyectos, situaciones), mejor y más creíble queda la carta.', en: 'The more concrete (grades, projects, situations), the better and more credible the letter.' } },
+  ],
+  buildPrompt(v, ctx) {
+    const system = `You are an academic writing assistant helping a university professor draft a recommendation letter. Use ONLY the facts the professor provides: never invent grades, awards, projects, dates, institutions or anecdotes. Where an essential detail is missing (student name, recipient, professor's name/title/institution/contact, dates), leave a clearly marked placeholder in [square brackets]. Prefer concrete evidence over generic praise and avoid exaggerated superlatives. Output only the letter in Markdown (no code fences), with no commentary before or after, except a final short "> Note:" blockquote listing the placeholders to complete. Respond entirely in ${ctx.outLangName}.`;
+    const prompt = `Write a recommendation letter (about 350–450 words) with this structure: letterhead placeholder and date, greeting, opening that states the purpose and how the professor knows the student, one or two paragraphs developing 2–3 qualities each backed by the evidence provided, a closing that gives a clear recommendation, and a signature block placeholder.
+
+- Student: ${v.student || '[student name]'}
+- Purpose of the letter: ${v.purpose}
+- Tone: ${v.tone === 'calido' ? 'formal but warm and personal' : 'formal'}
+- How the professor knows the student:
+${v.relation}
+- Qualities and achievements:
+${v.strengths}`;
+    return { system, prompt, title: `${ctx.t({ es: 'Carta', en: 'Letter' })} — ${v.student || v.purpose.slice(0, 40)}` };
+  },
+});
+</script>
+</body>
+</html>
