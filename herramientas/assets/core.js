@@ -54,6 +54,11 @@
 
   const S = {
     catalog: { es: 'Catálogo', en: 'Catalog' },
+    back: { es: 'Volver', en: 'Back' },
+    crumb_nav: { es: 'Ruta de navegación', en: 'Breadcrumb' },
+    crumb_home: { es: 'Inicio', en: 'Home' },
+    crumb_resources: { es: 'Recursos', en: 'Resources' },
+    crumb_tools: { es: 'Herramientas IA', en: 'AI tools' },
     site: { es: 'Herramientas IA para docentes', en: 'AI tools for educators' },
     key_set: { es: 'Configurar API Key', en: 'Set API key' },
     key_ok: { es: 'API Key lista', en: 'API key ready' },
@@ -262,18 +267,27 @@
       document.body.innerHTML = `
         <header class="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur no-print" style="border-color:var(--border)">
           <div class="container mx-auto flex h-16 items-center justify-between gap-3 px-4 md:px-8">
-            <a href="${opts.student ? '/' : BASE}" class="flex items-center gap-2 min-w-0">
-              <img src="/assets/logo-mark.png" alt="" class="h-7 w-auto">
-              <span class="text-sm md:text-base font-semibold truncate">${esc(opts.student ? ST.t({ es: 'Herramienta de estudio con IA', en: 'AI study tool' }) : ST.t('site'))}</span>
-              ${opts.student ? '' : `<span class="st-chip" style="background:#fef3c7;color:#92400e" title="${esc(ST.t('beta_title'))}">BETA</span>`}
-            </a>
+            <div class="flex items-center gap-2 min-w-0">
+              <a href="/" class="flex-shrink-0" title="sornoza.com" aria-label="sornoza.com"><img src="/assets/logo-mark.png" alt="" class="h-7 w-auto"></a>
+              <a href="${opts.student ? '/' : BASE}" class="flex items-center gap-2 min-w-0">
+                <span class="text-sm md:text-base font-semibold truncate">${esc(opts.student ? ST.t({ es: 'Herramienta de estudio con IA', en: 'AI study tool' }) : ST.t('site'))}</span>
+                ${opts.student ? '' : `<span class="st-chip" style="background:#fef3c7;color:#92400e" title="${esc(ST.t('beta_title'))}">BETA</span>`}
+              </a>
+            </div>
             <div class="flex items-center gap-2 flex-shrink-0">
-              ${opts.catalog || opts.student ? '' : `<a href="${BASE}" class="hidden sm:inline text-sm font-medium" style="color:var(--muted-foreground)">← ${esc(ST.t('catalog'))}</a>`}
+              ${opts.student ? '' : `<a href="${opts.catalog ? '/recursos/' : BASE}" class="st-btn st-btn-sm" aria-label="${esc(ST.t('back'))}">←<span class="st-back-label">${esc(ST.t('back'))}</span></a>`}
               <button class="st-btn st-btn-sm" id="st-lang" title="Language / Idioma">${ST.lang === 'es' ? 'EN' : 'ES'}</button>
               ${opts.noKey ? '' : '<button class="st-btn st-btn-sm" data-key-btn></button>'}
             </div>
           </div>
         </header>
+        ${opts.student ? '' : `<nav aria-label="${esc(ST.t('crumb_nav'))}" class="container mx-auto px-4 md:px-8 pt-4 text-sm no-print" style="color:var(--muted-foreground)">
+          <ol class="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <li><a href="/" class="hover:underline">${esc(ST.t('crumb_home'))}</a></li><li aria-hidden="true">/</li>
+            <li><a href="/recursos/" class="hover:underline">${esc(ST.t('crumb_resources'))}</a></li><li aria-hidden="true">/</li>
+            ${opts.catalog ? `<li aria-current="page" class="font-semibold" style="color:var(--card-foreground)">${esc(ST.t('crumb_tools'))}</li>` : `<li><a href="${BASE}" class="hover:underline">${esc(ST.t('crumb_tools'))}</a></li><li aria-hidden="true">/</li><li aria-current="page" class="font-semibold" style="color:var(--card-foreground)">${esc(ST.t(opts.crumb))}</li>`}
+          </ol>
+        </nav>`}
         <div id="st-main"></div>
         <footer class="py-8 px-4 border-t text-center text-sm no-print" style="border-color:var(--border);color:var(--muted-foreground);background:#fff;margin-top:3rem">
           ${esc(ST.t('footer'))}<br>&copy; ${new Date().getFullYear()} Dr. Diego Sornoza Parrales — <a href="/" class="hover:underline" style="color:var(--primary)">sornoza.com</a>
@@ -699,7 +713,7 @@ ${body}
     const customs = {}; // controladores de campos custom (conservan su estado entre re-render)
     let abort = null, out = null, busy = false;
 
-    const shell = ST.shell({ student: !!cfg.student, noKey: !!cfg.local });
+    const shell = ST.shell({ student: !!cfg.student, noKey: !!cfg.local, crumb: cfg.title });
     const outLangField = { id: '_lang', type: 'select', label: 'out_lang', options: [{ value: 'es', label: { es: 'Español', en: 'Spanish' } }, { value: 'en', label: { es: 'Inglés', en: 'English' } }] };
     const allFields = () => cfg.fields.concat(cfg.noOutLang ? [] : [outLangField]);
     const valOf = (f) => (state.values[f.id] !== undefined ? state.values[f.id] : f.type === 'checkboxes' ? (f.default || []) : f.id === '_lang' ? ST.lang : f.default !== undefined ? f.default : f.type === 'select' ? optVal(f.options[0]) : '');
@@ -735,7 +749,6 @@ ${body}
       main.innerHTML = `
         <main class="container mx-auto max-w-4xl px-4 md:px-8 py-8">
           <div class="mb-6">
-            ${cfg.student ? '' : `<a href="${BASE}" class="text-sm sm:hidden" style="color:var(--muted-foreground)">← ${esc(ST.t('catalog'))}</a>`}
             <h1 class="text-2xl md:text-3xl font-bold mt-1 flex items-center gap-2"><i data-lucide="${cfg.icon || 'sparkles'}" class="h-7 w-7" style="color:var(--primary)"></i>${esc(t)}</h1>
             <p class="mt-2" style="color:var(--muted-foreground)">${esc(ST.t(cfg.desc))}</p>
           </div>
