@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adaptaciones inclusivas (DUA) — Sornoza.com</title>
+<meta name="description" content="Propón ajustes razonables y estrategias de Diseño Universal para el Aprendizaje para estudiantes con necesidades educativas especiales.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="../assets/core.css">
+</head>
+<body class="min-h-screen antialiased">
+<script src="../assets/core.js"></script>
+<script>
+const opt = (v, es, en) => ({ value: v, label: { es, en } });
+const LEVELS = [
+  opt('inicial', 'Pregrado – ciclos iniciales', 'Undergraduate – early years'),
+  opt('intermedio', 'Pregrado – ciclos intermedios', 'Undergraduate – middle years'),
+  opt('avanzado', 'Pregrado – ciclos finales', 'Undergraduate – final years'),
+  opt('posgrado', 'Posgrado', 'Graduate')];
+const LEVEL_EN = { inicial: 'early undergraduate', intermedio: 'mid-program undergraduate', avanzado: 'final-year undergraduate', posgrado: 'graduate' };
+ST.mountTool({
+  id: 'adaptaciones-inclusivas', icon: 'accessibility',
+  title: { es: 'Adaptaciones inclusivas (DUA)', en: 'Inclusive adaptations (UDL)' },
+  desc: { es: 'Propone ajustes razonables y estrategias de Diseño Universal para el Aprendizaje (DUA) para estudiantes con necesidades educativas especiales, a partir de sus dificultades y fortalezas. Es un punto de partida: no reemplaza el diagnóstico ni el trabajo con la unidad de inclusión o bienestar de tu institución.', en: 'Suggests reasonable adjustments and Universal Design for Learning (UDL) strategies for students with special educational needs, based on their difficulties and strengths. It is a starting point: it does not replace diagnosis or work with your institution\'s inclusion or student-welfare unit.' },
+  privacy: { es: 'No escribas nombres, cédulas, diagnósticos con nombre propio ni datos que identifiquen al estudiante: describe solo lo que observas en clase. Lo que escribas se envía a Google (Gemini) con tu key. Las propuestas no son un diagnóstico; valida los ajustes con la unidad de bienestar o inclusión y con el estudiante.', en: 'Do not enter names, ID numbers, named diagnoses or data that identify the student: describe only what you observe in class. What you write is sent to Google (Gemini) with your key. The suggestions are not a diagnosis; validate adjustments with the welfare or inclusion unit and with the student.' },
+  temperature: 0.5,
+  fields: [
+    { id: 'setting', type: 'text', required: true, span: 'full', label: { es: 'Entorno de aprendizaje', en: 'Learning setting' }, placeholder: { es: 'Ej.: clase presencial de 35 estudiantes, laboratorio, curso virtual en Moodle…', en: 'E.g.: in-person class of 35 students, lab, online course in Moodle…' } },
+    { id: 'category', type: 'select', label: { es: 'Categoría de la necesidad', en: 'Category of need' }, options: [opt('no_esp', 'No especificada', 'Not specified'), opt('visual', 'Visual', 'Visual'), opt('auditiva', 'Auditiva', 'Hearing'), opt('motriz', 'Física / motriz', 'Physical / motor'), opt('aprendizaje', 'Dificultades específicas de aprendizaje (lectura, escritura, cálculo)', 'Specific learning difficulties (reading, writing, math)'), opt('tdah', 'Atención / TDAH', 'Attention / ADHD'), opt('tea', 'Espectro autista', 'Autism spectrum'), opt('intelectual', 'Intelectual', 'Intellectual'), opt('psico', 'Salud mental / psicosocial', 'Mental health / psychosocial'), opt('altas', 'Altas capacidades', 'High ability')] },
+    { id: 'level', type: 'select', label: { es: 'Nivel', en: 'Level' }, options: LEVELS },
+    { id: 'difficulties', type: 'textarea', rows: 4, required: true, label: { es: 'Dificultades actuales', en: 'Current difficulties' }, hint: { es: 'Lo que observas en clase y en las evaluaciones, sin datos que identifiquen al estudiante.', en: 'What you observe in class and in assessments, without identifying data.' } },
+    { id: 'strengths', type: 'textarea', rows: 4, required: true, label: { es: 'Fortalezas actuales', en: 'Current strengths' } },
+    { id: 'context', type: 'textarea', rows: 3, span: 'full', label: { es: 'Actividades o evaluaciones concretas que quieres adaptar (opcional)', en: 'Specific activities or assessments you want to adapt (optional)' } },
+  ],
+  buildPrompt(v, ctx) {
+    const system = `You are an inclusive-education advisor for higher education, familiar with Universal Design for Learning (UDL) and reasonable adjustments. You are NOT diagnosing: never state or infer a diagnosis, never label the student, and write about barriers in the learning environment rather than deficits in the person. Keep the academic learning outcomes intact: adjust the means (access, representation, expression, time, environment), not the competency expected. Do not cite specific laws or articles unless you are certain; refer generally to "your institution's inclusion/welfare policy and applicable national regulations". If the input contains identifying data, ignore it and do not repeat it. Output only Markdown (no HTML, no code fences). Respond entirely in ${ctx.outLangName}.`;
+    const prompt = `Propose adaptations.
+- Learning setting: ${v.setting}
+- Category of need (as declared by the teacher): ${v.category}
+- Level: ${LEVEL_EN[v.level]}
+- Current difficulties observed:
+${v.difficulties}
+- Current strengths:
+${v.strengths}
+${v.context ? `- Activities or assessments to adapt:\n${v.context}\n` : ''}
+Structure (headings translated to ${ctx.outLangName}):
+1. "## Resumen de la situación": 2–3 sentences in barrier-focused language.
+2. "## Ajustes razonables": a table (Area | Adjustment | Why it helps) covering teaching methods, materials, assessment (time, format, alternatives), classroom or virtual environment, and communication. Single-line cells.
+3. "## Estrategias DUA": bullets grouped by the three principles: multiple means of engagement, representation, and action/expression.
+4. "## Aprovechar las fortalezas": 3 ideas.
+5. "## Cómo implementarlo y dar seguimiento": 4–5 steps, including agreeing adjustments with the student, coordinating with the inclusion/welfare unit, and a review date.
+6. A closing blockquote "> Estas propuestas no son un diagnóstico ni reemplazan la valoración especializada." (translated).`;
+    return { system, prompt, title: `${ctx.t({ es: 'Adaptaciones', en: 'Adaptations' })} — ${v.setting.slice(0, 50)}` };
+  },
+});
+</script>
+</body>
+</html>

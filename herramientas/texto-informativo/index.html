@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Texto informativo — Sornoza.com</title>
+<meta name="description" content="Genera un texto informativo sobre un tema, con la extensión y el nivel que necesites.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="../assets/core.css">
+</head>
+<body class="min-h-screen antialiased">
+<script src="../assets/core.js"></script>
+<script>
+const opt = (v, es, en) => ({ value: v, label: { es, en } });
+const LEVELS = [
+  opt('inicial', 'Pregrado – ciclos iniciales', 'Undergraduate – early years'),
+  opt('intermedio', 'Pregrado – ciclos intermedios', 'Undergraduate – middle years'),
+  opt('avanzado', 'Pregrado – ciclos finales', 'Undergraduate – final years'),
+  opt('posgrado', 'Posgrado', 'Graduate')];
+const LEVEL_EN = { inicial: 'early undergraduate', intermedio: 'mid-program undergraduate', avanzado: 'final-year undergraduate', posgrado: 'graduate' };
+ST.mountTool({
+  id: 'texto-informativo', icon: 'book-open',
+  title: { es: 'Texto informativo', en: 'Informational text' },
+  desc: { es: 'Genera un texto informativo sobre un tema, con el nivel, la extensión y el enfoque que necesites: lectura de apoyo, material de introducción o explicación para una clase.', en: 'Generate an informational text on a topic, with the level, length and focus you need: a supporting reading, introductory material or a class explanation.' },
+  temperature: 0.6,
+  fields: [
+    { id: 'topic', type: 'text', required: true, span: 'full', label: { es: 'Tema', en: 'Topic' } },
+    { id: 'level', type: 'select', label: { es: 'Nivel', en: 'Level' }, options: LEVELS },
+    { id: 'length', type: 'select', default: 'medio', label: { es: 'Extensión del texto', en: 'Text length' }, options: [opt('corto', 'Corto (~250 palabras)', 'Short (~250 words)'), opt('medio', 'Medio (~500 palabras)', 'Medium (~500 words)'), opt('largo', 'Largo (~900 palabras)', 'Long (~900 words)')] },
+    { id: 'extra', type: 'textarea', rows: 3, label: { es: 'Instrucciones adicionales (opcional)', en: 'Additional instructions (optional)' }, hint: { es: 'Enfoque, público, ejemplos de tu región, términos que debe incluir…', en: 'Focus, audience, examples from your region, terms to include…' } },
+    { id: 'include', type: 'checkboxes', label: { es: 'Incluir al final', en: 'Include at the end' }, default: [], options: [opt('glossary', 'Glosario', 'Glossary'), opt('questions', 'Preguntas de comprensión', 'Comprehension questions')] },
+  ],
+  buildPrompt(v, ctx) {
+    const inc = v.include || [];
+    const words = { corto: 250, medio: 500, largo: 900 }[v.length];
+    const system = `You write accurate, clear informational texts for university teaching. Be factual and well organized (introduction, development with short subheadings when long, conclusion). NEVER invent statistics, dates, studies, quotations or references; if you give a figure or a named fact, keep it well established and general, and when unsure say so or leave it out. Do not cite sources you cannot verify. Output only Markdown (no HTML, no code fences). End with a one-line blockquote "> Revisa los datos antes de usar este texto en clase." (translated). Respond entirely in ${ctx.outLangName}.`;
+    const prompt = `Write an informational text.
+- Topic: ${v.topic}
+- Level: ${LEVEL_EN[v.level]}
+- Length: about ${words} words
+${v.extra ? `- Additional instructions: ${v.extra}\n` : ''}${inc.includes('glossary') ? '- After the text add "## Glosario" (translated): 5–8 key terms with one-line definitions.\n' : ''}${inc.includes('questions') ? '- After the text add "## Preguntas de comprensión" (translated): 4–5 questions of increasing difficulty.\n' : ''}Start with a "# " title.`;
+    return { system, prompt, title: `${ctx.t({ es: 'Texto', en: 'Text' })} — ${v.topic.slice(0, 60)}` };
+  },
+});
+</script>
+</body>
+</html>
