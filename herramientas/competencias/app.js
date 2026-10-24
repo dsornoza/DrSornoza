@@ -137,7 +137,7 @@
   }
 
   /* ---------- Render ---------- */
-  const shell = ST.shell({});
+  const shell = ST.shell({ crumb: { es: 'Guía para construir competencias', en: 'Competency-building guide' } });
   function fieldHtml(x) {
     const v = S.data[x.id] || '', full = x.span === 'full' || x.type === 'textarea';
     const ph = esc(ST.t(x.placeholder) || '');
@@ -199,7 +199,6 @@
     main.innerHTML = `
       <main class="container mx-auto max-w-4xl px-4 md:px-8 py-8">
         <div class="mb-5 no-print">
-          <a href="${ST.BASE}" class="text-sm sm:hidden" style="color:var(--muted-foreground)">← ${esc(ST.t('catalog'))}</a>
           <h1 class="text-2xl md:text-3xl font-bold mt-1 flex items-center gap-2"><i data-lucide="compass" class="h-7 w-7" style="color:var(--primary)"></i>${esc(T('Guía para construir competencias', 'Competency-building guide'))}</h1>
           <p class="mt-2" style="color:var(--muted-foreground)">${esc(T('Dame tus datos de partida y obtén un borrador completo de tu ficha de competencia (Anexo B). Luego lo revisas, lo ajustas y lo exportas a Word o PDF.', 'Give me your starting data and get a complete draft of your competency sheet (Annex B). Then review it, adjust it and export it to Word or PDF.'))}</p>
         </div>
