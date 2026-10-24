@@ -388,13 +388,18 @@
   const apiErr = (code, extra) => { const e = new Error(ST.t('err_' + code) + (extra ? ' (' + extra + ')' : '')); e.code = code; return e; };
 
   // Tiempos máximos sin recibir datos (ms): si Gemini no responde, se corta ese intento y se prueba otro modelo.
-  ST.geminiTimeouts = { first: 45000, stall: 30000 };
-  // Si hubo que cambiar de modelo, el que funcionó se recuerda 30 min para no volver a chocar con el saturado.
-  const GOOD_KEY = 'st_model_good', GOOD_TTL = 30 * 60 * 1000;
+  ST.geminiTimeouts = { first: 30000, stall: 30000 };
+  // Si hubo que cambiar de modelo, el que funcionó se recuerda 3 h para no volver a chocar con el saturado.
+  const GOOD_KEY = 'st_model_good', GOOD_TTL = 3 * 60 * 60 * 1000;
   const readGood = () => { try { const g = JSON.parse(LS.get(GOOD_KEY, 'null')); return g && g.m && Date.now() - g.ts < GOOD_TTL ? g.m : null; } catch (e) { return null; } };
-  // Pensamiento interno acotado (los modelos 2.5/3+ pueden tardar mucho si no se limita); si la API lo rechaza, se deja de enviar
-  const thinkingOk = (m) => /gemini-(2\.5|[3-9])|latest/.test(m);
-  let noThinkingCfg = false;
+  // Pensamiento interno acotado: los modelos con "thinking" pueden tardar decenas de segundos antes de escribir la primera palabra.
+  // Serie 3+ usa thinkingLevel; serie 2.5 usa thinkingBudget. Si la API rechaza una forma, se prueba la siguiente y por último ninguna.
+  const thinkingModes = (m) => {
+    if (/gemini-(3|[4-9])|latest/.test(m)) return [{ thinkingLevel: 'low' }, { thinkingBudget: 1024 }, null];
+    if (/gemini-2\.5/.test(m)) return [{ thinkingBudget: 1024 }, null];
+    return [null]; // modelos sin thinking: no se envía nada
+  };
+  const thinkStage = {}; // modelo -> posición en thinkingModes (en memoria)
 
   ST.gemini = async function ({ system, prompt, messages, temperature = 0.6, signal, onChunk }) {
     const key = ST.getKey();
@@ -410,7 +415,7 @@
     const bodyFor = () => JSON.stringify({
       ...(system ? { systemInstruction: { parts: [{ text: system }] } } : {}),
       contents,
-      generationConfig: { temperature, maxOutputTokens: maxTok(model), ...(thinkingOk(model) && !noThinkingCfg ? { thinkingConfig: { thinkingBudget: 2048 } } : {}) },
+      generationConfig: { temperature, maxOutputTokens: maxTok(model), ...(thinkingModes(model)[thinkStage[model] || 0] ? { thinkingConfig: thinkingModes(model)[thinkStage[model] || 0] } : {}) },
     });
     const CONTINUE = 'Continue exactly where your previous message stopped. Do not repeat anything already written and do not add any preface or comment: write the very next characters of the same document.';
 
@@ -450,7 +455,7 @@
           clearTimeout(timer);
           let msg = '';
           try { msg = (await res.json()).error.message || ''; } catch (e) { /* sin cuerpo */ }
-          if (res.status === 400 && /thinking/i.test(msg) && !noThinkingCfg) { noThinkingCfg = true; attempt--; continue; } // el modelo no admite limitar el pensamiento
+          if (res.status === 400 && /thinking/i.test(msg) && (thinkStage[model] || 0) < thinkingModes(model).length - 1) { thinkStage[model] = (thinkStage[model] || 0) + 1; attempt--; continue; } // el modelo no admite esa forma de limitar el pensamiento: se prueba la siguiente
           // 503: un solo reintento rápido; 429 (cuota por modelo): se cambia de modelo de inmediato
           if (res.status === 503 && attempt < 1) { await sleep(1500, signal); continue; }
           if ((res.status === 429 || res.status === 503) && await hop('busy')) { attempt = 1; continue; } // un solo intento por modelo alterno
