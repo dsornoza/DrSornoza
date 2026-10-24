@@ -106,6 +106,9 @@
     err_no_key: { es: 'Configura primero tu API Key de Gemini.', en: 'Set your Gemini API key first.' },
     err_key: { es: 'Google rechazó la API Key. Revisa que esté completa y activa.', en: 'Google rejected the API key. Check that it is complete and active.' },
     err_busy: { es: 'Los modelos de Gemini tienen alta demanda en este momento (es temporal). Espera un minuto e inténtalo de nuevo.', en: 'Gemini models are under high demand right now (this is temporary). Wait a minute and try again.' },
+    model_stalled: { es: 'El modelo {a} no responde. Probando con {b}…', en: 'Model {a} is not responding. Trying {b}…' },
+    err_stalled: { es: 'Gemini no respondió a tiempo y no hay otro modelo disponible para probar. Inténtalo de nuevo en un momento.', en: 'Gemini did not respond in time and no other model is available to try. Please try again in a moment.' },
+    gen_slow: { es: 'Gemini está tardando más de lo normal. Si no responde, se probará otro modelo automáticamente; también puedes pulsar «Detener» e intentarlo de nuevo.', en: 'Gemini is taking longer than usual. If it does not respond, another model will be tried automatically; you can also press “Stop” and try again.' },
     model_trying: { es: 'El modelo {a} está saturado o sin cuota. Probando con {b}…', en: 'Model {a} is overloaded or out of quota. Trying {b}…' },
     err_quota: { es: 'Se alcanzó el límite de uso gratuito de Gemini. Espera un momento o cambia de modelo (p. ej. flash-lite).', en: 'The free Gemini usage limit was reached. Wait a moment or switch model (e.g. flash-lite).' },
     err_model: { es: 'Ese modelo no está disponible para tu key. Abre la configuración de la API Key y pulsa «Detectar modelos disponibles».', en: 'That model is not available for your key. Open the API key settings and press “Detect available models”.' },
@@ -255,7 +258,7 @@
       const k = $('#st-key', bg).value.trim();
       if (k) LS.set('gemini_key', k);
       const m = sel.value === '__custom' ? custom.value.trim() : sel.value;
-      if (m) LS.set('st_model', m);
+      if (m) { LS.set('st_model', m); LS.del('st_model_good'); }
       close(); updateKeyButtons(); onDone && onDone();
     };
     $('#st-key', bg).focus();
@@ -384,10 +387,19 @@
   /* ================= Cliente Gemini (streaming) ================= */
   const apiErr = (code, extra) => { const e = new Error(ST.t('err_' + code) + (extra ? ' (' + extra + ')' : '')); e.code = code; return e; };
 
+  // Tiempos máximos sin recibir datos (ms): si Gemini no responde, se corta ese intento y se prueba otro modelo.
+  ST.geminiTimeouts = { first: 45000, stall: 30000 };
+  // Si hubo que cambiar de modelo, el que funcionó se recuerda 30 min para no volver a chocar con el saturado.
+  const GOOD_KEY = 'st_model_good', GOOD_TTL = 30 * 60 * 1000;
+  const readGood = () => { try { const g = JSON.parse(LS.get(GOOD_KEY, 'null')); return g && g.m && Date.now() - g.ts < GOOD_TTL ? g.m : null; } catch (e) { return null; } };
+  // Pensamiento interno acotado (los modelos 2.5/3+ pueden tardar mucho si no se limita); si la API lo rechaza, se deja de enviar
+  const thinkingOk = (m) => /gemini-(2\.5|[3-9])|latest/.test(m);
+  let noThinkingCfg = false;
+
   ST.gemini = async function ({ system, prompt, messages, temperature = 0.6, signal, onChunk }) {
     const key = ST.getKey();
     if (!key) throw apiErr('no_key');
-    let model = ST.getModel(), switched = false, knownIds = null;
+    let model = readGood() || ST.getModel(), switched = false, knownIds = null;
     const tried = new Set([model]);
     const urlFor = (m) => `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(m)}:streamGenerateContent?alt=sse`;
     let url = urlFor(model);
@@ -398,82 +410,113 @@
     const bodyFor = () => JSON.stringify({
       ...(system ? { systemInstruction: { parts: [{ text: system }] } } : {}),
       contents,
-      generationConfig: { temperature, maxOutputTokens: maxTok(model) },
+      generationConfig: { temperature, maxOutputTokens: maxTok(model), ...(thinkingOk(model) && !noThinkingCfg ? { thinkingConfig: { thinkingBudget: 2048 } } : {}) },
     });
     const CONTINUE = 'Continue exactly where your previous message stopped. Do not repeat anything already written and do not add any preface or comment: write the very next characters of the same document.';
 
-    for (let attempt = 0; ; attempt++) {
-      let res;
-      try {
-        res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key }, body: bodyFor(), signal });
-      } catch (e) {
-        if (e.name === 'AbortError') throw e;
-        throw apiErr('net');
-      }
-      if (!res.ok) {
-        if ((res.status === 429 || res.status === 503) && attempt < 2) { await sleep(2500 * (attempt + 1), signal); continue; }
-        if ((res.status === 429 || res.status === 503) && tried.size < 4) {
-          // Saturado o sin cuota tras reintentar: la demanda y la cuota son por modelo, así que probamos otro (sin guardarlo)
-          if (!knownIds) { try { knownIds = await ST.listModels(key, signal); } catch (e) { if (e.name === 'AbortError') throw e; knownIds = []; } }
-          const alt = knownIds.filter((id) => !tried.has(id) && modelScore(id) >= 0).sort((a, b) => modelScore(b) - modelScore(a))[0];
-          if (alt) {
-            ST.toast(ST.t('model_trying').replace('{a}', model).replace('{b}', alt));
-            tried.add(alt); model = alt; url = urlFor(alt); attempt = 1; continue; // un solo intento más por modelo alterno
-          }
-        }
-        let msg = '';
-        try { msg = (await res.json()).error.message || ''; } catch (e) { /* sin cuerpo */ }
-        if (res.status === 429) throw apiErr('quota');
-        if (res.status === 503) throw apiErr('busy');
-        if (res.status === 404) {
-          // El modelo ya no existe para esta key: buscamos uno vigente, lo guardamos y reintentamos una vez
-          if (!switched) {
-            switched = true;
-            let alt = null;
-            try { alt = pickModel(await ST.listModels(key, signal), model); } catch (e) { if (e.name === 'AbortError') throw e; }
-            if (alt) { model = alt; url = urlFor(alt); LS.set('st_model', alt); ST.toast(ST.t('model_switched').replace('{m}', alt)); continue; }
-          }
-          throw apiErr('model', model);
-        }
-        if (res.status === 401 || res.status === 403 || /API key/i.test(msg)) throw apiErr('key');
-        const e = new Error(msg || 'HTTP ' + res.status); e.code = 'http'; throw e;
-      }
+    // Pasa a otro modelo disponible para esta key (la demanda y la cuota son por modelo). Devuelve false si no hay otro.
+    const hop = async (why) => {
+      if (tried.size >= 5) return false;
+      if (!knownIds) { try { knownIds = await ST.listModels(key, signal); } catch (e) { if (e.name === 'AbortError') throw e; knownIds = []; } }
+      const alt = knownIds.filter((id) => !tried.has(id) && modelScore(id) >= 0).sort((a, b) => modelScore(b) - modelScore(a))[0];
+      if (!alt) return false;
+      ST.toast(ST.t(why === 'stall' ? 'model_stalled' : 'model_trying').replace('{a}', model).replace('{b}', alt));
+      tried.add(alt); model = alt; url = urlFor(alt);
+      return true;
+    };
+    const finish_ok = () => { if (model !== ST.getModel()) LS.set(GOOD_KEY, JSON.stringify({ m: model, ts: Date.now() })); else LS.del(GOOD_KEY); };
 
-      const reader = res.body.getReader(), dec = new TextDecoder();
-      let buf = '', full = '', finish = null;
-      const handle = (line) => {
-        if (!line.startsWith('data:')) return;
-        const js = line.slice(5).trim();
-        if (!js || js === '[DONE]') return;
-        let o; try { o = JSON.parse(js); } catch (e) { return; }
-        if (o.promptFeedback && o.promptFeedback.blockReason) throw apiErr('blocked');
-        const c = o.candidates && o.candidates[0];
-        const t = c && c.content && c.content.parts ? c.content.parts.map((p) => p.text || '').join('') : '';
-        if (t) { full += t; onChunk && onChunk(t, total + full); }
-        if (c && c.finishReason) finish = c.finishReason;
-      };
+    for (let attempt = 0; ; attempt++) {
+      // Un AbortController por intento: lo cortan el usuario (signal) o el vigilante de tiempo
+      const ac = new AbortController(); let timedOut = false, timer = 0;
+      const arm = (ms) => { clearTimeout(timer); timer = setTimeout(() => { timedOut = true; ac.abort(); }, ms); };
+      const onAbort = () => ac.abort();
+      if (signal) { if (signal.aborted) throw new DOMException('Aborted', 'AbortError'); signal.addEventListener('abort', onAbort); }
+      const userAborted = () => !!(signal && signal.aborted);
       try {
-        for (;;) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          buf += dec.decode(value, { stream: true });
-          let i;
-          while ((i = buf.indexOf('\n')) >= 0) { handle(buf.slice(0, i).replace(/\r$/, '')); buf = buf.slice(i + 1); }
+        arm(ST.geminiTimeouts.first);
+        let res;
+        try {
+          res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key }, body: bodyFor(), signal: ac.signal });
+        } catch (e) {
+          if (e.name === 'AbortError') {
+            if (userAborted() || !timedOut) throw e;
+            if (await hop('stall')) { attempt = 1; continue; }
+            throw apiErr('stalled');
+          }
+          throw apiErr('net');
         }
-        if (buf) handle(buf.replace(/\r$/, ''));
-      } catch (e) {
-        if (e.name === 'AbortError' || e.code === 'blocked') throw e;
-        // conexión cortada a mitad de respuesta: se trata como respuesta incompleta (finish = null)
+        if (!res.ok) {
+          clearTimeout(timer);
+          let msg = '';
+          try { msg = (await res.json()).error.message || ''; } catch (e) { /* sin cuerpo */ }
+          if (res.status === 400 && /thinking/i.test(msg) && !noThinkingCfg) { noThinkingCfg = true; attempt--; continue; } // el modelo no admite limitar el pensamiento
+          // 503: un solo reintento rápido; 429 (cuota por modelo): se cambia de modelo de inmediato
+          if (res.status === 503 && attempt < 1) { await sleep(1500, signal); continue; }
+          if ((res.status === 429 || res.status === 503) && await hop('busy')) { attempt = 1; continue; } // un solo intento por modelo alterno
+          if (res.status === 429) throw apiErr('quota');
+          if (res.status === 503) throw apiErr('busy');
+          if (res.status === 404) {
+            // El modelo ya no existe para esta key: buscamos uno vigente, lo guardamos y reintentamos una vez
+            if (!switched) {
+              switched = true;
+              let alt = null;
+              try { alt = pickModel(await ST.listModels(key, signal), model); } catch (e) { if (e.name === 'AbortError') throw e; }
+              if (alt) { model = alt; url = urlFor(alt); LS.set('st_model', alt); LS.del(GOOD_KEY); ST.toast(ST.t('model_switched').replace('{m}', alt)); continue; }
+            }
+            throw apiErr('model', model);
+          }
+          if (res.status === 401 || res.status === 403 || /API key/i.test(msg)) throw apiErr('key');
+          const e = new Error(msg || 'HTTP ' + res.status); e.code = 'http'; throw e;
+        }
+
+        const reader = res.body.getReader(), dec = new TextDecoder();
+        let buf = '', full = '', finish = null, stalledRead = false;
+        const handle = (line) => {
+          if (!line.startsWith('data:')) return;
+          const js = line.slice(5).trim();
+          if (!js || js === '[DONE]') return;
+          let o; try { o = JSON.parse(js); } catch (e) { return; }
+          if (o.promptFeedback && o.promptFeedback.blockReason) throw apiErr('blocked');
+          const c = o.candidates && o.candidates[0];
+          const t = c && c.content && c.content.parts ? c.content.parts.map((p) => (p.thought ? '' : p.text || '')).join('') : '';
+          if (t) { full += t; onChunk && onChunk(t, total + full); }
+          if (c && c.finishReason) finish = c.finishReason;
+        };
+        try {
+          for (;;) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            arm(ST.geminiTimeouts.stall); // llegó información: se reinicia el vigilante
+            buf += dec.decode(value, { stream: true });
+            let i;
+            while ((i = buf.indexOf('\n')) >= 0) { handle(buf.slice(0, i).replace(/\r$/, '')); buf = buf.slice(i + 1); }
+          }
+          if (buf) handle(buf.replace(/\r$/, ''));
+        } catch (e) {
+          if (e.code === 'blocked' || userAborted()) throw e;
+          if (e.name === 'AbortError' && timedOut) stalledRead = true;
+          else if (e.name === 'AbortError') throw e;
+          // conexión cortada o detenida a mitad de respuesta: se trata como respuesta incompleta (finish = null)
+        }
+        clearTimeout(timer);
+        if (!full && !total) {
+          if (stalledRead) { if (await hop('stall')) { attempt = 1; continue; } throw apiErr('stalled'); }
+          throw apiErr(finish === 'SAFETY' ? 'blocked' : 'empty');
+        }
+        total += full;
+        // Respuesta incompleta (límite de tokens o corte de conexión): pedimos al modelo que continúe, hasta 2 veces
+        const cut = finish === 'MAX_TOKENS' || !finish;
+        if (cut && full && cont < 2) {
+          cont++; contents = base.concat([{ role: 'model', parts: [{ text: total }] }, { role: 'user', parts: [{ text: CONTINUE }] }]);
+          attempt = -1; continue;
+        }
+        finish_ok();
+        return { text: total, finish: finish || 'CUT' };
+      } finally {
+        clearTimeout(timer);
+        if (signal) signal.removeEventListener('abort', onAbort);
       }
-      if (!full && !total) throw apiErr(finish === 'SAFETY' ? 'blocked' : 'empty');
-      total += full;
-      // Respuesta incompleta (límite de tokens o corte de conexión): pedimos al modelo que continúe, hasta 2 veces
-      const cut = finish === 'MAX_TOKENS' || !finish;
-      if (cut && full && cont < 2) {
-        cont++; contents = base.concat([{ role: 'model', parts: [{ text: total }] }, { role: 'user', parts: [{ text: CONTINUE }] }]);
-        attempt = -1; continue;
-      }
-      return { text: total, finish: finish || 'CUT' };
     }
   };
 
@@ -773,6 +816,7 @@ ${body}
               <button type="submit" class="st-btn st-btn-primary" id="st-go"><span id="st-go-txt">${esc(ST.t(cfg.submitLabel || 'generate'))}</span></button>
               <button type="button" class="st-btn hidden" id="st-stop">${esc(ST.t('stop'))}</button>
             </div>
+            <p class="st-notice mt-3 hidden" id="st-wait" role="status">${esc(ST.t('gen_slow'))}</p>
             <p class="st-hint mt-3">${esc(ST.t(cfg.privacy || 'privacy'))}</p>
           </form>
           <div id="st-out" class="mt-6 ${state.output ? '' : 'hidden'}"></div>
@@ -812,12 +856,21 @@ ${body}
       $('#st-stop').onclick = () => abort && abort.abort();
     }
 
+    let tick = 0, t0 = 0;
     function setBusy(b) {
       busy = b;
+      clearInterval(tick);
       const go = $('#st-go'); if (!go) return;
       go.disabled = b;
-      $('#st-go-txt').innerHTML = b ? `<span class="st-spin"></span> ${esc(ST.t('generating'))}` : esc(ST.t(cfg.submitLabel || 'generate'));
       $('#st-stop').classList.toggle('hidden', !b);
+      if (!b) { t0 = 0; $('#st-go-txt').innerHTML = esc(ST.t(cfg.submitLabel || 'generate')); const w = $('#st-wait'); if (w) w.classList.add('hidden'); return; }
+      if (!t0) t0 = Date.now();
+      const paint = () => { // segundos transcurridos y aviso si Gemini tarda
+        const secs = Math.floor((Date.now() - t0) / 1000), txt = $('#st-go-txt'), w = $('#st-wait');
+        if (txt) txt.innerHTML = `<span class="st-spin"></span> ${esc(ST.t('generating'))} ${secs} s`;
+        if (w) w.classList.toggle('hidden', secs < 20);
+      };
+      paint(); tick = setInterval(paint, 1000);
     }
     const showError = (m) => { const el = $('#st-error'); if (!el) return; el.textContent = m || ''; el.classList.toggle('hidden', !m); };
 
