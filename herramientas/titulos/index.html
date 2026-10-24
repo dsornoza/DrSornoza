@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador de títulos — Sornoza.com</title>
+<meta name="description" content="Con la técnica 5W+1H, obtén 3 títulos propositivos para tu proyecto de titulación o investigación aplicada.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="../assets/core.css">
+</head>
+<body class="min-h-screen antialiased">
+<script src="../assets/core.js"></script>
+<script>
+ST.mountTool({
+  id: 'titulos', icon: 'sparkles',
+  title: { es: 'Generador de títulos', en: 'Title generator' },
+  desc: { es: 'Describe tu proyecto con la técnica 5W+1H (qué, quién, dónde, cuándo, por qué y cómo) y obtén 3 títulos propositivos para tu proyecto de titulación o investigación aplicada.', en: 'Describe your project with the 5W+1H technique (what, who, where, when, why and how) and get 3 propositional titles for your degree project or applied research.' },
+  temperature: 0.8,
+  noOutLang: false,
+  fields: [
+    { id: 'que', type: 'textarea', rows: 2, required: true, label: { es: 'Qué: ¿cuál es el problema o fenómeno central?', en: 'What: what is the central problem or phenomenon?' }, placeholder: { es: 'Ej.: la congestión vehicular en horas pico, el bajo rendimiento académico en matemáticas…', en: 'E.g.: rush-hour traffic congestion, low academic performance in mathematics…' } },
+    { id: 'quien', type: 'textarea', rows: 2, required: true, label: { es: 'Quién: ¿quiénes son los beneficiarios directos?', en: 'Who: who are the direct beneficiaries?' }, placeholder: { es: 'Ej.: los conductores de la ciudad, los estudiantes de primer año…', en: 'E.g.: the city\'s drivers, first-year students…' } },
+    { id: 'donde', type: 'textarea', rows: 2, required: true, label: { es: 'Dónde: ¿en qué lugar o institución ocurre el problema?', en: 'Where: in which place or institution does the problem occur?' }, placeholder: { es: 'Ej.: la avenida universitaria de Jipijapa, la UNESUM, el cantón Paján…', en: 'E.g.: the university avenue of Jipijapa, UNESUM, Paján county…' } },
+    { id: 'cuando', type: 'textarea', rows: 2, required: true, label: { es: 'Cuándo: ¿en qué período se desarrolla el problema?', en: 'When: in which period does the problem develop?' }, placeholder: { es: 'Ej.: durante el período lectivo 2025, en los últimos 5 años…', en: 'E.g.: during the 2025 academic term, over the last 5 years…' } },
+    { id: 'porque', type: 'textarea', rows: 2, required: true, label: { es: 'Por qué: ¿por qué es urgente resolverlo?', en: 'Why: why is it urgent to solve it?' }, placeholder: { es: 'Ej.: porque genera accidentes y pérdidas económicas, porque causa deserción estudiantil…', en: 'E.g.: because it causes accidents and economic losses, because it drives student dropout…' } },
+    { id: 'como', type: 'textarea', rows: 2, required: true, label: { es: 'Cómo: ¿cuál es tu propuesta o alternativa de solución?', en: 'How: what is your proposal or solution?' }, placeholder: { es: 'Ej.: diseño de un carril adicional con semaforización inteligente, tutorías entre pares…', en: 'E.g.: design of an extra lane with smart traffic lights, peer tutoring…' } },
+  ],
+  buildPrompt(v, ctx) {
+    const system = `You are an expert in applied research methodology for Ecuadorian universities. You write propositional-applied project titles in the style of Ecuadorian degree-project guidelines. Output only Markdown (no HTML, no code fences). Respond entirely in ${ctx.outLangName}.`;
+    const prompt = `Generate 3 propositional research titles for a university degree project.
+
+The titles MUST follow the propositional-applied style of Ecuadorian degree guidelines.
+Example (Spanish): "Diseño de ampliación de vía para disminuir la congestión vehicular en la avenida universitaria"
+Structure: [Proposal / concrete action] + to + [problem to solve] + in + [context / beneficiaries] + [period ONLY if applicable]
+
+Student data:
+- WHAT (problem): ${v.que}
+- WHO (beneficiaries): ${v.quien}
+- WHERE (context): ${v.donde}
+- WHEN (period): ${v.cuando}
+- WHY (justification): ${v.porque}
+- HOW (proposal): ${v.como}
+
+Each title must:
+1. Have at most 25 words.
+2. Start with an action verb or a propositional noun (Design, Implementation, Proposal, Development, Plan, Model, Strategy…).
+3. Include the concrete proposal from HOW.
+4. Specify beneficiaries and place.
+5. Include the period ONLY if relevant (educational/social projects yes; physical works generally no).
+6. Vary in grammatical structure.
+
+Format (headings translated to ${ctx.outLangName}):
+"## Títulos propuestos": a numbered list; each item is the title in **bold** followed, on the next line, by "Estructura: …" with a brief description of its structure.
+"## Observaciones": 2–3 bullets: what was included, what was left out and why, and advice for choosing.`;
+    return { system, prompt, title: `${ctx.t({ es: 'Títulos', en: 'Titles' })} — ${String(v.que).slice(0, 50)}` };
+  },
+});
+</script>
+</body>
+</html>
