@@ -31,25 +31,52 @@
 </head>
 <body class="min-h-screen antialiased">
 
-    <!-- Nav — identical to main site -->
+    <!-- Nav — consistent with main site -->
     <header class="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur" style="border-color:var(--border);">
         <div class="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
-            <div class="flex items-center gap-2">
+            <a href="/" class="flex items-center gap-2">
                 <img src="/assets/logo-mark.png" alt="Diego Sornoza Parrales" class="h-7 w-auto">
                 <span class="text-base font-semibold">Dr. Diego Sornoza Parrales</span>
-            </div>
-            <nav class="hidden md:flex items-center gap-6 text-sm font-medium" style="color:var(--muted-foreground)">
-                <a href="/#about" class="hover:text-cyan-500 transition-colors">Acerca de</a>
-                <a href="/#services" class="hover:text-cyan-500 transition-colors">Servicios</a>
-                <a href="/recursos/" class="hover:text-cyan-500 transition-colors">Recursos</a>
-                <a href="/#contact" class="hover:text-cyan-500 transition-colors">Contacto</a>
-            </nav>
-            <a href="/#contact" class="inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium text-white transition-all shadow-soft"
-                style="background:var(--primary);"
-                onmouseover="this.style.background='var(--primary-dark)'"
-                onmouseout="this.style.background='var(--primary)'">
-                Agendar consulta
             </a>
+            <nav class="hidden md:flex items-center gap-6 text-sm font-medium" style="color:var(--muted-foreground)">
+                <a href="/#about" class="hover:text-cyan-500 transition-colors nav-about">Acerca de</a>
+                <a href="/#services" class="hover:text-cyan-500 transition-colors nav-services">Servicios</a>
+                <a href="/#credentials" class="hover:text-cyan-500 transition-colors nav-credentials">Credenciales</a>
+                <a href="/#publications" class="hover:text-cyan-500 transition-colors nav-publications">Publicaciones</a>
+                <a href="/recursos/" class="hover:text-cyan-500 transition-colors nav-resources">Recursos</a>
+                <a href="/bima/" class="font-semibold flex items-center gap-1.5" style="color:var(--primary);">
+                    BIMA
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                </a>
+                <a href="/#contact" class="hover:text-cyan-500 transition-colors nav-contact">Contacto</a>
+            </nav>
+            <div class="flex items-center gap-3">
+                <button id="lang-switcher-button"
+                    class="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors"
+                    style="color:var(--muted-foreground);background:var(--muted);">
+                    <i data-lucide="languages" class="h-4 w-4"></i>
+                    <span class="lang-btn-text">EN</span>
+                </button>
+                <a href="/#contact" class="hidden sm:inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium text-white transition-all shadow-soft cta-btn"
+                    style="background:var(--primary);"
+                    onmouseover="this.style.background='var(--primary-dark)'"
+                    onmouseout="this.style.background='var(--primary)'">
+                    Agendar consulta
+                </a>
+                <button id="mobile-menu-btn" class="md:hidden flex items-center justify-center p-2 rounded-md" style="color:var(--muted-foreground);">
+                    <i data-lucide="menu" class="h-6 w-6"></i>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t" style="border-color:var(--border);">
+            <a href="/#about" class="block py-3 px-4 nav-about" style="color:var(--card-foreground);">Acerca de</a>
+            <a href="/#services" class="block py-3 px-4 nav-services" style="color:var(--card-foreground);">Servicios</a>
+            <a href="/#credentials" class="block py-3 px-4 nav-credentials" style="color:var(--card-foreground);">Credenciales</a>
+            <a href="/#publications" class="block py-3 px-4 nav-publications" style="color:var(--card-foreground);">Publicaciones</a>
+            <a href="/recursos/" class="block py-3 px-4 nav-resources" style="color:var(--card-foreground);">Recursos</a>
+            <a href="/bima/" class="block py-3 px-4 font-semibold" style="color:var(--primary);">BIMA</a>
+            <a href="/#contact" class="block py-3 px-4 nav-contact" style="color:var(--card-foreground);">Contacto</a>
+            <a href="/#contact" class="block w-full text-center py-3 text-white font-semibold cta-btn" style="background:var(--primary);">Agendar consulta</a>
         </div>
     </header>
 
@@ -84,15 +111,15 @@
 
             <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight mb-4" style="color:var(--foreground)">BIMA</h1>
             <p class="text-xl md:text-2xl font-semibold mb-3" style="color:var(--primary)">Bibliometric Integrated Mixed Analysis</p>
-            <p class="text-base mb-2" style="color:var(--muted-foreground)">En español: <strong>AMBI</strong> — Análisis Mixto Bibliométrico Integrado</p>
-            <p class="text-lg max-w-2xl mx-auto leading-relaxed mb-10" style="color:var(--card-foreground)">
+            <p class="text-base mb-2" style="color:var(--muted-foreground)" id="hero-spanish-note">En español: <strong>AMBI</strong> — Análisis Mixto Bibliométrico Integrado</p>
+            <p class="text-lg max-w-2xl mx-auto leading-relaxed mb-10" style="color:var(--card-foreground)" id="hero-description">
                 Una metodología que integra análisis bibliométrico con revisión mixta para fundamentar propuestas de investigación en la evidencia científica global.
             </p>
 
             <!-- Under construction badge -->
             <div class="inline-flex items-center gap-3 rounded-xl px-6 py-3.5 mb-10 shadow-soft" style="background:var(--muted);border:1px solid var(--border);">
                 <span class="w-2.5 h-2.5 rounded-full animate-pulse" style="background:#f59e0b;"></span>
-                <p class="text-sm font-semibold" style="color:var(--card-foreground)">Esta sección está en construcción — contenido completo próximamente</p>
+                <p class="text-sm font-semibold" style="color:var(--card-foreground)" id="construction-badge">Esta sección está en construcción — contenido completo próximamente</p>
             </div>
 
         </div>
@@ -101,25 +128,25 @@
     <!-- What's coming -->
     <section class="py-16 px-4 md:px-8" style="background:var(--muted);">
         <div class="container mx-auto max-w-4xl">
-            <h2 class="text-2xl md:text-3xl font-bold text-center mb-10" style="color:var(--foreground)">¿Qué encontrarás aquí?</h2>
+            <h2 class="text-2xl md:text-3xl font-bold text-center mb-10" style="color:var(--foreground)" id="whats-coming-title">¿Qué encontrarás aquí?</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
                 <div class="fade-up bg-white rounded-xl p-6 shadow-soft" style="border:1px solid var(--border);">
                     <i data-lucide="book-open" class="h-8 w-8 mb-4" style="color:var(--primary)"></i>
-                    <h3 class="font-bold mb-2" style="color:var(--card-foreground)">Fundamentos teóricos</h3>
-                    <p class="text-sm leading-relaxed" style="color:var(--muted-foreground)">Origen, justificación epistemológica y posicionamiento de BIMA frente a otros enfoques metodológicos mixtos.</p>
+                    <h3 class="font-bold mb-2" style="color:var(--card-foreground)" id="card1-title">Fundamentos teóricos</h3>
+                    <p class="text-sm leading-relaxed" style="color:var(--muted-foreground)" id="card1-desc">Origen, justificación epistemológica y posicionamiento de BIMA frente a otros enfoques metodológicos mixtos.</p>
                 </div>
 
                 <div class="fade-up bg-white rounded-xl p-6 shadow-soft" style="border:1px solid var(--border);">
                     <i data-lucide="settings" class="h-8 w-8 mb-4" style="color:var(--primary)"></i>
-                    <h3 class="font-bold mb-2" style="color:var(--card-foreground)">Guía de implementación</h3>
-                    <p class="text-sm leading-relaxed" style="color:var(--muted-foreground)">Paso a paso: desde la ecuación de búsqueda en SCOPUS hasta la síntesis mixta con VOSviewer y Bibliometrix en R.</p>
+                    <h3 class="font-bold mb-2" style="color:var(--card-foreground)" id="card2-title">Guía de implementación</h3>
+                    <p class="text-sm leading-relaxed" style="color:var(--muted-foreground)" id="card2-desc">Paso a paso: desde la ecuación de búsqueda en SCOPUS hasta la síntesis mixta con VOSviewer y Bibliometrix en R.</p>
                 </div>
 
                 <div class="fade-up bg-white rounded-xl p-6 shadow-soft" style="border:1px solid var(--border);">
                     <i data-lucide="file-text" class="h-8 w-8 mb-4" style="color:var(--primary)"></i>
-                    <h3 class="font-bold mb-2" style="color:var(--card-foreground)">Publicaciones y casos</h3>
-                    <p class="text-sm leading-relaxed" style="color:var(--muted-foreground)">Artículos y tesis que aplican BIMA/AMBI, con análisis de sus resultados y lecciones aprendidas.</p>
+                    <h3 class="font-bold mb-2" style="color:var(--card-foreground)" id="card3-title">Publicaciones y casos</h3>
+                    <p class="text-sm leading-relaxed" style="color:var(--muted-foreground)" id="card3-desc">Artículos y tesis que aplican BIMA/AMBI, con análisis de sus resultados y lecciones aprendidas.</p>
                 </div>
 
             </div>
@@ -129,20 +156,21 @@
     <!-- CTA -->
     <section class="py-16 px-4 md:px-8 bg-white">
         <div class="container mx-auto max-w-2xl text-center">
-            <h2 class="text-2xl font-bold mb-3" style="color:var(--foreground)">¿Quieres aplicar BIMA en tu investigación?</h2>
-            <p class="mb-8" style="color:var(--muted-foreground)">Mientras se completa esta sección, puedes agendar una consulta directa con el Dr. Sornoza Parrales para explorar si BIMA es el enfoque adecuado para tu proyecto.</p>
+            <h2 class="text-2xl font-bold mb-3" style="color:var(--foreground)" id="cta-title">¿Quieres aplicar BIMA en tu investigación?</h2>
+            <p class="mb-8" style="color:var(--muted-foreground)" id="cta-desc">Mientras se completa esta sección, puedes agendar una consulta directa con el Dr. Sornoza Parrales para explorar si BIMA es el enfoque adecuado para tu proyecto.</p>
             <div class="flex flex-col sm:flex-row gap-3 justify-center">
                 <a href="/#contact" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold text-white shadow-elevated transition-all"
                     style="background:var(--primary);"
                     onmouseover="this.style.background='var(--primary-dark)';this.style.transform='scale(1.02)'"
                     onmouseout="this.style.background='var(--primary)';this.style.transform='scale(1)'">
                     <i data-lucide="calendar" class="h-4 w-4"></i>
-                    Agendar consulta sobre BIMA
+                    <span id="cta-btn1">Agendar consulta sobre BIMA</span>
                 </a>
                 <a href="/recursos/" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-sm font-medium border transition-all"
                     style="border-color:var(--border);color:var(--card-foreground);"
                     onmouseover="this.style.background='var(--muted)'"
-                    onmouseout="this.style.background='white'">
+                    onmouseout="this.style.background='white'"
+                    id="cta-btn2">
                     Ver recursos didácticos
                 </a>
             </div>
@@ -150,11 +178,109 @@
     </section>
 
     <footer class="py-8 px-4 border-t text-center text-sm" style="border-color:var(--border);color:var(--muted-foreground);background:var(--muted);">
-        &copy; 2025 Dr. Diego Sornoza Parrales — <a href="/" class="hover:underline" style="color:var(--primary)">sornoza.com</a>
+        &copy; <span id="footer-year">2025</span> Dr. Diego Sornoza Parrales — <span id="footer-rights">Todos los derechos reservados.</span> <a href="/" class="hover:underline" style="color:var(--primary)">sornoza.com</a>
     </footer>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => lucide.createIcons());
+const content = {
+    en: {
+        nav_about: 'About', nav_services: 'Services', nav_credentials: 'Credentials',
+        nav_publications: 'Publications', nav_resources: 'Resources', nav_contact: 'Contact',
+        cta_phrase: 'Book a Consultation',
+        hero_spanish_note: 'In Spanish: <strong>AMBI</strong> — Análisis Mixto Bibliométrico Integrado',
+        hero_description: 'A methodology that integrates bibliometric analysis with mixed-methods review to ground research proposals in global scientific evidence.',
+        construction_badge: 'This section is under construction — full content coming soon',
+        whats_coming_title: 'What will you find here?',
+        card1_title: 'Theoretical foundations',
+        card1_desc: 'Origin, epistemological justification, and positioning of BIMA against other mixed-methods approaches.',
+        card2_title: 'Implementation guide',
+        card2_desc: 'Step by step: from the SCOPUS search equation to mixed synthesis with VOSviewer and Bibliometrix in R.',
+        card3_title: 'Publications and case studies',
+        card3_desc: 'Articles and theses applying BIMA, with analysis of their results and lessons learned.',
+        cta_title: 'Want to apply BIMA to your research?',
+        cta_desc: 'While this section is completed, you can book a direct consultation with Dr. Sornoza Parrales to explore whether BIMA is the right approach for your project.',
+        cta_btn1: 'Book a consultation about BIMA',
+        cta_btn2: 'View teaching resources',
+        footer_rights: 'All rights reserved.'
+    },
+    es: {
+        nav_about: 'Acerca de', nav_services: 'Servicios', nav_credentials: 'Credenciales',
+        nav_publications: 'Publicaciones', nav_resources: 'Recursos', nav_contact: 'Contacto',
+        cta_phrase: 'Agendar consulta',
+        hero_spanish_note: 'En español: <strong>AMBI</strong> — Análisis Mixto Bibliométrico Integrado',
+        hero_description: 'Una metodología que integra análisis bibliométrico con revisión mixta para fundamentar propuestas de investigación en la evidencia científica global.',
+        construction_badge: 'Esta sección está en construcción — contenido completo próximamente',
+        whats_coming_title: '¿Qué encontrarás aquí?',
+        card1_title: 'Fundamentos teóricos',
+        card1_desc: 'Origen, justificación epistemológica y posicionamiento de BIMA frente a otros enfoques metodológicos mixtos.',
+        card2_title: 'Guía de implementación',
+        card2_desc: 'Paso a paso: desde la ecuación de búsqueda en SCOPUS hasta la síntesis mixta con VOSviewer y Bibliometrix en R.',
+        card3_title: 'Publicaciones y casos',
+        card3_desc: 'Artículos y tesis que aplican BIMA/AMBI, con análisis de sus resultados y lecciones aprendidas.',
+        cta_title: '¿Quieres aplicar BIMA en tu investigación?',
+        cta_desc: 'Mientras se completa esta sección, puedes agendar una consulta directa con el Dr. Sornoza Parrales para explorar si BIMA es el enfoque adecuado para tu proyecto.',
+        cta_btn1: 'Agendar consulta sobre BIMA',
+        cta_btn2: 'Ver recursos didácticos',
+        footer_rights: 'Todos los derechos reservados.'
+    }
+};
+
+let currentLang = 'es';
+
+function updateContent() {
+    const langData = content[currentLang];
+    document.querySelectorAll('.nav-about').forEach(el => el.textContent = langData.nav_about);
+    document.querySelectorAll('.nav-services').forEach(el => el.textContent = langData.nav_services);
+    document.querySelectorAll('.nav-credentials').forEach(el => el.textContent = langData.nav_credentials);
+    document.querySelectorAll('.nav-publications').forEach(el => el.textContent = langData.nav_publications);
+    document.querySelectorAll('.nav-resources').forEach(el => el.textContent = langData.nav_resources);
+    document.querySelectorAll('.nav-contact').forEach(el => el.textContent = langData.nav_contact);
+    document.querySelectorAll('.cta-btn').forEach(el => el.textContent = langData.cta_phrase);
+
+    document.querySelector('#hero-spanish-note').innerHTML = langData.hero_spanish_note;
+    document.querySelector('#hero-description').textContent = langData.hero_description;
+    document.querySelector('#construction-badge').textContent = langData.construction_badge;
+    document.querySelector('#whats-coming-title').textContent = langData.whats_coming_title;
+    document.querySelector('#card1-title').textContent = langData.card1_title;
+    document.querySelector('#card1-desc').textContent = langData.card1_desc;
+    document.querySelector('#card2-title').textContent = langData.card2_title;
+    document.querySelector('#card2-desc').textContent = langData.card2_desc;
+    document.querySelector('#card3-title').textContent = langData.card3_title;
+    document.querySelector('#card3-desc').textContent = langData.card3_desc;
+    document.querySelector('#cta-title').textContent = langData.cta_title;
+    document.querySelector('#cta-desc').textContent = langData.cta_desc;
+    document.querySelector('#cta-btn1').textContent = langData.cta_btn1;
+    document.querySelector('#cta-btn2').textContent = langData.cta_btn2;
+    document.querySelector('#footer-rights').textContent = langData.footer_rights;
+
+    const langBtnText = currentLang === 'en' ? 'ES' : 'EN';
+    document.querySelectorAll('.lang-btn-text').forEach(el => el.textContent = langBtnText);
+    document.documentElement.lang = currentLang;
+}
+
+function switchLanguage(lang) {
+    currentLang = lang;
+    updateContent();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+    updateContent();
+    document.querySelector('#footer-year').textContent = new Date().getFullYear();
+
+    const langSwitcherButton = document.querySelector('#lang-switcher-button');
+    if (langSwitcherButton) {
+        langSwitcherButton.addEventListener('click', () => {
+            switchLanguage(currentLang === 'en' ? 'es' : 'en');
+        });
+    }
+
+    const mobileMenuBtn = document.querySelector('#mobile-menu-btn');
+    const mobileMenu = document.querySelector('#mobile-menu');
+    if (mobileMenuBtn && mobileMenu) {
+        mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+    }
+});
 </script>
 </body>
 </html>
