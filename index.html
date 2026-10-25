@@ -45,6 +45,12 @@
         /* Counter animation */
         @keyframes countUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         .counter-item { animation: countUp 0.4s ease forwards; }
+
+        /* Publications carousel scrollbar */
+        #publications-carousel { scrollbar-width: thin; scrollbar-color: var(--primary) transparent; }
+        #publications-carousel::-webkit-scrollbar { height: 8px; }
+        #publications-carousel::-webkit-scrollbar-track { background: transparent; }
+        #publications-carousel::-webkit-scrollbar-thumb { background-color: rgba(6,182,212,0.4); border-radius: 9999px; }
     </style>
 </head>
 <body class="antialiased">
@@ -66,7 +72,7 @@ const content = {
         hero_subtext: "Ph.D. from The University of Western Ontario, Canada.",
         hero_cta: "Book a Thesis/Paper Consultation",
         about_title: "About Dr. Sornoza Parrales",
-        about_summary_p1: "With over 10 years of experience in higher education, Dr. Diego Sornoza Parrales brings a wealth of expertise in research, teaching, and academic management.",
+        about_summary_p1: "With over 12 years of experience in higher education, Dr. Diego Sornoza Parrales brings a wealth of expertise in research, teaching, and academic management.",
         about_summary_p2: "As an Accredited Investigator (SENESCYT: REG-INV-16-01687) and Associate Professor, he specializes in Critical Policy, Equity and Leadership Studies. His Ph.D. from The University of Western Ontario, Canada, combined with extensive experience directing postgraduate theses, positions him uniquely to guide researchers through every stage of their academic journey.",
         about_summary_p3: "He is passionate about empowering researchers to achieve publication success through strategic, modern methods, including ethical AI integration.",
         services_title: "Expertise & Services",
@@ -81,9 +87,9 @@ const content = {
         service4_description: "Ethical and effective use of modern AI tools in the research process, backed by specialized research in Educational Technology and Artificial Intelligence.",
         credentials_title: "Proof of Impact & Credentials",
         cred1_title: "Distinguished Investigator",
-        cred1_description: "Recognized as 'Investigador destacado' (Level 1—maximum level) in 2024 by UNESUM for outstanding scientific productivity.",
+        cred1_description: "Recognized as 'Investigador destacado' (Level 1—maximum level) in 2024 and 2025 by UNESUM for outstanding scientific productivity.",
         cred2_title: "High-Impact Publications",
-        cred2_description: "Authored/Co-authored 2 books and 20+ articles in arbitrated journals (SCOPUS and regional bases).",
+        cred2_description: "Authored/Co-authored 6 books and 50+ articles in indexed journals (SCOPUS and regional bases).",
         counter_years: "Years of Experience",
         counter_articles: "Published Articles",
         counter_books: "Books Authored",
@@ -95,10 +101,24 @@ const content = {
         pub1_link_label: "View in Frontiers in Virtual Reality",
         pub2_title: "Business Administration Students' Perceptions of Formative Assessment as an Instructional Tool",
         pub2_abstract: "This study with 112 Ecuadorian students revealed that their perceptions of formative assessment are moderately positive. Although congruence and authenticity were well-rated, consultation (student participation) was the lowest. It is recommended to improve the authenticity of tasks and student involvement in evaluation criteria.",
+        pub2_url: "https://www.edupij.com/index/arsiv/79/893/business-administration-students-perceptions-of-formative-assessment-as-an-instructional-tool",
+        pub2_link_label: "View publication",
         pub3_title: "Educational modality and performance: Differential patterns by major in a university cohort before, during, and after the COVID-19 pandemic",
         pub3_abstract: "This longitudinal study with 442 students showed that COVID-19 virtuality impacted performance unequally. Health programs improved and finished with a net positive balance. In contrast, technical programs like Civil Engineering declined upon returning to face-to-face, recording losses. The conclusion is that differentiated educational strategies are required by discipline.",
+        pub3_url: "https://sct.ageditor.ar/index.php/sct/article/view/2266",
+        pub3_link_label: "View publication",
         pub4_title: "Artificial Intelligence in the Transformation of the Teaching-Learning Process",
         pub4_abstract: "This correlational study surveyed 234 Business Administration students regarding the use of Artificial Intelligence (AI). Results revealed a high use of tools like ChatGPT and a positive and significant correlation (ρ = 0.827) between the use of AI and the transformation of the teaching-learning process. It is concluded that the strategic use of AI creates more dynamic and innovative educational environments.",
+        pub4_url: "https://produccioncientifica.luz.edu.ve/index.php/rvg/article/view/44169/52463",
+        pub4_link_label: "View in Revista Venezolana de Gerencia",
+        pub5_title: "Strategic Planning for the Internationalization of Public Universities: A Bibliometric Analysis of Scientific Production 2003-2025",
+        pub5_abstract: "This bibliometric analysis examines two decades (2003–2025) of scientific production on the strategic planning of internationalization processes in public universities, mapping research trends and institutional strategies in higher education internationalization.",
+        pub5_url: "https://revista.sangregorio.edu.ec/index.php/REVISTASANGREGORIO/article/view/4211",
+        pub5_link_label: "View in Revista San Gregorio",
+        pub6_title: "Artificial Intelligence for Net-Zero Construction: A Bibliometric Mapping of Research Landscape, Thematic Clusters and Emerging Directions Across the AEC Industry",
+        pub6_abstract: "This bibliometric mapping study analyzes the research landscape on artificial intelligence applications for net-zero construction, identifying thematic clusters and emerging directions across the Architecture, Engineering, and Construction (AEC) industry. Published in Frontiers in Sustainability (2026).",
+        pub6_url: "https://www.frontiersin.org/journals/sustainability/articles/10.3389/frsus.2026.1958541/full",
+        pub6_link_label: "View in Frontiers in Sustainability",
         resources_title: "Academic Profile",
         googleScholar: "Google Scholar Profile",
         linkedin: "LinkedIn Profile",
@@ -136,7 +156,7 @@ const content = {
         hero_subtext: "Ph.D. de The University of Western Ontario, Canadá.",
         hero_cta: "Agenda una Consulta de Tesis/Artículo",
         about_title: "Acerca del Dr. Sornoza Parrales",
-        about_summary_p1: "Con más de 10 años de experiencia en educación superior, el Dr. Diego Sornoza Parrales aporta una amplia experiencia en investigación, docencia y gestión académica.",
+        about_summary_p1: "Con más de 12 años de experiencia en educación superior, el Dr. Diego Sornoza Parrales aporta una amplia experiencia en investigación, docencia y gestión académica.",
         about_summary_p2: "Como Investigador Acreditado (SENESCYT: REG-INV-16-01687) y Profesor Asociado, se especializa en Políticas Críticas, Equidad y Estudios de Liderazgo. Su Ph.D. de The University of Western Ontario, Canadá, combinado con amplia experiencia dirigiendo tesis de posgrado, lo posiciona de manera única para guiar a los investigadores en cada etapa de su trayectoria académica.",
         about_summary_p3: "Su pasión es empoderar a los investigadores para alcanzar el éxito en la publicación a través de métodos estratégicos y modernos, incluyendo la integración ética de la IA.",
         services_title: "Experiencia y Servicios",
@@ -151,9 +171,9 @@ const content = {
         service4_description: "Uso ético y efectivo de herramientas modernas de IA en el proceso de investigación, respaldado por investigación especializada en Tecnología Educativa e Inteligencia Artificial.",
         credentials_title: "Prueba de Impacto y Credenciales",
         cred1_title: "Investigador Destacado",
-        cred1_description: "Reconocido como 'Investigador destacado' (Nivel 1—nivel máximo) en 2024 por UNESUM por su sobresaliente productividad científica.",
+        cred1_description: "Reconocido como 'Investigador destacado' (Nivel 1—nivel máximo) en 2024 y 2025 por UNESUM por su sobresaliente productividad científica.",
         cred2_title: "Publicaciones de Alto Impacto",
-        cred2_description: "Autor/Coautor de 2 libros y más de 20 artículos en revistas arbitradas (SCOPUS y bases regionales).",
+        cred2_description: "Autor/Coautor de 6 libros y más de 50 artículos en revistas indexadas (SCOPUS y bases regionales).",
         counter_years: "Años de Experiencia",
         counter_articles: "Artículos Publicados",
         counter_books: "Libros Publicados",
@@ -165,10 +185,24 @@ const content = {
         pub1_link_label: "Ver en Frontiers in Virtual Reality",
         pub2_title: "Percepciones de Estudiantes de Administración de Empresas sobre la Evaluación Formativa como Herramienta de Instrucción",
         pub2_abstract: "Este estudio con 112 estudiantes ecuatorianos reveló que sus percepciones sobre la evaluación formativa son moderadamente positivas. Aunque la congruencia y la autenticidad fueron bien valoradas, la consulta (participación estudiantil) fue la más baja. Se recomienda mejorar la autenticidad de las tareas y la participación del estudiante en los criterios de evaluación.",
+        pub2_url: "https://www.edupij.com/index/arsiv/79/893/business-administration-students-perceptions-of-formative-assessment-as-an-instructional-tool",
+        pub2_link_label: "Ver publicación",
         pub3_title: "Modalidad educativa y rendimiento: Patrones diferenciales por especialidad en una cohorte universitaria antes, durante y después de la pandemia de COVID-19",
         pub3_abstract: "Este estudio longitudinal con 442 estudiantes mostró que la virtualidad por COVID-19 impactó el rendimiento de forma desigual. Los programas de Salud mejoraron y terminaron con saldo positivo. En cambio, programas técnicos como Ingeniería Civil cayeron al volver a la presencialidad, registrando pérdidas. Se concluye que se requieren estrategias educativas diferenciadas por disciplina.",
+        pub3_url: "https://sct.ageditor.ar/index.php/sct/article/view/2266",
+        pub3_link_label: "Ver publicación",
         pub4_title: "Inteligencia Artificial en la Transformación del Proceso de Enseñanza-Aprendizaje",
         pub4_abstract: "Este estudio correlacional encuestó a 234 estudiantes de Administración de Empresas sobre el uso de la Inteligencia Artificial (IA). Los resultados revelaron un alto uso de herramientas como ChatGPT y una correlación positiva y significativa (ρ = 0.827) entre el uso de la IA y la transformación del proceso de enseñanza-aprendizaje. Se concluye que el uso estratégico de la IA crea ambientes educativos más dinámicos e innovadores.",
+        pub4_url: "https://produccioncientifica.luz.edu.ve/index.php/rvg/article/view/44169/52463",
+        pub4_link_label: "Ver en Revista Venezolana de Gerencia",
+        pub5_title: "Planificación estratégica de la internacionalización en universidades públicas: análisis bibliométrico de la producción científica 2003-2025",
+        pub5_abstract: "Este análisis bibliométrico examina dos décadas (2003–2025) de producción científica sobre la planificación estratégica de los procesos de internacionalización en universidades públicas, mapeando las tendencias de investigación y las estrategias institucionales en la internacionalización de la educación superior.",
+        pub5_url: "https://revista.sangregorio.edu.ec/index.php/REVISTASANGREGORIO/article/view/4211",
+        pub5_link_label: "Ver en Revista San Gregorio",
+        pub6_title: "Inteligencia artificial para la construcción net-zero: un mapeo bibliométrico del panorama de investigación, clústeres temáticos y direcciones emergentes en la industria AEC",
+        pub6_abstract: "Este estudio de mapeo bibliométrico analiza el panorama de investigación sobre aplicaciones de inteligencia artificial para la construcción net-zero, identificando clústeres temáticos y direcciones emergentes en la industria de Arquitectura, Ingeniería y Construcción (AEC). Publicado en Frontiers in Sustainability (2026).",
+        pub6_url: "https://www.frontiersin.org/journals/sustainability/articles/10.3389/frsus.2026.1958541/full",
+        pub6_link_label: "Ver en Frontiers in Sustainability",
         resources_title: "Perfil Académico",
         googleScholar: "Perfil de Google Scholar",
         linkedin: "Perfil de LinkedIn",
@@ -239,10 +273,24 @@ function updateContent() {
     document.querySelector('#pub1-link').textContent = langData.pub1_link_label;
     document.querySelector('#pub2-title').textContent = langData.pub2_title;
     document.querySelector('#pub2-abstract').textContent = langData.pub2_abstract;
+    document.querySelector('#pub2-link').textContent = langData.pub2_link_label;
+    document.querySelector('#pub2-link').href = langData.pub2_url;
     document.querySelector('#pub3-title').textContent = langData.pub3_title;
     document.querySelector('#pub3-abstract').textContent = langData.pub3_abstract;
+    document.querySelector('#pub3-link').textContent = langData.pub3_link_label;
+    document.querySelector('#pub3-link').href = langData.pub3_url;
     document.querySelector('#pub4-title').textContent = langData.pub4_title;
     document.querySelector('#pub4-abstract').textContent = langData.pub4_abstract;
+    document.querySelector('#pub4-link').textContent = langData.pub4_link_label;
+    document.querySelector('#pub4-link').href = langData.pub4_url;
+    document.querySelector('#pub5-title').textContent = langData.pub5_title;
+    document.querySelector('#pub5-abstract').textContent = langData.pub5_abstract;
+    document.querySelector('#pub5-link').textContent = langData.pub5_link_label;
+    document.querySelector('#pub5-link').href = langData.pub5_url;
+    document.querySelector('#pub6-title').textContent = langData.pub6_title;
+    document.querySelector('#pub6-abstract').textContent = langData.pub6_abstract;
+    document.querySelector('#pub6-link').textContent = langData.pub6_link_label;
+    document.querySelector('#pub6-link').href = langData.pub6_url;
     document.querySelector('#resources-title').textContent = langData.resources_title;
     document.querySelector('#google-scholar-link').textContent = langData.googleScholar;
     document.querySelector('#linkedin-link').textContent = langData.linkedin;
@@ -298,6 +346,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     lucide.createIcons();
+
+    // Publications carousel controls
+    const pubCarousel = document.getElementById('publications-carousel');
+    const pubScrollLeft = document.getElementById('pub-scroll-left');
+    const pubScrollRight = document.getElementById('pub-scroll-right');
+    if (pubCarousel && pubScrollLeft && pubScrollRight) {
+        const scrollAmount = () => pubCarousel.querySelector(':scope > div')?.offsetWidth + 24 || 420;
+        pubScrollLeft.addEventListener('click', () => pubCarousel.scrollBy({ left: -scrollAmount(), behavior: 'smooth' }));
+        pubScrollRight.addEventListener('click', () => pubCarousel.scrollBy({ left: scrollAmount(), behavior: 'smooth' }));
+    }
 
     // Impact counter animation
     const counters = document.querySelectorAll('.counter-number');
@@ -398,7 +456,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
                 <div class="flex-shrink-0">
-                    <img src="./Foto headshot small.jpg" alt="Dr. Diego Sornoza Parrales"
+                    <img src="/assets/headshot.webp" alt="Dr. Diego Sornoza Parrales"
                         onerror="this.onerror=null;this.src='https://placehold.co/320x320/06B6D4/FFFFFF?text=Dr.+Sornoza';"
                         class="w-64 h-64 md:w-80 md:h-80 rounded-full object-cover shadow-elevated border-4 border-primary/20"/>
                 </div>
@@ -493,25 +551,25 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
                 <div class="counter-item p-6">
                     <div class="text-4xl md:text-5xl font-extrabold text-primary mb-2">
-                        <span class="counter-number" data-target="10" data-suffix="+">0+</span>
+                        <span class="counter-number" data-target="12" data-suffix="+">0+</span>
                     </div>
                     <p class="text-sm font-medium text-muted-foreground" id="counter-years-label">Years of Experience</p>
                 </div>
                 <div class="counter-item p-6">
                     <div class="text-4xl md:text-5xl font-extrabold text-primary mb-2">
-                        <span class="counter-number" data-target="20" data-suffix="+">0+</span>
+                        <span class="counter-number" data-target="50" data-suffix="+">0+</span>
                     </div>
                     <p class="text-sm font-medium text-muted-foreground" id="counter-articles-label">Published Articles</p>
                 </div>
                 <div class="counter-item p-6">
                     <div class="text-4xl md:text-5xl font-extrabold text-primary mb-2">
-                        <span class="counter-number" data-target="2" data-suffix="">0</span>
+                        <span class="counter-number" data-target="6" data-suffix="">0</span>
                     </div>
                     <p class="text-sm font-medium text-muted-foreground" id="counter-books-label">Books Authored</p>
                 </div>
                 <div class="counter-item p-6">
                     <div class="text-4xl md:text-5xl font-extrabold text-primary mb-2">
-                        <span class="counter-number" data-target="8" data-suffix="">0</span>
+                        <span class="counter-number" data-target="10" data-suffix="">0</span>
                     </div>
                     <p class="text-sm font-medium text-muted-foreground" id="counter-theses-label">Theses Directed</p>
                 </div>
@@ -522,54 +580,85 @@ document.addEventListener('DOMContentLoaded', () => {
 
     <!-- Publications -->
     <section id="publications" class="scroll-mt-24 py-20 px-4 md:px-8 bg-muted/50">
-        <div class="container mx-auto max-w-5xl">
-            <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center" id="publications-title">Recent Publications</h2>
-            <div class="space-y-6">
+        <div class="container mx-auto max-w-6xl">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-center" id="publications-title">Recent Publications</h2>
+            <div class="flex justify-center gap-2 mb-8">
+                <button id="pub-scroll-left" aria-label="Scroll left"
+                    class="inline-flex items-center justify-center h-9 w-9 rounded-full border border-input bg-background hover:bg-muted transition-colors">
+                    <i data-lucide="chevron-left" class="h-4 w-4"></i>
+                </button>
+                <button id="pub-scroll-right" aria-label="Scroll right"
+                    class="inline-flex items-center justify-center h-9 w-9 rounded-full border border-input bg-background hover:bg-muted transition-colors">
+                    <i data-lucide="chevron-right" class="h-4 w-4"></i>
+                </button>
+            </div>
+            <div id="publications-carousel" class="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4 scroll-smooth -mx-4 px-4 md:-mx-8 md:px-8">
 
-                <div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300">
-                    <div class="flex gap-4">
-                        <i data-lucide="file-text" class="h-6 w-6 text-primary flex-shrink-0 mt-1"></i>
-                        <div>
-                            <h3 class="text-xl font-semibold text-card-foreground mb-3" id="pub1-title"></h3>
-                            <p class="text-muted-foreground leading-relaxed mb-4" id="pub1-abstract"></p>
-                            <a id="pub1-link" href="https://www.frontiersin.org/journals/virtual-reality/articles/10.3389/frvir.2025.1725875/full"
-                                target="_blank" rel="noopener noreferrer"
-                                class="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
-                                View in Frontiers in Virtual Reality
-                                <i data-lucide="external-link" class="h-3.5 w-3.5"></i>
-                            </a>
-                        </div>
-                    </div>
+                <div class="snap-start shrink-0 w-[85vw] sm:w-[420px] bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300 flex flex-col">
+                    <i data-lucide="file-text" class="h-6 w-6 text-primary flex-shrink-0 mb-3"></i>
+                    <h3 class="text-xl font-semibold text-card-foreground mb-3" id="pub1-title"></h3>
+                    <p class="text-muted-foreground leading-relaxed mb-4 flex-1" id="pub1-abstract"></p>
+                    <a id="pub1-link" href="https://www.frontiersin.org/journals/virtual-reality/articles/10.3389/frvir.2025.1725875/full"
+                        target="_blank" rel="noopener noreferrer"
+                        class="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+                        View in Frontiers in Virtual Reality
+                        <i data-lucide="external-link" class="h-3.5 w-3.5"></i>
+                    </a>
                 </div>
 
-                <div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300">
-                    <div class="flex gap-4">
-                        <i data-lucide="file-text" class="h-6 w-6 text-primary flex-shrink-0 mt-1"></i>
-                        <div>
-                            <h3 class="text-xl font-semibold text-card-foreground mb-3" id="pub2-title"></h3>
-                            <p class="text-muted-foreground leading-relaxed" id="pub2-abstract"></p>
-                        </div>
-                    </div>
+                <div class="snap-start shrink-0 w-[85vw] sm:w-[420px] bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300 flex flex-col">
+                    <i data-lucide="file-text" class="h-6 w-6 text-primary flex-shrink-0 mb-3"></i>
+                    <h3 class="text-xl font-semibold text-card-foreground mb-3" id="pub2-title"></h3>
+                    <p class="text-muted-foreground leading-relaxed mb-4 flex-1" id="pub2-abstract"></p>
+                    <a id="pub2-link" href="#" target="_blank" rel="noopener noreferrer"
+                        class="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+                        View publication
+                        <i data-lucide="external-link" class="h-3.5 w-3.5"></i>
+                    </a>
                 </div>
 
-                <div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300">
-                    <div class="flex gap-4">
-                        <i data-lucide="file-text" class="h-6 w-6 text-primary flex-shrink-0 mt-1"></i>
-                        <div>
-                            <h3 class="text-xl font-semibold text-card-foreground mb-3" id="pub3-title"></h3>
-                            <p class="text-muted-foreground leading-relaxed" id="pub3-abstract"></p>
-                        </div>
-                    </div>
+                <div class="snap-start shrink-0 w-[85vw] sm:w-[420px] bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300 flex flex-col">
+                    <i data-lucide="file-text" class="h-6 w-6 text-primary flex-shrink-0 mb-3"></i>
+                    <h3 class="text-xl font-semibold text-card-foreground mb-3" id="pub3-title"></h3>
+                    <p class="text-muted-foreground leading-relaxed mb-4 flex-1" id="pub3-abstract"></p>
+                    <a id="pub3-link" href="#" target="_blank" rel="noopener noreferrer"
+                        class="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+                        View publication
+                        <i data-lucide="external-link" class="h-3.5 w-3.5"></i>
+                    </a>
                 </div>
 
-                <div class="bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300">
-                    <div class="flex gap-4">
-                        <i data-lucide="file-text" class="h-6 w-6 text-primary flex-shrink-0 mt-1"></i>
-                        <div>
-                            <h3 class="text-xl font-semibold text-card-foreground mb-3" id="pub4-title"></h3>
-                            <p class="text-muted-foreground leading-relaxed" id="pub4-abstract"></p>
-                        </div>
-                    </div>
+                <div class="snap-start shrink-0 w-[85vw] sm:w-[420px] bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300 flex flex-col">
+                    <i data-lucide="file-text" class="h-6 w-6 text-primary flex-shrink-0 mb-3"></i>
+                    <h3 class="text-xl font-semibold text-card-foreground mb-3" id="pub4-title"></h3>
+                    <p class="text-muted-foreground leading-relaxed mb-4 flex-1" id="pub4-abstract"></p>
+                    <a id="pub4-link" href="#" target="_blank" rel="noopener noreferrer"
+                        class="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+                        View publication
+                        <i data-lucide="external-link" class="h-3.5 w-3.5"></i>
+                    </a>
+                </div>
+
+                <div class="snap-start shrink-0 w-[85vw] sm:w-[420px] bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300 flex flex-col">
+                    <i data-lucide="file-text" class="h-6 w-6 text-primary flex-shrink-0 mb-3"></i>
+                    <h3 class="text-xl font-semibold text-card-foreground mb-3" id="pub5-title"></h3>
+                    <p class="text-muted-foreground leading-relaxed mb-4 flex-1" id="pub5-abstract"></p>
+                    <a id="pub5-link" href="#" target="_blank" rel="noopener noreferrer"
+                        class="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+                        View publication
+                        <i data-lucide="external-link" class="h-3.5 w-3.5"></i>
+                    </a>
+                </div>
+
+                <div class="snap-start shrink-0 w-[85vw] sm:w-[420px] bg-card p-8 rounded-xl shadow-soft border border-border hover:shadow-elevated transition-all duration-300 flex flex-col">
+                    <i data-lucide="file-text" class="h-6 w-6 text-primary flex-shrink-0 mb-3"></i>
+                    <h3 class="text-xl font-semibold text-card-foreground mb-3" id="pub6-title"></h3>
+                    <p class="text-muted-foreground leading-relaxed mb-4 flex-1" id="pub6-abstract"></p>
+                    <a id="pub6-link" href="#" target="_blank" rel="noopener noreferrer"
+                        class="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+                        View publication
+                        <i data-lucide="external-link" class="h-3.5 w-3.5"></i>
+                    </a>
                 </div>
 
             </div>
