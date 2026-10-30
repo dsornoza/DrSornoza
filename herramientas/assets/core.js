@@ -54,6 +54,11 @@
 
   const S = {
     catalog: { es: 'Catálogo', en: 'Catalog' },
+    back: { es: 'Volver', en: 'Back' },
+    crumb_nav: { es: 'Ruta de navegación', en: 'Breadcrumb' },
+    crumb_home: { es: 'Inicio', en: 'Home' },
+    crumb_resources: { es: 'Recursos', en: 'Resources' },
+    crumb_tools: { es: 'Herramientas IA', en: 'AI tools' },
     site: { es: 'Herramientas IA para docentes', en: 'AI tools for educators' },
     key_set: { es: 'Configurar API Key', en: 'Set API key' },
     key_ok: { es: 'API Key lista', en: 'API key ready' },
@@ -101,6 +106,9 @@
     err_no_key: { es: 'Configura primero tu API Key de Gemini.', en: 'Set your Gemini API key first.' },
     err_key: { es: 'Google rechazó la API Key. Revisa que esté completa y activa.', en: 'Google rejected the API key. Check that it is complete and active.' },
     err_busy: { es: 'Los modelos de Gemini tienen alta demanda en este momento (es temporal). Espera un minuto e inténtalo de nuevo.', en: 'Gemini models are under high demand right now (this is temporary). Wait a minute and try again.' },
+    model_stalled: { es: 'El modelo {a} no responde. Probando con {b}…', en: 'Model {a} is not responding. Trying {b}…' },
+    err_stalled: { es: 'Gemini no respondió a tiempo y no hay otro modelo disponible para probar. Inténtalo de nuevo en un momento.', en: 'Gemini did not respond in time and no other model is available to try. Please try again in a moment.' },
+    gen_slow: { es: 'Gemini está tardando más de lo normal. Si no responde, se probará otro modelo automáticamente; también puedes pulsar «Detener» e intentarlo de nuevo.', en: 'Gemini is taking longer than usual. If it does not respond, another model will be tried automatically; you can also press “Stop” and try again.' },
     model_trying: { es: 'El modelo {a} está saturado o sin cuota. Probando con {b}…', en: 'Model {a} is overloaded or out of quota. Trying {b}…' },
     err_quota: { es: 'Se alcanzó el límite de uso gratuito de Gemini. Espera un momento o cambia de modelo (p. ej. flash-lite).', en: 'The free Gemini usage limit was reached. Wait a moment or switch model (e.g. flash-lite).' },
     err_model: { es: 'Ese modelo no está disponible para tu key. Abre la configuración de la API Key y pulsa «Detectar modelos disponibles».', en: 'That model is not available for your key. Open the API key settings and press “Detect available models”.' },
@@ -122,6 +130,7 @@
     { id: 'eval', icon: 'clipboard-check', label: { es: 'Evaluación', en: 'Assessment' } },
     { id: 'thesis', icon: 'graduation-cap', label: { es: 'Tesis y artículos', en: 'Theses & papers' } },
     { id: 'data', icon: 'bar-chart-3', label: { es: 'Análisis de datos', en: 'Data analysis' } },
+    { id: 'admin', icon: 'briefcase', label: { es: 'Gestión docente', en: 'Teaching admin' } },
     { id: 'student', icon: 'users', label: { es: 'Para estudiantes', en: 'For students' } },
   ];
   ST.TOOLS = [
@@ -140,12 +149,27 @@
     { id: 'borrador', cat: 'student', icon: 'file-pen-line', ready: true, badge: { es: 'Enlace para tus estudiantes', en: 'Link for your students' },
       title: { es: 'Evaluador de borradores', en: 'Draft feedback' },
       desc: { es: 'Crea un enlace donde el estudiante pega su borrador y recibe retroalimentación formativa según tu rúbrica, sin que la IA reescriba su texto.', en: 'Create a link where students paste a draft and get formative feedback against your rubric, without the AI rewriting their text.' } },
+    { id: 'competencias', cat: 'plan', icon: 'compass', ready: true, badge: { es: 'Borrador completo en un paso', en: 'Full draft in one step' },
+      title: { es: 'Guía para construir competencias', en: 'Competency-building guide' },
+      desc: { es: 'Das tus datos de partida y obtienes un borrador completo de tu ficha de competencia (Anexo B) para revisar, ajustar y exportar a Word o PDF, con revisión de coherencia.', en: 'Provide your starting data and get a complete draft of your competency sheet (Annex B) to review, adjust and export to Word or PDF, with a coherence review.' } },
     { id: 'silabo', cat: 'plan', icon: 'book-open', ready: true, title: { es: 'Sílabo', en: 'Syllabus' }, desc: { es: 'Sílabo alineado a resultados de aprendizaje.', en: 'Syllabus aligned to learning outcomes.' } },
     { id: 'resultados', cat: 'plan', icon: 'target', ready: true, title: { es: 'Resultados de aprendizaje', en: 'Learning outcomes' }, desc: { es: 'Redacción medible con taxonomía de Bloom.', en: 'Measurable outcomes using Bloom\'s taxonomy.' } },
     { id: 'banco-preguntas', cat: 'eval', icon: 'list-checks', ready: true, title: { es: 'Banco de preguntas', en: 'Question bank' }, desc: { es: 'Opción múltiple y casos con retroalimentación.', en: 'Multiple choice and case items with feedback.' } },
     { id: 'retroalimentacion', cat: 'eval', icon: 'message-square-text', ready: true, title: { es: 'Retroalimentación a trabajos', en: 'Feedback on student work' }, desc: { es: 'Comentarios según tu rúbrica.', en: 'Comments based on your rubric.' } },
     { id: 'matriz-consistencia', cat: 'thesis', icon: 'grid-3x3', ready: true, title: { es: 'Matriz de consistencia', en: 'Consistency matrix' }, desc: { es: 'Problema, objetivos, hipótesis y método alineados.', en: 'Aligned problem, objectives, hypotheses and method.' } },
     { id: 'ecuacion-busqueda', cat: 'thesis', icon: 'search', ready: true, title: { es: 'Ecuación de búsqueda', en: 'Search string' }, desc: { es: 'Scopus y Web of Science con sinónimos y operadores.', en: 'Scopus and Web of Science with synonyms and operators.' } },
+    { id: 'titulos', cat: 'thesis', icon: 'sparkles', ready: true, title: { es: 'Generador de títulos', en: 'Title generator' }, desc: { es: 'Técnica 5W+1H: 3 títulos propositivos para tu proyecto de titulación.', en: '5W+1H technique: 3 propositional titles for your degree project.' } },
+    { id: 'gancho-inicio', cat: 'plan', icon: 'zap', ready: true, title: { es: 'Gancho de inicio de clase', en: 'Lesson hook' }, desc: { es: 'Ideas para abrir tu clase captando la atención y conectando con el tema.', en: 'Ways to open your class, grabbing attention and connecting with the topic.' } },
+    { id: 'contexto-real', cat: 'plan', icon: 'globe', ready: true, title: { es: 'Contexto real y relevancia', en: 'Real-world context' }, desc: { es: 'Conecta un tema con aplicaciones reales y con la vida de tus estudiantes.', en: 'Connect a topic with real applications and your students\' lives.' } },
+    { id: 'texto-adaptado', cat: 'plan', icon: 'file-text', ready: true, title: { es: 'Texto adaptado', en: 'Adapted text' }, desc: { es: 'Fragmenta, cambia el nivel de lectura o reescribe un texto sin perder su significado.', en: 'Split, change the reading level of, or rewrite a text without losing its meaning.' } },
+    { id: 'preguntas-discusion', cat: 'plan', icon: 'messages-square', ready: true, title: { es: 'Preguntas para discusión', en: 'Discussion prompts' }, desc: { es: 'Preguntas, dilemas y repreguntas para discusiones significativas en clase.', en: 'Questions, dilemmas and follow-ups for meaningful class discussions.' } },
+    { id: 'ticket-salida', cat: 'eval', icon: 'ticket', ready: true, title: { es: 'Ticket de salida', en: 'Exit ticket' }, desc: { es: 'Preguntas rápidas de cierre con respuestas esperadas y qué hacer con los resultados.', en: 'Quick closing questions with expected answers and what to do with the results.' } },
+    { id: 'carta-recomendacion', cat: 'admin', icon: 'mail', ready: true, title: { es: 'Carta de recomendación', en: 'Recommendation letter' }, desc: { es: 'Carta personalizada a partir de lo que sabes del estudiante, sin inventar logros.', en: 'Personalized letter from what you know about the student, without inventing achievements.' } },
+    { id: 'instrucciones-claras', cat: 'plan', icon: 'list-ordered', ready: true, title: { es: 'Instrucciones claras para tareas', en: 'Clear task directions' }, desc: { es: 'Convierte la descripción de una tarea en instrucciones listas para pegar en Classroom, Moodle u otra aula virtual.', en: 'Turn a task description into directions ready to paste into Classroom, Moodle or another LMS.' } },
+    { id: 'texto-informativo', cat: 'plan', icon: 'book-open', ready: true, title: { es: 'Texto informativo', en: 'Informational text' }, desc: { es: 'Texto de apoyo sobre un tema, con el nivel y la extensión que necesites.', en: 'A supporting text on a topic, at the level and length you need.' } },
+    { id: 'adaptaciones-inclusivas', cat: 'plan', icon: 'accessibility', ready: true, title: { es: 'Adaptaciones inclusivas (DUA)', en: 'Inclusive adaptations (UDL)' }, desc: { es: 'Ajustes razonables y estrategias DUA para estudiantes con necesidades educativas especiales.', en: 'Reasonable adjustments and UDL strategies for students with special educational needs.' } },
+    { id: 'meta-smart', cat: 'admin', icon: 'target', ready: true, title: { es: 'Metas SMART', en: 'SMART goals' }, desc: { es: 'Convierte una meta general en una meta específica, medible, alcanzable, relevante y con plazo.', en: 'Turn a general goal into a specific, measurable, achievable, relevant and time-bound one.' } },
+    { id: 'correo-profesional', cat: 'admin', icon: 'send', ready: true, title: { es: 'Correo electrónico profesional', en: 'Professional email' }, desc: { es: 'Correos claros y corteses para estudiantes, colegas y autoridades, o respuestas a correos recibidos.', en: 'Clear, courteous emails to students, colleagues and authorities, or replies to emails you received.' } },
     { id: 'revisor-redaccion', cat: 'thesis', icon: 'pen-line', ready: true, title: { es: 'Revisor de redacción académica', en: 'Academic writing reviewer' }, desc: { es: 'Claridad, coherencia y estilo APA 7 en avances de tesis.', en: 'Clarity, coherence and APA 7 style in thesis drafts.' } },
   ];
 
@@ -182,7 +206,7 @@
     }
     return ids;
   };
-  ST.getKey = () => LS.get('gemini_key', '') || ''; // misma clave que usa recursos/titulos
+  ST.getKey = () => LS.get('gemini_key', '') || ''; // clave única compartida por todas las herramientas
   ST.getModel = () => LS.get('st_model', MODELS[0]);
 
   function openKeyModal(onDone) {
@@ -234,7 +258,7 @@
       const k = $('#st-key', bg).value.trim();
       if (k) LS.set('gemini_key', k);
       const m = sel.value === '__custom' ? custom.value.trim() : sel.value;
-      if (m) LS.set('st_model', m);
+      if (m) { LS.set('st_model', m); LS.del('st_model_good'); }
       close(); updateKeyButtons(); onDone && onDone();
     };
     $('#st-key', bg).focus();
@@ -258,18 +282,27 @@
       document.body.innerHTML = `
         <header class="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur no-print" style="border-color:var(--border)">
           <div class="container mx-auto flex h-16 items-center justify-between gap-3 px-4 md:px-8">
-            <a href="${opts.student ? '/' : BASE}" class="flex items-center gap-2 min-w-0">
-              <img src="/assets/logo-mark.png" alt="" class="h-7 w-auto">
-              <span class="text-sm md:text-base font-semibold truncate">${esc(opts.student ? ST.t({ es: 'Herramienta de estudio con IA', en: 'AI study tool' }) : ST.t('site'))}</span>
-              ${opts.student ? '' : `<span class="st-chip" style="background:#fef3c7;color:#92400e" title="${esc(ST.t('beta_title'))}">BETA</span>`}
-            </a>
+            <div class="flex items-center gap-2 min-w-0">
+              <a href="/" class="flex-shrink-0" title="sornoza.com" aria-label="sornoza.com"><img src="/assets/logo-mark.png" alt="" class="h-7 w-auto"></a>
+              <a href="${opts.student ? '/' : BASE}" class="flex items-center gap-2 min-w-0">
+                <span class="text-sm md:text-base font-semibold truncate">${esc(opts.student ? ST.t({ es: 'Herramienta de estudio con IA', en: 'AI study tool' }) : ST.t('site'))}</span>
+                ${opts.student ? '' : `<span class="st-chip" style="background:#fef3c7;color:#92400e" title="${esc(ST.t('beta_title'))}">BETA</span>`}
+              </a>
+            </div>
             <div class="flex items-center gap-2 flex-shrink-0">
-              ${opts.catalog || opts.student ? '' : `<a href="${BASE}" class="hidden sm:inline text-sm font-medium" style="color:var(--muted-foreground)">← ${esc(ST.t('catalog'))}</a>`}
+              ${opts.student ? '' : `<a href="${opts.catalog ? '/recursos/' : BASE}" class="st-btn st-btn-sm" aria-label="${esc(ST.t('back'))}">←<span class="st-back-label">${esc(ST.t('back'))}</span></a>`}
               <button class="st-btn st-btn-sm" id="st-lang" title="Language / Idioma">${ST.lang === 'es' ? 'EN' : 'ES'}</button>
               ${opts.noKey ? '' : '<button class="st-btn st-btn-sm" data-key-btn></button>'}
             </div>
           </div>
         </header>
+        ${opts.student ? '' : `<nav aria-label="${esc(ST.t('crumb_nav'))}" class="container mx-auto px-4 md:px-8 pt-4 text-sm no-print" style="color:var(--muted-foreground)">
+          <ol class="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <li><a href="/" class="hover:underline">${esc(ST.t('crumb_home'))}</a></li><li aria-hidden="true">/</li>
+            <li><a href="/recursos/" class="hover:underline">${esc(ST.t('crumb_resources'))}</a></li><li aria-hidden="true">/</li>
+            ${opts.catalog ? `<li aria-current="page" class="font-semibold" style="color:var(--card-foreground)">${esc(ST.t('crumb_tools'))}</li>` : `<li><a href="${BASE}" class="hover:underline">${esc(ST.t('crumb_tools'))}</a></li><li aria-hidden="true">/</li><li aria-current="page" class="font-semibold" style="color:var(--card-foreground)">${esc(ST.t(opts.crumb))}</li>`}
+          </ol>
+        </nav>`}
         <div id="st-main"></div>
         <footer class="py-8 px-4 border-t text-center text-sm no-print" style="border-color:var(--border);color:var(--muted-foreground);background:#fff;margin-top:3rem">
           ${esc(ST.t('footer'))}<br>&copy; ${new Date().getFullYear()} Dr. Diego Sornoza Parrales — <a href="/" class="hover:underline" style="color:var(--primary)">sornoza.com</a>
@@ -354,10 +387,24 @@
   /* ================= Cliente Gemini (streaming) ================= */
   const apiErr = (code, extra) => { const e = new Error(ST.t('err_' + code) + (extra ? ' (' + extra + ')' : '')); e.code = code; return e; };
 
+  // Tiempos máximos sin recibir datos (ms): si Gemini no responde, se corta ese intento y se prueba otro modelo.
+  ST.geminiTimeouts = { first: 30000, stall: 30000 };
+  // Si hubo que cambiar de modelo, el que funcionó se recuerda 3 h para no volver a chocar con el saturado.
+  const GOOD_KEY = 'st_model_good', GOOD_TTL = 3 * 60 * 60 * 1000;
+  const readGood = () => { try { const g = JSON.parse(LS.get(GOOD_KEY, 'null')); return g && g.m && Date.now() - g.ts < GOOD_TTL ? g.m : null; } catch (e) { return null; } };
+  // Pensamiento interno acotado: los modelos con "thinking" pueden tardar decenas de segundos antes de escribir la primera palabra.
+  // Serie 3+ usa thinkingLevel; serie 2.5 usa thinkingBudget. Si la API rechaza una forma, se prueba la siguiente y por último ninguna.
+  const thinkingModes = (m) => {
+    if (/gemini-(3|[4-9])|latest/.test(m)) return [{ thinkingLevel: 'low' }, { thinkingBudget: 1024 }, null];
+    if (/gemini-2\.5/.test(m)) return [{ thinkingBudget: 1024 }, null];
+    return [null]; // modelos sin thinking: no se envía nada
+  };
+  const thinkStage = {}; // modelo -> posición en thinkingModes (en memoria)
+
   ST.gemini = async function ({ system, prompt, messages, temperature = 0.6, signal, onChunk }) {
     const key = ST.getKey();
     if (!key) throw apiErr('no_key');
-    let model = ST.getModel(), switched = false, knownIds = null;
+    let model = readGood() || ST.getModel(), switched = false, knownIds = null;
     const tried = new Set([model]);
     const urlFor = (m) => `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(m)}:streamGenerateContent?alt=sse`;
     let url = urlFor(model);
@@ -368,82 +415,113 @@
     const bodyFor = () => JSON.stringify({
       ...(system ? { systemInstruction: { parts: [{ text: system }] } } : {}),
       contents,
-      generationConfig: { temperature, maxOutputTokens: maxTok(model) },
+      generationConfig: { temperature, maxOutputTokens: maxTok(model), ...(thinkingModes(model)[thinkStage[model] || 0] ? { thinkingConfig: thinkingModes(model)[thinkStage[model] || 0] } : {}) },
     });
     const CONTINUE = 'Continue exactly where your previous message stopped. Do not repeat anything already written and do not add any preface or comment: write the very next characters of the same document.';
 
-    for (let attempt = 0; ; attempt++) {
-      let res;
-      try {
-        res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key }, body: bodyFor(), signal });
-      } catch (e) {
-        if (e.name === 'AbortError') throw e;
-        throw apiErr('net');
-      }
-      if (!res.ok) {
-        if ((res.status === 429 || res.status === 503) && attempt < 2) { await sleep(2500 * (attempt + 1), signal); continue; }
-        if ((res.status === 429 || res.status === 503) && tried.size < 4) {
-          // Saturado o sin cuota tras reintentar: la demanda y la cuota son por modelo, así que probamos otro (sin guardarlo)
-          if (!knownIds) { try { knownIds = await ST.listModels(key, signal); } catch (e) { if (e.name === 'AbortError') throw e; knownIds = []; } }
-          const alt = knownIds.filter((id) => !tried.has(id) && modelScore(id) >= 0).sort((a, b) => modelScore(b) - modelScore(a))[0];
-          if (alt) {
-            ST.toast(ST.t('model_trying').replace('{a}', model).replace('{b}', alt));
-            tried.add(alt); model = alt; url = urlFor(alt); attempt = 1; continue; // un solo intento más por modelo alterno
-          }
-        }
-        let msg = '';
-        try { msg = (await res.json()).error.message || ''; } catch (e) { /* sin cuerpo */ }
-        if (res.status === 429) throw apiErr('quota');
-        if (res.status === 503) throw apiErr('busy');
-        if (res.status === 404) {
-          // El modelo ya no existe para esta key: buscamos uno vigente, lo guardamos y reintentamos una vez
-          if (!switched) {
-            switched = true;
-            let alt = null;
-            try { alt = pickModel(await ST.listModels(key, signal), model); } catch (e) { if (e.name === 'AbortError') throw e; }
-            if (alt) { model = alt; url = urlFor(alt); LS.set('st_model', alt); ST.toast(ST.t('model_switched').replace('{m}', alt)); continue; }
-          }
-          throw apiErr('model', model);
-        }
-        if (res.status === 401 || res.status === 403 || /API key/i.test(msg)) throw apiErr('key');
-        const e = new Error(msg || 'HTTP ' + res.status); e.code = 'http'; throw e;
-      }
+    // Pasa a otro modelo disponible para esta key (la demanda y la cuota son por modelo). Devuelve false si no hay otro.
+    const hop = async (why) => {
+      if (tried.size >= 5) return false;
+      if (!knownIds) { try { knownIds = await ST.listModels(key, signal); } catch (e) { if (e.name === 'AbortError') throw e; knownIds = []; } }
+      const alt = knownIds.filter((id) => !tried.has(id) && modelScore(id) >= 0).sort((a, b) => modelScore(b) - modelScore(a))[0];
+      if (!alt) return false;
+      ST.toast(ST.t(why === 'stall' ? 'model_stalled' : 'model_trying').replace('{a}', model).replace('{b}', alt));
+      tried.add(alt); model = alt; url = urlFor(alt);
+      return true;
+    };
+    const finish_ok = () => { if (model !== ST.getModel()) LS.set(GOOD_KEY, JSON.stringify({ m: model, ts: Date.now() })); else LS.del(GOOD_KEY); };
 
-      const reader = res.body.getReader(), dec = new TextDecoder();
-      let buf = '', full = '', finish = null;
-      const handle = (line) => {
-        if (!line.startsWith('data:')) return;
-        const js = line.slice(5).trim();
-        if (!js || js === '[DONE]') return;
-        let o; try { o = JSON.parse(js); } catch (e) { return; }
-        if (o.promptFeedback && o.promptFeedback.blockReason) throw apiErr('blocked');
-        const c = o.candidates && o.candidates[0];
-        const t = c && c.content && c.content.parts ? c.content.parts.map((p) => p.text || '').join('') : '';
-        if (t) { full += t; onChunk && onChunk(t, total + full); }
-        if (c && c.finishReason) finish = c.finishReason;
-      };
+    for (let attempt = 0; ; attempt++) {
+      // Un AbortController por intento: lo cortan el usuario (signal) o el vigilante de tiempo
+      const ac = new AbortController(); let timedOut = false, timer = 0;
+      const arm = (ms) => { clearTimeout(timer); timer = setTimeout(() => { timedOut = true; ac.abort(); }, ms); };
+      const onAbort = () => ac.abort();
+      if (signal) { if (signal.aborted) throw new DOMException('Aborted', 'AbortError'); signal.addEventListener('abort', onAbort); }
+      const userAborted = () => !!(signal && signal.aborted);
       try {
-        for (;;) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          buf += dec.decode(value, { stream: true });
-          let i;
-          while ((i = buf.indexOf('\n')) >= 0) { handle(buf.slice(0, i).replace(/\r$/, '')); buf = buf.slice(i + 1); }
+        arm(ST.geminiTimeouts.first);
+        let res;
+        try {
+          res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key }, body: bodyFor(), signal: ac.signal });
+        } catch (e) {
+          if (e.name === 'AbortError') {
+            if (userAborted() || !timedOut) throw e;
+            if (await hop('stall')) { attempt = 1; continue; }
+            throw apiErr('stalled');
+          }
+          throw apiErr('net');
         }
-        if (buf) handle(buf.replace(/\r$/, ''));
-      } catch (e) {
-        if (e.name === 'AbortError' || e.code === 'blocked') throw e;
-        // conexión cortada a mitad de respuesta: se trata como respuesta incompleta (finish = null)
+        if (!res.ok) {
+          clearTimeout(timer);
+          let msg = '';
+          try { msg = (await res.json()).error.message || ''; } catch (e) { /* sin cuerpo */ }
+          if (res.status === 400 && /thinking/i.test(msg) && (thinkStage[model] || 0) < thinkingModes(model).length - 1) { thinkStage[model] = (thinkStage[model] || 0) + 1; attempt--; continue; } // el modelo no admite esa forma de limitar el pensamiento: se prueba la siguiente
+          // 503: un solo reintento rápido; 429 (cuota por modelo): se cambia de modelo de inmediato
+          if (res.status === 503 && attempt < 1) { await sleep(1500, signal); continue; }
+          if ((res.status === 429 || res.status === 503) && await hop('busy')) { attempt = 1; continue; } // un solo intento por modelo alterno
+          if (res.status === 429) throw apiErr('quota');
+          if (res.status === 503) throw apiErr('busy');
+          if (res.status === 404) {
+            // El modelo ya no existe para esta key: buscamos uno vigente, lo guardamos y reintentamos una vez
+            if (!switched) {
+              switched = true;
+              let alt = null;
+              try { alt = pickModel(await ST.listModels(key, signal), model); } catch (e) { if (e.name === 'AbortError') throw e; }
+              if (alt) { model = alt; url = urlFor(alt); LS.set('st_model', alt); LS.del(GOOD_KEY); ST.toast(ST.t('model_switched').replace('{m}', alt)); continue; }
+            }
+            throw apiErr('model', model);
+          }
+          if (res.status === 401 || res.status === 403 || /API key/i.test(msg)) throw apiErr('key');
+          const e = new Error(msg || 'HTTP ' + res.status); e.code = 'http'; throw e;
+        }
+
+        const reader = res.body.getReader(), dec = new TextDecoder();
+        let buf = '', full = '', finish = null, stalledRead = false;
+        const handle = (line) => {
+          if (!line.startsWith('data:')) return;
+          const js = line.slice(5).trim();
+          if (!js || js === '[DONE]') return;
+          let o; try { o = JSON.parse(js); } catch (e) { return; }
+          if (o.promptFeedback && o.promptFeedback.blockReason) throw apiErr('blocked');
+          const c = o.candidates && o.candidates[0];
+          const t = c && c.content && c.content.parts ? c.content.parts.map((p) => (p.thought ? '' : p.text || '')).join('') : '';
+          if (t) { full += t; onChunk && onChunk(t, total + full); }
+          if (c && c.finishReason) finish = c.finishReason;
+        };
+        try {
+          for (;;) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            arm(ST.geminiTimeouts.stall); // llegó información: se reinicia el vigilante
+            buf += dec.decode(value, { stream: true });
+            let i;
+            while ((i = buf.indexOf('\n')) >= 0) { handle(buf.slice(0, i).replace(/\r$/, '')); buf = buf.slice(i + 1); }
+          }
+          if (buf) handle(buf.replace(/\r$/, ''));
+        } catch (e) {
+          if (e.code === 'blocked' || userAborted()) throw e;
+          if (e.name === 'AbortError' && timedOut) stalledRead = true;
+          else if (e.name === 'AbortError') throw e;
+          // conexión cortada o detenida a mitad de respuesta: se trata como respuesta incompleta (finish = null)
+        }
+        clearTimeout(timer);
+        if (!full && !total) {
+          if (stalledRead) { if (await hop('stall')) { attempt = 1; continue; } throw apiErr('stalled'); }
+          throw apiErr(finish === 'SAFETY' ? 'blocked' : 'empty');
+        }
+        total += full;
+        // Respuesta incompleta (límite de tokens o corte de conexión): pedimos al modelo que continúe, hasta 2 veces
+        const cut = finish === 'MAX_TOKENS' || !finish;
+        if (cut && full && cont < 2) {
+          cont++; contents = base.concat([{ role: 'model', parts: [{ text: total }] }, { role: 'user', parts: [{ text: CONTINUE }] }]);
+          attempt = -1; continue;
+        }
+        finish_ok();
+        return { text: total, finish: finish || 'CUT' };
+      } finally {
+        clearTimeout(timer);
+        if (signal) signal.removeEventListener('abort', onAbort);
       }
-      if (!full && !total) throw apiErr(finish === 'SAFETY' ? 'blocked' : 'empty');
-      total += full;
-      // Respuesta incompleta (límite de tokens o corte de conexión): pedimos al modelo que continúe, hasta 2 veces
-      const cut = finish === 'MAX_TOKENS' || !finish;
-      if (cut && full && cont < 2) {
-        cont++; contents = base.concat([{ role: 'model', parts: [{ text: total }] }, { role: 'user', parts: [{ text: CONTINUE }] }]);
-        attempt = -1; continue;
-      }
-      return { text: total, finish: finish || 'CUT' };
     }
   };
 
@@ -695,7 +773,7 @@ ${body}
     const customs = {}; // controladores de campos custom (conservan su estado entre re-render)
     let abort = null, out = null, busy = false;
 
-    const shell = ST.shell({ student: !!cfg.student, noKey: !!cfg.local });
+    const shell = ST.shell({ student: !!cfg.student, noKey: !!cfg.local, crumb: cfg.title });
     const outLangField = { id: '_lang', type: 'select', label: 'out_lang', options: [{ value: 'es', label: { es: 'Español', en: 'Spanish' } }, { value: 'en', label: { es: 'Inglés', en: 'English' } }] };
     const allFields = () => cfg.fields.concat(cfg.noOutLang ? [] : [outLangField]);
     const valOf = (f) => (state.values[f.id] !== undefined ? state.values[f.id] : f.type === 'checkboxes' ? (f.default || []) : f.id === '_lang' ? ST.lang : f.default !== undefined ? f.default : f.type === 'select' ? optVal(f.options[0]) : '');
@@ -731,7 +809,6 @@ ${body}
       main.innerHTML = `
         <main class="container mx-auto max-w-4xl px-4 md:px-8 py-8">
           <div class="mb-6">
-            ${cfg.student ? '' : `<a href="${BASE}" class="text-sm sm:hidden" style="color:var(--muted-foreground)">← ${esc(ST.t('catalog'))}</a>`}
             <h1 class="text-2xl md:text-3xl font-bold mt-1 flex items-center gap-2"><i data-lucide="${cfg.icon || 'sparkles'}" class="h-7 w-7" style="color:var(--primary)"></i>${esc(t)}</h1>
             <p class="mt-2" style="color:var(--muted-foreground)">${esc(ST.t(cfg.desc))}</p>
           </div>
@@ -744,6 +821,7 @@ ${body}
               <button type="submit" class="st-btn st-btn-primary" id="st-go"><span id="st-go-txt">${esc(ST.t(cfg.submitLabel || 'generate'))}</span></button>
               <button type="button" class="st-btn hidden" id="st-stop">${esc(ST.t('stop'))}</button>
             </div>
+            <p class="st-notice mt-3 hidden" id="st-wait" role="status">${esc(ST.t('gen_slow'))}</p>
             <p class="st-hint mt-3">${esc(ST.t(cfg.privacy || 'privacy'))}</p>
           </form>
           <div id="st-out" class="mt-6 ${state.output ? '' : 'hidden'}"></div>
@@ -783,12 +861,21 @@ ${body}
       $('#st-stop').onclick = () => abort && abort.abort();
     }
 
+    let tick = 0, t0 = 0;
     function setBusy(b) {
       busy = b;
+      clearInterval(tick);
       const go = $('#st-go'); if (!go) return;
       go.disabled = b;
-      $('#st-go-txt').innerHTML = b ? `<span class="st-spin"></span> ${esc(ST.t('generating'))}` : esc(ST.t(cfg.submitLabel || 'generate'));
       $('#st-stop').classList.toggle('hidden', !b);
+      if (!b) { t0 = 0; $('#st-go-txt').innerHTML = esc(ST.t(cfg.submitLabel || 'generate')); const w = $('#st-wait'); if (w) w.classList.add('hidden'); return; }
+      if (!t0) t0 = Date.now();
+      const paint = () => { // segundos transcurridos y aviso si Gemini tarda
+        const secs = Math.floor((Date.now() - t0) / 1000), txt = $('#st-go-txt'), w = $('#st-wait');
+        if (txt) txt.innerHTML = `<span class="st-spin"></span> ${esc(ST.t('generating'))} ${secs} s`;
+        if (w) w.classList.toggle('hidden', secs < 20);
+      };
+      paint(); tick = setInterval(paint, 1000);
     }
     const showError = (m) => { const el = $('#st-error'); if (!el) return; el.textContent = m || ''; el.classList.toggle('hidden', !m); };
 

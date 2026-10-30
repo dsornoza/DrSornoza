@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Texto adaptado — Sornoza.com</title>
+<meta name="description" content="Fragmenta, cambia el nivel de lectura o reescribe un texto según tus necesidades.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="../assets/core.css">
+</head>
+<body class="min-h-screen antialiased">
+<script src="../assets/core.js"></script>
+<script>
+const opt = (v, es, en) => ({ value: v, label: { es, en } });
+const LEVELS = [
+  opt('inicial', 'Pregrado – ciclos iniciales', 'Undergraduate – early years'),
+  opt('intermedio', 'Pregrado – ciclos intermedios', 'Undergraduate – middle years'),
+  opt('avanzado', 'Pregrado – ciclos finales', 'Undergraduate – final years'),
+  opt('posgrado', 'Posgrado', 'Graduate')];
+const LEVEL_EN = { inicial: 'early undergraduate', intermedio: 'mid-program undergraduate', avanzado: 'final-year undergraduate', posgrado: 'graduate' };
+const MAX_WORDS = 1500;
+ST.mountTool({
+  id: 'texto-adaptado', icon: 'file-text',
+  title: { es: 'Texto adaptado', en: 'Adapted text' },
+  desc: { es: 'Pega un texto (hasta unas 1.500 palabras) y elige qué hacer con él: dividirlo en fragmentos fáciles de comprender, cambiar su nivel de lectura o reescribirlo con tus instrucciones. Conserva el significado y no agrega datos nuevos.', en: 'Paste a text (up to about 1,500 words) and choose what to do with it: split it into easy-to-follow chunks, change its reading level, or rewrite it following your instructions. It keeps the meaning and adds no new facts.' },
+  temperature: 0.4,
+  fields: [
+    { id: 'action', type: 'select', label: { es: 'Qué quieres hacer', en: 'What do you want to do' }, options: [opt('chunk', 'Fragmentar en secciones', 'Split into chunks'), opt('level', 'Cambiar el nivel de lectura', 'Change the reading level'), opt('rewrite', 'Reescribir con mis instrucciones', 'Rewrite with my instructions')] },
+    { id: 'title', type: 'text', label: { es: 'Título del texto', en: 'Text title' } },
+    { id: 'text', type: 'textarea', rows: 10, label: { es: 'Texto', en: 'Text' }, hint: { es: 'Pega el texto o sube un archivo. Máximo unas 1.500 palabras.', en: 'Paste the text or upload a file. Maximum about 1,500 words.' } },
+    { id: 'file', type: 'file', label: { es: 'O sube el texto (PDF/Word/texto)', en: 'Or upload the text (PDF/Word/text)' } },
+    { id: 'chunkType', type: 'select', label: { es: 'Si fragmentas: tipo de fragmentos', en: 'If chunking: chunk type' }, options: [opt('secciones', 'Secciones con subtítulo y idea clave', 'Sections with subheading and key idea'), opt('parrafos', 'Párrafos cortos con pregunta de comprensión', 'Short paragraphs with a comprehension question'), opt('ideas', 'Una idea principal por fragmento', 'One main idea per chunk')] },
+    { id: 'readLevel', type: 'select', label: { es: 'Si cambias el nivel: nuevo nivel de lectura', en: 'If changing level: new reading level' }, options: [opt('sencillo', 'Lenguaje sencillo (cotidiano)', 'Plain language (everyday)'), opt('bachillerato', 'Bachillerato / secundaria', 'High school'), opt('pregrado', 'Pregrado', 'Undergraduate'), opt('especializado', 'Especializado / posgrado', 'Specialized / graduate')] },
+    { id: 'instructions', type: 'textarea', rows: 3, span: 'full', label: { es: 'Si reescribes: instrucciones', en: 'If rewriting: instructions' }, placeholder: { es: 'Ej.: más breve, con ejemplos de ingeniería, en tono para estudiantes de primer ciclo…', en: 'E.g.: shorter, with engineering examples, in a tone for first-year students…' } },
+  ],
+  buildPrompt(v, ctx) {
+    const text = ((v.file && v.file.text) || v.text || '').trim();
+    if (!text) throw new Error(ctx.lang === 'en' ? 'Paste a text or upload a file.' : 'Pega un texto o sube un archivo.');
+    const words = text.split(/\s+/).length;
+    if (words > MAX_WORDS) throw new Error(ctx.lang === 'en' ? `The text has about ${words} words; the limit is ${MAX_WORDS}. Split it and process it in parts.` : `El texto tiene unas ${words} palabras y el límite es ${MAX_WORDS}. Divídelo y procésalo por partes.`);
+    if (v.action === 'rewrite' && !String(v.instructions || '').trim()) throw new Error(ctx.lang === 'en' ? 'Write the rewriting instructions.' : 'Escribe las instrucciones de reescritura.');
+    const system = `You adapt texts for university teaching. Strict rules: preserve the original meaning, terminology that must stay (technical terms, names, figures, formulas) and any citations exactly; NEVER add facts, examples or claims that are not in the source unless the instructions explicitly ask for examples (then mark them clearly as added). Output only Markdown (no HTML, no code fences). Respond entirely in ${ctx.outLangName}; if the source is in another language, translate faithfully only when the response language differs from it.`;
+    const task = {
+      chunk: `Split the text into manageable chunks for easier comprehension. Chunk type: ${{ secciones: 'sections, each with a short descriptive subheading, the (lightly tidied) original content, and a one-line "Idea clave"', parrafos: 'short paragraphs, each followed by one comprehension question (answers not needed)', ideas: 'one main idea per chunk, each labeled with that idea in a few words' }[v.chunkType]}. Do not leave anything out. Number the chunks.`,
+      level: `Rewrite the text at this reading level: ${{ sencillo: 'plain everyday language (short sentences, common words; keep and briefly explain essential technical terms)', bachillerato: 'high-school level', pregrado: 'undergraduate level', especializado: 'specialized / graduate level, precise technical register' }[v.readLevel]}. Keep the same structure and content. After the text add "## Cambios clave" (translated): 3 bullets on what was simplified or elevated.`,
+      rewrite: `Rewrite the text following these instructions:\n${v.instructions}`,
+    }[v.action];
+    const prompt = `${task}\n\nTitle: ${v.title || '(untitled)'}\n\nSource text:\n"""\n${text}\n"""`;
+    return { system, prompt, title: `${ctx.t({ es: 'Texto', en: 'Text' })} — ${v.title || text.slice(0, 40)}` };
+  },
+});
+</script>
+</body>
+</html>

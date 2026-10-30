@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía para construir competencias — Sornoza.com</title>
+<meta name="description" content="Asistente paso a paso para construir una ficha de competencia (Anexo B) con retroalimentación de IA. Tú escribes; la IA guía y revisa.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="../assets/core.css">
+<style>
+  @media print {
+    @page { size: A4; margin: 15mm; }
+    body { background: #fff; }
+    .st-card { box-shadow: none; border: 0; padding: 0 !important; }
+    #ficha-doc table { font-size: 10pt; }
+    #ficha-doc tr { break-inside: avoid; }
+  }
+</style>
+</head>
+<body class="min-h-screen antialiased">
+<noscript>Esta herramienta necesita JavaScript.</noscript>
+<script src="../assets/core.js"></script>
+<script src="../assets/access.js"></script>
+<script src="prompts.js"></script>
+<script src="ficha.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

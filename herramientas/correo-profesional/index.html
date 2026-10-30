@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Correo electrónico profesional — Sornoza.com</title>
+<meta name="description" content="Redacta correos profesionales para estudiantes, colegas y autoridades: claros, corteses y con una acción concreta.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="../assets/core.css">
+</head>
+<body class="min-h-screen antialiased">
+<script src="../assets/core.js"></script>
+<script>
+const opt = (v, es, en) => ({ value: v, label: { es, en } });
+const LEVELS = [
+  opt('inicial', 'Pregrado – ciclos iniciales', 'Undergraduate – early years'),
+  opt('intermedio', 'Pregrado – ciclos intermedios', 'Undergraduate – middle years'),
+  opt('avanzado', 'Pregrado – ciclos finales', 'Undergraduate – final years'),
+  opt('posgrado', 'Posgrado', 'Graduate')];
+const LEVEL_EN = { inicial: 'early undergraduate', intermedio: 'mid-program undergraduate', avanzado: 'final-year undergraduate', posgrado: 'graduate' };
+ST.mountTool({
+  id: 'correo-profesional', icon: 'send',
+  title: { es: 'Correo electrónico profesional', en: 'Professional email' },
+  desc: { es: 'Redacta correos profesionales para estudiantes, colegas, autoridades o instituciones: con asunto claro, tono adecuado y una acción concreta. También puede responder a un correo que recibiste.', en: 'Write professional emails to students, colleagues, authorities or institutions: with a clear subject line, the right tone and a concrete action. It can also reply to an email you received.' },
+  privacy: { es: 'Evita incluir datos personales sensibles (calificaciones con nombre, salud, cédulas). Lo que escribas o pegues se envía a Google (Gemini) con tu key. Revisa y completa lo que quede entre [corchetes] antes de enviar.', en: 'Avoid sensitive personal data (named grades, health, ID numbers). What you write or paste is sent to Google (Gemini) with your key. Review and complete anything left in [brackets] before sending.' },
+  temperature: 0.6,
+  fields: [
+    { id: 'purpose', type: 'select', required: true, label: { es: 'Tipo de correo', en: 'Type of email' }, options: [
+      opt('responder', 'Responder un correo que recibí', 'Reply to an email I received'),
+      opt('estudiante', 'Comunicar algo a estudiantes (aviso, recordatorio, cambio)', 'Tell students something (notice, reminder, change)'),
+      opt('solicitar', 'Solicitar algo a una autoridad o coordinación', 'Request something from an authority or coordinator'),
+      opt('reunion', 'Solicitar o confirmar una reunión', 'Request or confirm a meeting'),
+      opt('colega', 'Escribir a un colega o investigador', 'Write to a colleague or researcher'),
+      opt('negativa', 'Decir que no o dar una mala noticia con cortesía', 'Politely decline or deliver bad news'),
+      opt('seguimiento', 'Dar seguimiento o recordar algo pendiente', 'Follow up or remind about something pending'),
+      opt('agradecer', 'Agradecer o felicitar', 'Thank or congratulate'),
+      opt('otro', 'Otro', 'Other')] },
+    { id: 'recipient', type: 'text', required: true, label: { es: 'Destinatario y tu relación con él o ella', en: 'Recipient and your relationship' }, placeholder: { es: 'Ej.: Decana de la facultad, a quien no conozco; estudiante de tercer ciclo', en: 'E.g.: Faculty dean, whom I do not know; third-year student' } },
+    { id: 'tone', type: 'select', label: { es: 'Tono', en: 'Tone' }, options: [opt('formal', 'Formal', 'Formal'), opt('cordial', 'Cordial y profesional', 'Warm and professional'), opt('directo', 'Directo y breve', 'Direct and brief')] },
+    { id: 'length', type: 'select', label: { es: 'Extensión', en: 'Length' }, options: [opt('breve', 'Breve (3–5 líneas)', 'Brief (3–5 lines)'), opt('estandar', 'Estándar', 'Standard'), opt('detallado', 'Detallado', 'Detailed')] },
+    { id: 'points', type: 'textarea', rows: 5, required: true, span: 'full', label: { es: 'Qué quieres comunicar o lograr', en: 'What you want to say or achieve' }, hint: { es: 'Los datos clave: fechas, motivos, lo que pides o ofreces. Lo que no incluyas, no se inventará.', en: 'Key facts: dates, reasons, what you ask or offer. Anything you leave out will not be invented.' } },
+    { id: 'received', type: 'textarea', rows: 5, span: 'full', label: { es: 'Correo que recibiste y vas a responder (opcional)', en: 'Email you received and are replying to (optional)' } },
+    { id: 'sig', type: 'text', span: 'full', label: { es: 'Tu firma (opcional)', en: 'Your signature (optional)' }, placeholder: { es: 'Ej.: Dr. Diego Sornoza Parrales, docente de la carrera de…, UNESUM', en: 'E.g.: Dr. Jane Doe, Lecturer, Department of…, University' } },
+    { id: 'extras', type: 'checkboxes', label: { es: 'Incluir', en: 'Include' }, default: ['subjects'], options: [opt('subjects', 'Opciones de asunto', 'Subject-line options'), opt('short', 'Versión más breve', 'Shorter version')] },
+  ],
+  buildPrompt(v, ctx) {
+    const ex = v.extras || [];
+    const label = { responder: 'a reply to a received email', estudiante: 'a message from a professor to students', solicitar: 'a request to an authority or coordinator', reunion: 'a request or confirmation of a meeting', colega: 'a message to a colleague or researcher', negativa: 'a polite refusal or bad-news message', seguimiento: 'a follow-up or reminder', agradecer: 'a thank-you or congratulation', otro: 'a professional email' }[v.purpose];
+    const system = `You write professional emails for university faculty. Principles: a specific subject line; greeting adapted to the relationship and academic titles used in the response language; the main point or request in the first two lines; short paragraphs; one clear call to action with a deadline when relevant; courteous, never blaming; an appropriate closing and signature. Use ONLY the facts provided: never invent dates, names, numbers, attachments or commitments; mark missing essentials as [placeholders]. Match the register to the tone requested. Output only Markdown (no code fences) with the structure requested, no extra commentary. Respond entirely in ${ctx.outLangName}.`;
+    const prompt = `Write ${label}.
+- Recipient and relationship: ${v.recipient}
+- Tone: ${{ formal: 'formal', cordial: 'warm but professional', directo: 'direct and brief' }[v.tone]}
+- Length: ${{ breve: 'brief, 3–5 lines of body', estandar: 'standard', detallado: 'detailed but well organized' }[v.length]}
+- What to communicate or achieve:
+${v.points}
+${v.received ? `\nEmail received (reply to it; address each question it raises):\n"""\n${v.received}\n"""\n` : ''}${v.sig ? `\nSignature to use: ${v.sig}\n` : ''}
+Structure (labels translated to ${ctx.outLangName}):
+${ex.includes('subjects') ? '1. "**Asunto**": 3 subject-line options, one per line.\n' : '1. "**Asunto**": one subject line.\n'}2. "**Correo**": the email, from greeting to signature.${ex.includes('short') ? '\n3. "**Versión más breve**": the same email in at most 60 words.' : ''}`;
+    return { system, prompt, title: `${ctx.t({ es: 'Correo', en: 'Email' })} — ${v.recipient.slice(0, 50)}` };
+  },
+});
+</script>
+</body>
+</html>

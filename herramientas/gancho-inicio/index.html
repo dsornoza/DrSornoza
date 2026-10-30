@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gancho de inicio de clase — Sornoza.com</title>
+<meta name="description" content="Ideas para abrir una clase captando la atención de los estudiantes y conectando con el tema.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="../assets/core.css">
+</head>
+<body class="min-h-screen antialiased">
+<script src="../assets/core.js"></script>
+<script>
+const opt = (v, es, en) => ({ value: v, label: { es, en } });
+const LEVELS = [
+  opt('inicial', 'Pregrado – ciclos iniciales', 'Undergraduate – early years'),
+  opt('intermedio', 'Pregrado – ciclos intermedios', 'Undergraduate – middle years'),
+  opt('avanzado', 'Pregrado – ciclos finales', 'Undergraduate – final years'),
+  opt('posgrado', 'Posgrado', 'Graduate')];
+const LEVEL_EN = { inicial: 'early undergraduate', intermedio: 'mid-program undergraduate', avanzado: 'final-year undergraduate', posgrado: 'graduate' };
+ST.mountTool({
+  id: 'gancho-inicio', icon: 'zap',
+  title: { es: 'Gancho de inicio de clase', en: 'Lesson hook' },
+  desc: { es: 'Propone ideas para abrir tu clase: actividades breves que despiertan curiosidad y conectan con el tema, con tiempo, materiales y la pregunta puente hacia el contenido.', en: 'Suggests ways to open your class: short activities that spark curiosity and connect with the topic, with timing, materials and the bridge question into the content.' },
+  temperature: 0.8,
+  fields: [
+    { id: 'topic', type: 'text', required: true, span: 'full', label: { es: 'Tema de la lección', en: 'Lesson topic' } },
+    { id: 'level', type: 'select', label: { es: 'Nivel', en: 'Level' }, options: LEVELS },
+    { id: 'count', type: 'number', label: { es: 'Cuántas ideas', en: 'How many ideas' }, default: 3, min: 1, max: 6 },
+    { id: 'context', type: 'textarea', rows: 3, label: { es: 'Contexto de la lección (opcional)', en: 'Lesson context (optional)' }, hint: { es: 'Asignatura, qué vieron antes, tamaño del grupo, modalidad, recursos.', en: 'Course, what they covered before, group size, modality, resources.' } },
+  ],
+  buildPrompt(v, ctx) {
+    const system = `You are an expert in higher-education pedagogy and active learning. You design lesson hooks: brief openers (3–7 minutes) that activate prior knowledge, create curiosity or a productive problem, and lead naturally into the topic. Keep them realistic for a classroom with limited resources and tied to the discipline; no filler icebreakers unrelated to the topic. Do not invent statistics or facts; if you use a real-world fact, keep it general and flag it "verify before using". Output only Markdown (no HTML, no code fences). Respond entirely in ${ctx.outLangName}.`;
+    const prompt = `Design ${v.count} different lesson hooks.
+- Topic: ${v.topic}
+- Level: ${LEVEL_EN[v.level]}
+${v.context ? `- Context: ${v.context}\n` : ''}
+For each hook use the heading "## Gancho N: short name" (headings in ${ctx.outLangName}) and then bullets: Type (question, scenario, quick demo, poll, mini-case…), Duration, Materials, How to run it (steps), Bridge question into the topic, and a variation for virtual or large groups.
+Finish with "## Cómo elegir" (translated): two lines on which hook fits which situation.`;
+    return { system, prompt, title: `${ctx.t({ es: 'Gancho', en: 'Hook' })} — ${v.topic.slice(0, 60)}` };
+  },
+});
+</script>
+</body>
+</html>
