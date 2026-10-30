@@ -4,56 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex">
-    <title>Simulador IPCT — Sornoza.com</title>
+    <title>Simulador IPCT — Ingeniería Civil UNESUM</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <style>
+        /* Design system «Ingeniería Civil UNESUM» — tema claro */
         :root {
-            --primary: #06B6D4;
-            --primary-dark: #0E7490;
-            --muted: #F1F5F9;
-            --muted-foreground: #64748B;
-            --border: #E2E8F0;
-            --foreground: #0F172A;
-            --card-foreground: #1E293B;
-            --shadow-soft: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --green-900: #005020; --green-700: #006830; --green-500: #00a000; --red-500: #f80000;
+            --gray-700: #484848; --gray-500: #808080; --gray-100: #ecedee;
+            --surface-100: #ffffff; --surface-200: #ecedee;
+            --border: #c9cccb; --border-strong: #767c79;
+            --ink: #333333; --muted: #585b5a;
+            --primary: #006830; --on-primary: #ffffff; --heading: #005020; --link: #006830; --focus: #006830;
+            --font-sans: "Myriad Pro", "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+            --radius-sm: 2px; --radius-md: 4px;
         }
-        body { font-family: 'Inter', sans-serif; color: var(--foreground); background: var(--muted); }
-        .card { background: #fff; border: 1px solid var(--border); border-radius: 0.75rem; box-shadow: var(--shadow-soft); }
-        .qty { width: 5rem; text-align: center; border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.4rem 0.5rem; font-weight: 600; background: #fff; }
-        .qty:focus { outline: 2px solid var(--primary); outline-offset: 0; border-color: var(--primary); }
-        .field { width: 100%; border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.6rem 0.75rem; background: #fff; }
-        .field:focus { outline: 2px solid var(--primary); border-color: var(--primary); }
-        .row-active { background: rgba(6,182,212,0.06); }
-        .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; font-weight: 600; font-size: .875rem; padding: .65rem 1rem; border-radius: .5rem; transition: all .2s; cursor: pointer; }
-        .btn-primary { background: var(--primary); color: #fff; }
-        .btn-primary:hover { background: var(--primary-dark); }
-        .btn-ghost { border: 1px solid var(--border); background: #fff; color: var(--card-foreground); }
-        .btn-ghost:hover { border-color: var(--primary); color: var(--primary-dark); }
-        .bar { height: .5rem; border-radius: 9999px; background: var(--border); overflow: hidden; }
-        .bar > span { display: block; height: 100%; background: var(--primary); transition: width .3s ease; }
-        .cap-note { font-size: .75rem; color: #B45309; }
+        body { font-family: var(--font-sans); font-size: 16px; line-height: 24px; color: var(--ink); background: var(--surface-100); }
+        h1, h2, h3 { font-family: var(--font-sans); }
+        :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+        .lbl { font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+        .stripe { display: flex; height: 6px; }
+        .stripe span { display: block; height: 100%; }
+        .card { background: var(--surface-100); border: 1px solid var(--border); border-radius: var(--radius-md); }
+        .card-panel { background: var(--surface-200); }
+        .qty { width: 5rem; text-align: center; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: 0.4rem 0.5rem; font-weight: 700; background: var(--surface-100); color: var(--ink); }
+        .field { width: 100%; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: 0.6rem 0.75rem; background: var(--surface-100); color: var(--ink); }
+        .row-active { background: rgba(0,104,48,0.08); }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; font-weight: 700; font-size: .875rem; padding: .75rem 1rem; border-radius: var(--radius-md); transition: background .2s; cursor: pointer; }
+        .btn-primary { background: var(--primary); color: var(--on-primary); }
+        .btn-primary:hover { background: var(--green-900); }
+        .btn-ghost { border: 1px solid var(--border-strong); background: var(--surface-100); color: var(--ink); }
+        .btn-ghost:hover { background: var(--surface-200); }
+        .bar { height: .5rem; background: var(--border); overflow: hidden; }
+        .bar > span { display: block; height: 100%; background: var(--green-700); transition: width .3s ease; }
+        .cap-note { font-size: 12px; line-height: 16px; color: var(--ink); background: var(--surface-200); padding: .5rem .75rem; border-radius: var(--radius-sm); }
     </style>
 </head>
 <body class="min-h-screen antialiased">
 
-    <header class="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur" style="border-color:var(--border);">
-        <div class="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
-            <a href="/" class="flex items-center gap-2">
-                <img src="/assets/logo-mark.png" alt="Diego Sornoza Parrales" class="h-7 w-auto">
-                <span class="text-base font-semibold">Dr. Diego Sornoza Parrales</span>
+    <header class="sticky top-0 z-50 w-full" style="background:var(--surface-100);border-bottom:1px solid var(--border);">
+        <div class="stripe" aria-hidden="true">
+            <span style="flex:420;background:var(--green-700)"></span>
+            <span style="flex:180;background:var(--green-500)"></span>
+            <span style="flex:180;background:var(--gray-700)"></span>
+            <span style="flex:120;background:var(--gray-100)"></span>
+            <span style="flex:36;background:var(--green-900)"></span>
+            <span style="flex:24;background:var(--red-500)"></span>
+        </div>
+        <div class="container mx-auto flex h-20 md:h-24 items-center justify-between px-4 md:px-8">
+            <a href="/" class="flex items-center">
+                <img src="/ipct/assets/logo-comision-investigacion-color.png" alt="Comisión de Investigación, Carrera de Ingeniería Civil, Universidad Estatal del Sur de Manabí" class="h-14 md:h-16 w-auto">
             </a>
-            <a href="/" class="text-sm font-medium transition-colors hover:text-cyan-500" style="color:var(--muted-foreground)">← Inicio</a>
+            <a href="/" class="text-sm font-bold underline" style="color:var(--link)">← Inicio</a>
         </div>
     </header>
 
-    <section class="py-10 md:py-14 px-4 md:px-8 bg-white border-b" style="border-color:var(--border);">
+    <section class="py-10 md:py-14 px-4 md:px-8" style="background:var(--green-700);color:var(--on-primary);">
         <div class="container mx-auto max-w-4xl text-center">
-            <h1 class="text-3xl md:text-4xl font-bold mb-3">Simulador del IPCT</h1>
-            <p class="text-lg max-w-2xl mx-auto" style="color:var(--muted-foreground)">
+            <h1 class="text-3xl md:text-4xl font-bold mb-3" style="color:var(--on-primary)">Simulador del IPCT</h1>
+            <p class="text-lg max-w-2xl mx-auto" style="color:var(--on-primary)">
                 Índice de Producción Científica y Tecnológica del personal académico. Ingresa las cantidades y obtén el puntaje, el nivel y un reporte en PDF.
             </p>
         </div>
@@ -65,11 +77,11 @@
         <section class="card p-5 mb-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="md:col-span-2">
-                    <label for="profName" class="block text-sm font-semibold mb-1">Nombre del profesor evaluado</label>
+                    <label for="profName" class="block text-sm font-bold mb-1">Nombre del profesor evaluado</label>
                     <input id="profName" type="text" class="field" placeholder="Nombres y apellidos" autocomplete="off">
                 </div>
                 <div>
-                    <label for="evalYear" class="block text-sm font-semibold mb-1">Año de evaluación</label>
+                    <label for="evalYear" class="block text-sm font-bold mb-1">Año de evaluación</label>
                     <input id="evalYear" type="text" inputmode="numeric" maxlength="4" class="field" placeholder="2025" autocomplete="off">
                 </div>
             </div>
@@ -82,23 +94,23 @@
 
             <!-- Resumen -->
             <aside class="lg:sticky lg:top-24 space-y-4">
-                <div class="card p-5">
-                    <p class="text-xs font-semibold uppercase tracking-wide" style="color:var(--muted-foreground)">IPCT total</p>
+                <div class="card card-panel p-5">
+                    <p class="lbl">IPCT total</p>
                     <div class="flex items-end gap-3 mt-1">
-                        <span id="total" class="text-5xl font-extrabold" style="color:var(--primary-dark)">0</span>
-                        <span id="level" class="mb-1.5 text-sm font-bold px-3 py-1 rounded-full text-white" style="background:var(--muted-foreground)">Sin nivel</span>
+                        <span id="total" class="text-5xl font-bold" style="color:var(--heading)">0</span>
+                        <span id="level" class="mb-1.5 text-sm font-bold px-3 py-1" style="background:var(--gray-700);color:var(--on-primary);border-radius:var(--radius-sm)">Sin nivel</span>
                     </div>
-                    <p class="text-xs mt-1" style="color:var(--muted-foreground)">IPCT = Ii + IiD + IVs</p>
+                    <p class="text-xs mt-1" style="color:var(--muted)">IPCT = Ii + IiD + IVs</p>
 
                     <div class="mt-5">
                         <div class="bar"><span id="progress" style="width:0%"></span></div>
-                        <p id="progressText" class="text-sm mt-2" style="color:var(--muted-foreground)"></p>
+                        <p id="progressText" class="text-sm mt-2" style="color:var(--muted)"></p>
                     </div>
 
                     <div class="mt-5 space-y-3" id="breakdown"></div>
 
                     <div class="mt-5 pt-4 border-t" style="border-color:var(--border)">
-                        <p class="text-xs font-semibold uppercase tracking-wide mb-2" style="color:var(--muted-foreground)">Estímulos del nivel (Art. 8)</p>
+                        <p class="lbl mb-2">Estímulos del nivel (Art. 8)</p>
                         <ul id="stimuli" class="text-sm space-y-1.5 list-disc pl-5"></ul>
                     </div>
                 </div>
@@ -110,10 +122,17 @@
             </aside>
         </div>
 
-        <p class="text-xs mt-8 max-w-3xl" style="color:var(--muted-foreground)">
+        <p class="text-xs mt-8 max-w-3xl" style="color:var(--muted)">
             Simulador referencial; no constituye el cálculo oficial. Los puntajes, topes y niveles corresponden a la Reforma del Instructivo para el reconocimiento y estímulo al personal académico y estudiantes con actividades de investigación, desarrollo, innovación y vinculación con la sociedad de la UNESUM (aprobada por el OCS el 4 de marzo de 2022, SE Nº ROCS-05-Nº-12-2022). La valoración oficial corresponde a la Dirección de Investigación y al Consejo Científico.
         </p>
     </main>
+
+    <footer style="background:var(--green-700);color:var(--on-primary);">
+        <div class="container mx-auto px-4 md:px-8 py-6 flex items-center justify-between flex-wrap gap-4">
+            <img src="/ipct/assets/logo-comision-investigacion-blanco.png" alt="Comisión de Investigación, Carrera de Ingeniería Civil, Universidad Estatal del Sur de Manabí" class="h-12 md:h-14 w-auto">
+            <p class="text-sm">Simulador referencial del IPCT · <a href="/" class="underline font-bold" style="color:var(--on-primary)">sornoza.com</a></p>
+        </div>
+    </footer>
 
 <script>
 /* ============================================================
@@ -287,22 +306,22 @@ function buildSections() {
     const root = document.getElementById("sections");
     root.innerHTML = CONFIG.indicadores.map(i => `
         <section class="card overflow-hidden">
-            <div class="px-5 py-4 flex items-center justify-between" style="background:var(--foreground);color:#fff;">
+            <div class="px-5 py-4 flex items-center justify-between" style="background:var(--green-700);color:var(--on-primary);">
                 <h2 class="font-bold text-base md:text-lg">${esc(i.nombre)}</h2>
-                <span class="text-sm font-semibold" style="color:#67E8F9"><span data-total="${i.id}">0</span> pts</span>
+                <span class="text-sm font-bold" style="color:var(--on-primary)"><span data-total="${i.id}">0</span> pts</span>
             </div>
             ${i.bloques.map((b, bi) => `
                 <div class="px-5 pt-4 pb-1">
                     <div class="flex items-baseline justify-between gap-3 flex-wrap">
-                        <h3 class="text-sm font-bold" style="color:var(--card-foreground)">${esc(b.titulo)}</h3>
-                        ${b.tope !== undefined ? `<span class="text-xs" style="color:var(--muted-foreground)">Se computan máximo ${b.tope} proyectos</span>` : ""}
+                        <h3 class="text-sm font-bold" style="color:var(--heading)">${esc(b.titulo)}</h3>
+                        ${b.tope !== undefined ? `<span class="text-xs" style="color:var(--muted)">Se computan máximo ${b.tope} proyectos</span>` : ""}
                     </div>
-                    <p class="cap-note hidden mt-1" data-cap="${i.id}-${bi}"></p>
+                    <p class="cap-note hidden mt-2" data-cap="${i.id}-${bi}"></p>
                 </div>
                 <div class="px-3 pb-3">
                     <table class="w-full text-sm">
                         <thead>
-                            <tr class="text-left text-xs uppercase tracking-wide" style="color:var(--muted-foreground)">
+                            <tr class="text-left lbl">
                                 <th class="px-2 py-2 font-semibold">Criterio</th>
                                 <th class="px-2 py-2 font-semibold text-center whitespace-nowrap">Pts/unidad</th>
                                 <th class="px-2 py-2 font-semibold text-center">Cantidad</th>
@@ -313,7 +332,7 @@ function buildSections() {
                             ${b.items.map(it => `
                             <tr data-row="${it.id}" class="border-t" style="border-color:var(--border)">
                                 <td class="px-2 py-2.5">${esc(it.nombre)}</td>
-                                <td class="px-2 py-2.5 text-center" style="color:var(--muted-foreground)">${it.pts}</td>
+                                <td class="px-2 py-2.5 text-center" style="color:var(--muted)">${it.pts}</td>
                                 <td class="px-2 py-2.5 text-center">
                                     <input class="qty" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" data-id="${it.id}" value="" placeholder="0" aria-label="Cantidad: ${esc(it.nombre)}">
                                 </td>
@@ -352,7 +371,7 @@ function update(save) {
             });
             const note = document.querySelector(`[data-cap="${i.def.id}-${bi}"]`);
             if (calc.excede) {
-                note.textContent = explicarTope(b, calc);
+                note.innerHTML = "<strong>Tope aplicado.</strong> " + esc(explicarTope(b, calc));
                 note.classList.remove("hidden");
             } else note.classList.add("hidden");
         });
@@ -361,7 +380,7 @@ function update(save) {
     document.getElementById("total").textContent = r.total;
     const lvl = document.getElementById("level");
     lvl.textContent = r.nivel;
-    lvl.style.background = r.nivel === CONFIG.sinNivel ? "var(--muted-foreground)" : "var(--primary)";
+    lvl.style.background = r.nivel === CONFIG.sinNivel ? "var(--gray-700)" : "var(--primary)";
 
     const sig = siguienteNivel(r.total);
     const bar = document.getElementById("progress");
@@ -388,7 +407,7 @@ function update(save) {
     const est = CONFIG.estimulos[r.nivel];
     document.getElementById("stimuli").innerHTML = est
         ? est.map(e => `<li>${esc(e)}</li>`).join("")
-        : `<li style="list-style:none;margin-left:-1.25rem;color:var(--muted-foreground)">Se requieren al menos ${CONFIG.niveles[CONFIG.niveles.length - 1].min} puntos para acceder a un nivel.</li>`;
+        : `<li style="list-style:none;margin-left:-1.25rem;color:var(--muted)">Se requieren al menos ${CONFIG.niveles[CONFIG.niveles.length - 1].min} puntos para acceder a un nivel.</li>`;
 
     if (save) store(true);
 }
@@ -406,7 +425,7 @@ function loadLogo() {
             } catch (e) { resolve(null); }
         };
         img.onerror = () => resolve(null);
-        img.src = "/assets/logo-mark.png";
+        img.src = "/ipct/assets/logo-comision-investigacion-color.png";
     });
 }
 
@@ -421,7 +440,8 @@ async function generarPdf() {
     const W = doc.internal.pageSize.getWidth();
     const H = doc.internal.pageSize.getHeight();
     const M = 15;
-    const cyan = [6, 182, 212], dark = [15, 23, 42], gray = [100, 116, 139];
+    // Colores del sistema: green-700, green-900, ink, muted, border, gray-100
+    const verde = [0, 104, 48], verdeOscuro = [0, 80, 32], dark = [51, 51, 51], gray = [88, 91, 90], borde = [201, 204, 203], suave = [236, 237, 238];
 
     const nombre = state.nombre.trim() || "No especificado";
     const anio = state.anio.trim() || "No especificado";
@@ -429,47 +449,41 @@ async function generarPdf() {
 
     // Cabecera
     const logo = await loadLogo();
-    let x = M;
     if (logo) {
-        const h = 12, w = h * logo.w / logo.h;
-        doc.addImage(logo.data, "PNG", M, 12, w, h);
-        x = M + w + 4;
+        const h = 14, w = h * logo.w / logo.h;
+        doc.addImage(logo.data, "PNG", M, 10, w, h);
     }
-    doc.setTextColor(...dark).setFont("helvetica", "bold").setFontSize(12);
-    doc.text("Dr. Diego Sornoza Parrales", x, 18);
-    doc.setFont("helvetica", "normal").setFontSize(9).setTextColor(...gray);
-    doc.text("sornoza.com", x, 23);
-    doc.setDrawColor(...cyan).setLineWidth(0.6).line(M, 28, W - M, 28);
+    doc.setDrawColor(...verde).setLineWidth(0.8).line(M, 30, W - M, 30);
 
-    doc.setTextColor(...dark).setFont("helvetica", "bold").setFontSize(16);
-    doc.text("Reporte de simulación del IPCT", M, 38);
+    doc.setTextColor(...verdeOscuro).setFont("helvetica", "bold").setFontSize(16);
+    doc.text("Reporte de simulación del IPCT", M, 40);
     doc.setFont("helvetica", "normal").setFontSize(10).setTextColor(...gray);
-    doc.text("Índice de Producción Científica y Tecnológica — UNESUM", M, 44);
+    doc.text("Índice de Producción Científica y Tecnológica — UNESUM", M, 46);
 
     // Datos
     doc.setTextColor(...dark).setFontSize(10);
-    doc.setFont("helvetica", "bold"); doc.text("Profesor evaluado:", M, 54);
-    doc.setFont("helvetica", "normal"); doc.text(nombre, M + 38, 54);
-    doc.setFont("helvetica", "bold"); doc.text("Año de evaluación:", M, 60);
-    doc.setFont("helvetica", "normal"); doc.text(anio, M + 38, 60);
-    doc.setFont("helvetica", "bold"); doc.text("Fecha del reporte:", M, 66);
-    doc.setFont("helvetica", "normal"); doc.text(fecha, M + 38, 66);
+    doc.setFont("helvetica", "bold"); doc.text("Profesor evaluado:", M, 56);
+    doc.setFont("helvetica", "normal"); doc.text(nombre, M + 38, 56);
+    doc.setFont("helvetica", "bold"); doc.text("Año de evaluación:", M, 62);
+    doc.setFont("helvetica", "normal"); doc.text(anio, M + 38, 62);
+    doc.setFont("helvetica", "bold"); doc.text("Fecha del reporte:", M, 68);
+    doc.setFont("helvetica", "normal"); doc.text(fecha, M + 38, 68);
 
     // Resultado
-    doc.setFillColor(241, 245, 249).roundedRect(M, 72, W - 2 * M, 22, 2, 2, "F");
+    doc.setFillColor(...suave).rect(M, 74, W - 2 * M, 22, "F");
     doc.setFont("helvetica", "bold").setFontSize(10).setTextColor(...gray);
-    doc.text("IPCT TOTAL", M + 6, 80);
-    doc.setFontSize(24).setTextColor(14, 116, 144);
-    doc.text(String(r.total), M + 6, 90);
+    doc.text("IPCT TOTAL", M + 6, 82);
+    doc.setFontSize(24).setTextColor(...verdeOscuro);
+    doc.text(String(r.total), M + 6, 92);
     doc.setFontSize(10).setTextColor(...gray);
-    doc.text("NIVEL", M + 60, 80);
+    doc.text("NIVEL", M + 60, 82);
     doc.setFontSize(18).setTextColor(...dark);
-    doc.text(r.nivel, M + 60, 90);
+    doc.text(r.nivel, M + 60, 92);
     doc.setFontSize(9).setFont("helvetica", "normal").setTextColor(...gray);
     const partes = r.ind.map(i => `${i.def.id}: ${i.puntos}`).join("   |   ");
-    doc.text(partes, W - M - 6, 90, { align: "right" });
+    doc.text(partes, W - M - 6, 92, { align: "right" });
 
-    let y = 102;
+    let y = 104;
 
     // Tablas por indicador
     r.ind.forEach(i => {
@@ -492,8 +506,9 @@ async function generarPdf() {
             head: [[i.def.nombre, "Pts/unidad", "Cantidad", "Puntos"]],
             body,
             theme: "grid",
-            styles: { font: "helvetica", fontSize: 9, cellPadding: 2, lineColor: [226, 232, 240], textColor: dark },
-            headStyles: { fillColor: dark, textColor: 255, fontStyle: "bold" },
+            styles: { font: "helvetica", fontSize: 9, cellPadding: 2, lineColor: borde, textColor: dark },
+            alternateRowStyles: { fillColor: suave },
+            headStyles: { fillColor: verde, textColor: 255, fontStyle: "bold" },
             columnStyles: { 1: { halign: "center", cellWidth: 24 }, 2: { halign: "center", cellWidth: 38 }, 3: { halign: "center", cellWidth: 22 } },
             didParseCell: d => { if (d.section === "head" && d.column.index > 0) d.cell.styles.halign = "center"; }
         });
@@ -503,7 +518,7 @@ async function generarPdf() {
             if (!i.bloques[bi].excede) return;
             const lines = doc.splitTextToSize(`Nota (${b.titulo}): ${explicarTope(b, i.bloques[bi])}`, W - 2 * M);
             if (y + lines.length * 4 > H - 22) { doc.addPage(); y = 20; }
-            doc.setFont("helvetica", "italic").setFontSize(8.5).setTextColor(146, 64, 14);
+            doc.setFont("helvetica", "italic").setFontSize(8.5).setTextColor(...dark);
             doc.text(lines, M, y + 3);
             y += lines.length * 4 + 3;
         });
@@ -534,7 +549,7 @@ async function generarPdf() {
     const total = doc.internal.getNumberOfPages();
     for (let p = 1; p <= total; p++) {
         doc.setPage(p);
-        doc.setDrawColor(226, 232, 240).setLineWidth(0.3).line(M, H - 20, W - M, H - 20);
+        doc.setDrawColor(...borde).setLineWidth(0.3).line(M, H - 20, W - M, H - 20);
         doc.setFont("helvetica", "normal").setFontSize(7).setTextColor(...gray);
         const nota = doc.splitTextToSize("Reporte referencial generado con el simulador de sornoza.com; no constituye el cálculo oficial. Fuente: " + CONFIG.fuente + ".", W - 2 * M - 20);
         doc.text(nota, M, H - 16);
