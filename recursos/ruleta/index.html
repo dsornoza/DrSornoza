@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruleta de Nombres - Sornoza.com</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root { --primary:#06B6D4; --primary-dark:#0E7490; --muted:#F1F5F9; --muted-foreground:#64748B; --border:#E2E8F0; --foreground:#0F172A; --card-foreground:#1E293B;
+            --shadow-soft:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06); }
+        body { font-family:'Inter',sans-serif; color:var(--foreground); background:var(--muted); }
+        .shadow-soft { box-shadow:var(--shadow-soft); }
+        .btn { display:inline-flex; align-items:center; justify-content:center; gap:.5rem; font-weight:600; border-radius:.75rem; padding:.75rem 1.5rem; font-size:1rem; transition:all .15s; border:1px solid transparent; cursor:pointer; }
+        .btn:active:not(:disabled) { transform:scale(.97); } .btn:disabled { opacity:.5; cursor:not-allowed; }
+        .btn-primary { background:var(--primary); color:#fff; } .btn-primary:hover:not(:disabled) { background:var(--primary-dark); }
+        .btn-ghost { background:#fff; color:var(--card-foreground); border-color:var(--border); } .btn-ghost:hover:not(:disabled) { background:var(--muted); }
+        .field { width:100%; border:1px solid var(--border); border-radius:.5rem; padding:.5rem .75rem; font-size:.95rem; background:#fff; }
+        .field:focus { outline:2px solid var(--primary); }
+        .label { display:block; font-size:.8rem; font-weight:600; margin-bottom:.25rem; color:var(--muted-foreground); }
+        #panel:fullscreen { display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:0; }
+        #panel:fullscreen .relative { max-width:min(80vh,90vw)!important; }
+        #panel:fullscreen #result { font-size:clamp(2rem,6vw,5rem); }
+    </style>
+</head>
+<body class="min-h-screen antialiased">
+    <header class="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur" style="border-color:var(--border);">
+        <div class="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
+            <a href="/" class="flex items-center gap-2">
+                <img src="/assets/logo-mark.png" alt="Diego Sornoza Parrales" class="h-7 w-auto">
+                <span class="text-base font-semibold">sornoza.com</span>
+            </a>
+            <a href="/recursos/" class="text-sm font-medium transition-colors hover:text-cyan-500" style="color:var(--muted-foreground)">← Recursos</a>
+        </div>
+    </header>
+    <main class="container mx-auto max-w-6xl px-4 md:px-8 py-10">
+        <div class="mb-6">
+            <h1 class="text-3xl md:text-4xl font-bold mb-2">Ruleta de Nombres</h1>
+            <p class="text-lg" style="color:var(--muted-foreground)">Escribe la lista de estudiantes, gira la ruleta y selecciona uno a uno. Atajo: <b>Espacio</b> para girar, <b>F</b> para pantalla completa.</p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div id="panel" class="lg:col-span-2 bg-white rounded-xl shadow-soft p-4 md:p-6 text-center" style="border:1px solid var(--border);">
+                <div class="relative mx-auto" style="max-width:640px;width:100%;">
+                    <div class="absolute left-1/2 z-10" style="top:-6px;transform:translateX(-50%);width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-top:32px solid #0F172A;"></div>
+                    <canvas id="wheel" width="900" height="900" class="w-full h-auto cursor-pointer"></canvas>
+                </div>
+                <div id="result" class="mt-4 min-h-[3.5rem] text-2xl md:text-4xl font-bold" style="color:var(--primary-dark)"></div>
+                <div class="flex flex-wrap justify-center gap-3 mt-4">
+                    <button id="spin" class="btn btn-primary"><i data-lucide="rotate-cw" class="h-5 w-5"></i>Girar</button>
+                    <button id="full" class="btn btn-ghost"><i data-lucide="maximize" class="h-5 w-5"></i>Pantalla completa</button>
+                </div>
+            </div>
+            <div class="space-y-6">
+                <div class="bg-white rounded-xl shadow-soft p-5" style="border:1px solid var(--border);">
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="label !mb-0" for="names">Lista de estudiantes (uno por línea)</label>
+                        <span id="count" class="text-xs font-semibold" style="color:var(--primary-dark)"></span>
+                    </div>
+                    <textarea id="names" class="field" rows="10" placeholder="Ana Pérez&#10;Luis Mora&#10;..."></textarea>
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        <button id="shuffle" class="btn btn-ghost !py-1.5 !px-3 !text-sm"><i data-lucide="shuffle" class="h-4 w-4"></i>Mezclar</button>
+                        <button id="clear" class="btn btn-ghost !py-1.5 !px-3 !text-sm"><i data-lucide="trash-2" class="h-4 w-4"></i>Vaciar</button>
+                    </div>
+                    <div class="mt-4 space-y-2 text-sm">
+                        <label class="flex items-center gap-2"><input id="remove" type="checkbox" checked> Quitar de la ruleta al estudiante seleccionado</label>
+                        <label class="flex items-center gap-2"><input id="sound" type="checkbox" checked> Sonido</label>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-soft p-5" style="border:1px solid var(--border);">
+                    <div class="flex items-center justify-between mb-2">
+                        <h2 class="font-bold">Ya seleccionados</h2>
+                        <button id="restore" class="btn btn-ghost !py-1 !px-3 !text-sm" disabled><i data-lucide="undo-2" class="h-4 w-4"></i>Restaurar</button>
+                    </div>
+                    <ol id="history" class="list-decimal list-inside text-sm space-y-1" style="color:var(--card-foreground)"></ol>
+                    <p id="history-empty" class="text-sm" style="color:var(--muted-foreground)">Aún no hay selecciones.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const COLORS=['#06B6D4','#6366F1','#F59E0B','#10B981','#EC4899','#8B5CF6','#EF4444','#14B8A6','#F97316','#3B82F6'];
+const canvas=$('wheel'),ctx=canvas.getContext('2d'),W=canvas.width,C=W/2;
+let rotation=0,spinning=false,history=[],audio=null,lastTick=-1;
+const getNames=()=>$('names').value.split('\n').map(s=>s.trim()).filter(Boolean);
+function setNames(a){$('names').value=a.join('\n');refresh();}
+function refresh(){const n=getNames().length;$('count').textContent=n+(n===1?' nombre':' nombres');$('spin').disabled=spinning||n<2;draw();
+  $('history').innerHTML=history.map(h=>`<li>${h.replace(/</g,'&lt;')}</li>`).join('');
+  $('history-empty').style.display=history.length?'none':'';$('restore').disabled=!history.length||spinning;}
+function draw(){const names=getNames(),n=names.length;ctx.clearRect(0,0,W,W);
+  if(n<1){ctx.fillStyle='#F1F5F9';ctx.beginPath();ctx.arc(C,C,C-8,0,7);ctx.fill();ctx.fillStyle='#64748B';ctx.font='600 40px Inter,sans-serif';ctx.textAlign='center';ctx.fillText('Agrega nombres',C,C);return;}
+  const a=2*Math.PI/n,R=C-8;
+  for(let i=0;i<n;i++){const s=rotation+i*a;ctx.beginPath();ctx.moveTo(C,C);ctx.arc(C,C,R,s,s+a);ctx.closePath();
+    ctx.fillStyle=COLORS[i%COLORS.length];if(n>1&&n%COLORS.length===1&&i===n-1)ctx.fillStyle='#94A3B8';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.stroke();
+    ctx.save();ctx.translate(C,C);ctx.rotate(s+a/2);ctx.fillStyle='#fff';ctx.textAlign='right';ctx.textBaseline='middle';
+    const fs=Math.max(14,Math.min(46,Math.floor(R*a*0.55)));ctx.font=`700 ${fs}px Inter,sans-serif`;
+    let t=names[i];const maxW=R*0.78;while(t.length>2&&ctx.measureText(t).width>maxW)t=t.slice(0,-2)+'…';
+    ctx.shadowColor='rgba(0,0,0,.25)';ctx.shadowBlur=3;ctx.fillText(t,R-24,0);ctx.restore();}
+  ctx.beginPath();ctx.arc(C,C,46,0,7);ctx.fillStyle='#fff';ctx.fill();ctx.strokeStyle='#E2E8F0';ctx.lineWidth=4;ctx.stroke();}
+function snd(){if(!$('sound').checked)return false;try{audio=audio||new (window.AudioContext||window.webkitAudioContext)();return true;}catch(e){return false;}}
+function tone(f,d,v,t0=0,type='square'){if(!audio)return;const o=audio.createOscillator(),g=audio.createGain(),t=audio.currentTime+t0;o.type=type;o.frequency.value=f;o.connect(g);g.connect(audio.destination);
+  g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.start(t);o.stop(t+d);}
+const ease=t=>1-Math.pow(1-t,4);
+function spin(){const names=getNames(),n=names.length;if(spinning||n<2)return;spinning=true;$('result').textContent='';$('names').disabled=true;refresh();
+  const useSound=snd();const idx=Math.floor(Math.random()*n),a=2*Math.PI/n,jitter=(Math.random()-.5)*a*.7;
+  const target=-Math.PI/2-(idx+.5)*a+jitter;const cur=rotation,TAU=2*Math.PI;
+  const delta=((target-cur)%TAU+TAU)%TAU+TAU*(5+Math.floor(Math.random()*3));const dur=5000+Math.random()*1500,t0=performance.now();lastTick=-1;
+  function frame(now){const p=Math.min(1,(now-t0)/dur);rotation=cur+delta*ease(p);draw();
+    const under=Math.floor((((-Math.PI/2-rotation)%TAU)+TAU)%TAU/a);if(under!==lastTick){lastTick=under;if(useSound)tone(900,.04,.08);}
+    if(p<1)requestAnimationFrame(frame);else done(idx,names,useSound);}
+  requestAnimationFrame(frame);}
+function done(idx,names,useSound){spinning=false;const w=names[idx];$('result').textContent='🎉 '+w;history.push(w);
+  if(useSound){[523,659,784,1047].forEach((f,i)=>tone(f,.35,.2,i*.12,'triangle'));}
+  $('names').disabled=false;if($('remove').checked){names.splice(idx,1);setNames(names);}else refresh();}
+$('spin').onclick=spin;canvas.onclick=spin;
+$('names').addEventListener('input',()=>{refresh();});
+$('shuffle').onclick=()=>{const a=getNames();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}setNames(a);};
+$('clear').onclick=()=>{history=[];$('result').textContent='';setNames([]);};
+$('restore').onclick=()=>{setNames(getNames().concat(history));history=[];$('result').textContent='';refresh();};
+$('full').onclick=()=>document.fullscreenElement?document.exitFullscreen():$('panel').requestFullscreen?.();
+document.addEventListener('keydown',e=>{if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT')return;
+  if(e.code==='Space'){e.preventDefault();spin();}else if(e.key==='f'||e.key==='F')$('full').click();});
+$('names').value='Ana Pérez\nLuis Mora\nCarla Vera\nJosé Zambrano\nMaría Cedeño\nPedro Loor';
+refresh();window.lucide&&lucide.createIcons();
+})();
+document.addEventListener("DOMContentLoaded",()=>window.lucide&&lucide.createIcons());
+</script>
+</body></html>
