@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { --primary:#06B6D4; --primary-dark:#0E7490; --muted:#F1F5F9; --muted-foreground:#64748B; --border:#E2E8F0; --foreground:#0F172A; --card-foreground:#1E293B;
             --shadow-soft:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06); }
@@ -66,6 +67,7 @@
                 <div id="actions" class="flex flex-wrap gap-2 mb-4 hidden">
                     <button id="again" class="btn btn-ghost !py-2 !px-4 !text-sm"><i data-lucide="refresh-cw" class="h-4 w-4"></i>Volver a mezclar</button>
                     <button id="copy" class="btn btn-ghost !py-2 !px-4 !text-sm"><i data-lucide="copy" class="h-4 w-4"></i><span>Copiar</span></button>
+                    <button id="pdf" class="btn btn-ghost !py-2 !px-4 !text-sm"><i data-lucide="file-text" class="h-4 w-4"></i>Descargar PDF</button>
                     <button id="csv" class="btn btn-ghost !py-2 !px-4 !text-sm"><i data-lucide="download" class="h-4 w-4"></i>Descargar CSV</button>
                 </div>
                 <div id="out" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -100,7 +102,28 @@ function render(){$('actions').classList.remove('hidden');
 function make(){if(build())render();}
 function asText(){return groups.map(g=>g.name+'\n'+g.members.map(m=>'  - '+m).join('\n')).join('\n\n');}
 function asCSV(){const q=v=>'"'+v.replace(/"/g,'""')+'"';return '﻿Grupo,Estudiante\n'+groups.flatMap(g=>g.members.map(m=>q(g.name)+','+q(m))).join('\n');}
-$('make').onclick=make;$('again').onclick=make;
+function hex(h){return [1,3,5].map(i=>parseInt(h.substr(i,2),16));}
+function pdf(){if(!window.jspdf||!window.jspdf.jsPDF){alert('No se pudo cargar el generador de PDF. Revisa tu conexión e intenta de nuevo.');return;}
+  const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),M=15,GAP=10,CW=(210-2*M-GAP)/2,LH=6,HH=9,PAD=4,BOT=282;
+  doc.setFont('helvetica','bold');doc.setFontSize(20);doc.setTextColor(15,23,42);doc.text('Grupos',M,M+6);
+  const total=groups.reduce((a,g)=>a+g.members.length,0);
+  doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(100,116,139);
+  doc.text(`${groups.length} grupos · ${total} estudiantes · ${new Date().toLocaleDateString('es-EC',{day:'numeric',month:'long',year:'numeric'})}`,M,M+13);
+  let y=M+22;
+  for(let r=0;r<groups.length;r+=2){const row=groups.slice(r,r+2);
+    const h=Math.max(...row.map(g=>HH+PAD*2+g.members.length*LH));
+    if(y+h>BOT&&y>M+22){doc.addPage();y=M;}
+    row.forEach((g,c)=>{const x=M+c*(CW+GAP),i=r+c;
+      let bh=h;doc.setDrawColor(226,232,240);doc.setFillColor(...hex(COLORS[i%COLORS.length]));
+      if(y+bh>BOT+8)bh=BOT+8-y;
+      doc.roundedRect(x,y,CW,bh,2,2,'S');doc.roundedRect(x,y,CW,HH,2,2,'F');doc.rect(x,y+HH-2,CW,2,'F');
+      doc.setFont('helvetica','bold');doc.setFontSize(11);doc.setTextColor(255,255,255);doc.text(g.name,x+PAD,y+6,{maxWidth:CW-34});
+      doc.setFont('helvetica','normal');doc.setFontSize(9);doc.text(`${g.members.length} ${g.members.length===1?'persona':'personas'}`,x+CW-PAD,y+6,{align:'right'});
+      doc.setFontSize(10.5);doc.setTextColor(30,41,59);
+      g.members.forEach((m,k)=>doc.text(doc.splitTextToSize(m,CW-2*PAD)[0],x+PAD,y+HH+PAD+LH*k+4));});
+    y+=h+6;}
+  doc.save('grupos.pdf');}
+$('make').onclick=make;$('pdf').onclick=pdf;$('again').onclick=make;
 $('names').addEventListener('input',updateCount);
 $('mode').onchange=()=>{const g=$('mode').value==='groups';$('qty-label').textContent=g?'Número de grupos':'Personas por grupo';$('qty').value=g?4:5;};
 $('copy').onclick=async()=>{const sp=$('copy').querySelector('span');try{await navigator.clipboard.writeText(asText());sp.textContent='¡Copiado!';}catch(e){sp.textContent='No se pudo copiar';}setTimeout(()=>sp.textContent='Copiar',1800);};
