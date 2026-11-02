@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronómetro y Temporizador - Sornoza.com</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root { --primary:#06B6D4; --primary-dark:#0E7490; --muted:#F1F5F9; --muted-foreground:#64748B; --border:#E2E8F0; --foreground:#0F172A; --card-foreground:#1E293B;
+            --shadow-soft:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06); }
+        body { font-family:'Inter',sans-serif; color:var(--foreground); background:var(--muted); }
+        .shadow-soft { box-shadow:var(--shadow-soft); }
+        .digits { font-variant-numeric:tabular-nums; font-weight:700; line-height:1; letter-spacing:-0.02em; }
+        .big { font-size:clamp(3rem,15vw,9rem); }
+        .btn { display:inline-flex; align-items:center; justify-content:center; gap:.5rem; font-weight:600; border-radius:.75rem; padding:.9rem 2rem; font-size:1.125rem; transition:all .15s; border:1px solid transparent; cursor:pointer; }
+        .btn:active { transform:scale(.97); }
+        .btn-primary { background:var(--primary); color:#fff; } .btn-primary:hover { background:var(--primary-dark); }
+        .btn-warn { background:#F59E0B; color:#fff; } .btn-warn:hover { background:#D97706; }
+        .btn-ghost { background:#fff; color:var(--card-foreground); border-color:var(--border); } .btn-ghost:hover { background:var(--muted); }
+        .chip { padding:.4rem .9rem; border-radius:9999px; border:1px solid var(--border); background:#fff; font-size:.875rem; font-weight:600; color:var(--card-foreground); cursor:pointer; }
+        .chip:hover { border-color:var(--primary); color:var(--primary-dark); }
+        .num { width:5rem; text-align:center; font-size:1.5rem; font-weight:700; padding:.5rem; border:1px solid var(--border); border-radius:.5rem; }
+        .num:focus { outline:2px solid var(--primary); }
+        @keyframes flash { 0%,100% { background:#fff; } 50% { background:#FEE2E2; } }
+        .flash { animation:flash 1s infinite; }
+        .panel:fullscreen { display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:0; }
+        .panel:fullscreen .big { font-size:clamp(4rem,22vw,22rem); }
+            .choice { cursor:pointer; transition:all .2s; } .choice:hover { border-color:var(--primary)!important; transform:translateY(-3px); }
+        .hidden { display:none; }
+    </style>
+</head>
+<body class="min-h-screen antialiased">
+    <header class="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur" style="border-color:var(--border);">
+        <div class="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
+            <a href="/" class="flex items-center gap-2">
+                <img src="/assets/logo-mark.png" alt="Diego Sornoza Parrales" class="h-7 w-auto">
+                <span class="text-base font-semibold">sornoza.com</span>
+            </a>
+            <a href="/recursos/" class="text-sm font-medium transition-colors hover:text-cyan-500" style="color:var(--muted-foreground)">← Recursos</a>
+        </div>
+    </header>
+    
+    <main id="view-menu" class="container mx-auto max-w-4xl px-4 md:px-8 py-12">
+        <div class="mb-10 text-center">
+            <h1 class="text-3xl md:text-4xl font-bold mb-2">Cronómetro y Temporizador</h1>
+            <p class="text-lg" style="color:var(--muted-foreground)">¿Qué necesitas usar?</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <button data-go="c" class="choice bg-white rounded-xl shadow-soft p-10 text-center" style="border:1px solid var(--border);">
+                <i data-lucide="timer" class="h-16 w-16 mx-auto mb-4" style="color:var(--primary)"></i>
+                <h2 class="text-2xl font-bold mb-2">Cronómetro</h2>
+                <p style="color:var(--muted-foreground)">Cuenta hacia arriba desde cero. Con milésimas y vueltas.</p>
+            </button>
+            <button data-go="t" class="choice bg-white rounded-xl shadow-soft p-10 text-center" style="border:1px solid var(--border);">
+                <i data-lucide="hourglass" class="h-16 w-16 mx-auto mb-4" style="color:var(--primary)"></i>
+                <h2 class="text-2xl font-bold mb-2">Temporizador</h2>
+                <p style="color:var(--muted-foreground)">Cuenta regresiva con alarma al terminar.</p>
+            </button>
+        </div>
+    </main>
+    <main id="view-c" class="container mx-auto max-w-4xl px-4 md:px-8 py-10 hidden">
+        <button class="back inline-flex items-center gap-1.5 text-sm font-medium mb-6 hover:text-cyan-600" style="color:var(--muted-foreground)" data-back><i data-lucide="arrow-left" class="h-4 w-4"></i> Cambiar de herramienta</button>
+        <div class="mb-6">
+            <h1 class="text-3xl md:text-4xl font-bold mb-2">Cronómetro</h1>
+            <p class="text-lg" style="color:var(--muted-foreground)">Mide el tiempo con precisión de milésimas y registra vueltas. Atajos: <b>Espacio</b> inicia/pausa, <b>V</b> vuelta, <b>R</b> reinicia, <b>F</b> pantalla completa.</p>
+        </div>
+        <div id="c-panel" class="panel bg-white rounded-xl shadow-soft p-6 md:p-10 text-center" style="border:1px solid var(--border);">
+            <div class="digits big"><span id="c-main">00:00:00</span><span id="c-ms" class="text-3xl md:text-5xl" style="color:var(--muted-foreground)">.000</span></div>
+            <div class="flex flex-wrap justify-center gap-3 mt-8">
+                <button id="c-start" class="btn btn-primary"><i data-lucide="play" class="h-5 w-5"></i><span>Iniciar</span></button>
+                <button id="c-lap" class="btn btn-ghost" disabled><i data-lucide="flag" class="h-5 w-5"></i>Vuelta</button>
+                <button id="c-reset" class="btn btn-ghost"><i data-lucide="rotate-ccw" class="h-5 w-5"></i>Reiniciar</button>
+                <button id="c-full" class="btn btn-ghost"><i data-lucide="maximize" class="h-5 w-5"></i>Pantalla completa</button>
+            </div>
+        </div>
+        <div id="c-laps-card" class="bg-white rounded-xl shadow-soft p-6 mt-6 hidden" style="border:1px solid var(--border);">
+            <h2 class="font-bold mb-3">Vueltas</h2>
+            <table class="w-full text-sm font-mono"><thead style="color:var(--muted-foreground)"><tr><th class="text-left py-1">#</th><th class="text-right">Parcial</th><th class="text-right">Total</th></tr></thead><tbody id="c-laps"></tbody></table>
+        </div>
+    </main>
+    <main id="view-t" class="container mx-auto max-w-4xl px-4 md:px-8 py-10 hidden">
+        <button class="back inline-flex items-center gap-1.5 text-sm font-medium mb-6 hover:text-cyan-600" style="color:var(--muted-foreground)" data-back><i data-lucide="arrow-left" class="h-4 w-4"></i> Cambiar de herramienta</button>
+        <div class="mb-6">
+            <h1 class="text-3xl md:text-4xl font-bold mb-2">Temporizador</h1>
+            <p class="text-lg" style="color:var(--muted-foreground)">Cuenta regresiva para actividades en clase, exámenes y exposiciones. Atajos: <b>Espacio</b> inicia/pausa, <b>R</b> reinicia, <b>F</b> pantalla completa.</p>
+        </div>
+        <div id="t-panel" class="panel bg-white rounded-xl shadow-soft p-6 md:p-10 text-center" style="border:1px solid var(--border);">
+            <div id="t-setup" class="mb-6">
+                <div class="flex justify-center items-end gap-2 mb-4">
+                    <label class="text-xs font-semibold" style="color:var(--muted-foreground)">HORAS<br><input id="t-inH" class="num" type="number" min="0" max="99" value="0"></label><span class="text-2xl font-bold pb-2">:</span>
+                    <label class="text-xs font-semibold" style="color:var(--muted-foreground)">MIN<br><input id="t-inM" class="num" type="number" min="0" max="59" value="5"></label><span class="text-2xl font-bold pb-2">:</span>
+                    <label class="text-xs font-semibold" style="color:var(--muted-foreground)">SEG<br><input id="t-inS" class="num" type="number" min="0" max="59" value="0"></label>
+                </div>
+                <div class="flex flex-wrap justify-center gap-2">
+                    <button class="chip" data-s="30">30 s</button><button class="chip" data-s="60">1 min</button><button class="chip" data-s="120">2 min</button><button class="chip" data-s="300">5 min</button>
+                    <button class="chip" data-s="600">10 min</button><button class="chip" data-s="900">15 min</button><button class="chip" data-s="1800">30 min</button><button class="chip" data-s="3600">1 h</button>
+                </div>
+            </div>
+            <div class="digits big" id="t-display">00:05:00</div>
+            <div id="t-bar" class="h-2 rounded-full mt-6 mx-auto max-w-xl overflow-hidden" style="background:var(--border)"><div id="t-fill" class="h-full" style="background:var(--primary);width:100%"></div></div>
+            <p id="t-msg" class="mt-4 text-xl font-bold h-7" style="color:#DC2626"></p>
+            <div class="flex flex-wrap justify-center gap-3 mt-4">
+                <button id="t-start" class="btn btn-primary"><i data-lucide="play" class="h-5 w-5"></i><span>Iniciar</span></button>
+                <button id="t-reset" class="btn btn-ghost"><i data-lucide="rotate-ccw" class="h-5 w-5"></i>Reiniciar</button>
+                <button id="t-add" class="btn btn-ghost"><i data-lucide="plus" class="h-5 w-5"></i>1 min</button>
+                <button id="t-full" class="btn btn-ghost"><i data-lucide="maximize" class="h-5 w-5"></i>Pantalla completa</button>
+            </div>
+            <label class="inline-flex items-center gap-2 mt-5 text-sm" style="color:var(--muted-foreground)"><input id="t-sound" type="checkbox" checked> Alarma sonora al terminar</label>
+        </div>
+    </main>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const active=()=>!document.getElementById('view-c').classList.contains('hidden');
+
+let running=false, base=0, startedAt=0, lastLap=0, laps=[];
+const elapsed=()=>base+(running?performance.now()-startedAt:0);
+function fmt(t){const h=Math.floor(t/3600000),m=Math.floor(t/60000)%60,s=Math.floor(t/1000)%60,ms=Math.floor(t%1000);
+  const p=n=>String(n).padStart(2,'0');return{main:`${p(h)}:${p(m)}:${p(s)}`,ms:'.'+String(ms).padStart(3,'0')};}
+const full=t=>{const f=fmt(t);return f.main+f.ms;};
+function render(){const f=fmt(elapsed());$('c-main').textContent=f.main;$('c-ms').textContent=f.ms;document.title=(running?f.main+' · ':'')+'Cronómetro y Temporizador - Sornoza.com';if(running)requestAnimationFrame(render);}
+function setBtn(){const b=$('c-start');b.className='btn '+(running?'btn-warn':'btn-primary');
+  b.innerHTML=`<i data-lucide="${running?'pause':'play'}" class="h-5 w-5"></i><span>${running?'Pausar':(base>0?'Continuar':'Iniciar')}</span>`;
+  $('c-lap').disabled=!running;window.lucide&&lucide.createIcons();}
+function toggle(){if(running){base+=performance.now()-startedAt;running=false;}else{startedAt=performance.now();running=true;requestAnimationFrame(render);}setBtn();render();}
+function lap(){if(!running)return;const t=elapsed();laps.unshift({n:laps.length+1,split:t-lastLap,total:t});lastLap=t;drawLaps();}
+function drawLaps(){$('c-laps-card').classList.toggle('hidden',!laps.length);
+  $('c-laps').innerHTML=laps.map(l=>`<tr class="border-t" style="border-color:var(--border)"><td class="py-1.5">${l.n}</td><td class="text-right">${full(l.split)}</td><td class="text-right">${full(l.total)}</td></tr>`).join('');}
+function reset(){running=false;base=0;lastLap=0;laps=[];drawLaps();setBtn();render();}
+function fs(){document.fullscreenElement?document.exitFullscreen():$('c-panel').requestFullscreen?.();}
+$('c-start').onclick=toggle;$('c-lap').onclick=lap;$('c-reset').onclick=reset;$('c-full').onclick=fs;
+document.addEventListener('keydown',e=>{if(!active()||e.target.tagName==='INPUT')return;
+  if(e.code==='Space'){e.preventDefault();toggle();}else if(e.key==='v'||e.key==='V')lap();else if(e.key==='r'||e.key==='R')reset();else if(e.key==='f'||e.key==='F')fs();});
+setBtn();render();
+})();
+</script><script>
+(function(){
+const $=id=>document.getElementById(id);
+const active=()=>!document.getElementById('view-t').classList.contains('hidden');
+
+let total=300000, remaining=300000, running=false, endAt=0, timerId=null, alarmId=null, ctx=null;
+const p=n=>String(n).padStart(2,'0');
+function fmt(t){const s=Math.ceil(t/1000);return `${p(Math.floor(s/3600))}:${p(Math.floor(s/60)%60)}:${p(s%60)}`;}
+function readInputs(){const v=id=>Math.max(0,parseInt($(id).value)||0);return(v('t-inH')*3600+v('t-inM')*60+v('t-inS'))*1000;}
+function setInputs(sec){$('t-inH').value=Math.floor(sec/3600);$('t-inM').value=Math.floor(sec/60)%60;$('t-inS').value=sec%60;}
+function draw(){$('t-display').textContent=fmt(remaining);$('t-fill').style.width=(total?remaining/total*100:0)+'%';
+  document.title=(running?fmt(remaining)+' · ':'')+'Cronómetro y Temporizador - Sornoza.com';}
+function setBtn(){const b=$('t-start');b.className='btn '+(running?'btn-warn':'btn-primary');
+  b.innerHTML=`<i data-lucide="${running?'pause':'play'}" class="h-5 w-5"></i><span>${running?'Pausar':(remaining<total?'Continuar':'Iniciar')}</span>`;
+  $('t-setup').style.display=running||remaining<total?'none':'';window.lucide&&lucide.createIcons();}
+function tick(){remaining=Math.max(0,endAt-performance.now());draw();if(remaining<=0)finish();}
+function beep(){if(!$('t-sound').checked)return;try{ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();
+  [0,.25,.5].forEach(d=>{const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=880;o.connect(g);g.connect(ctx.destination);
+    const t=ctx.currentTime+d;g.gain.setValueAtTime(.3,t);g.gain.exponentialRampToValueAtTime(.001,t+.2);o.start(t);o.stop(t+.2);});}catch(e){}}
+function finish(){running=false;clearInterval(timerId);$('t-msg').textContent='¡Tiempo!';$('t-panel').classList.add('flash');beep();alarmId=setInterval(beep,1500);setBtn();}
+function stopAlarm(){clearInterval(alarmId);alarmId=null;$('t-panel').classList.remove('flash');$('t-msg').textContent='';}
+function start(){stopAlarm();if(remaining<=0)remaining=total;
+  if(!running&&remaining===total){total=remaining=readInputs();if(total<=0){remaining=total=0;return;}}
+  if(!ctx)try{ctx=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}
+  endAt=performance.now()+remaining;running=true;timerId=setInterval(tick,100);setBtn();draw();}
+function pause(){running=false;clearInterval(timerId);remaining=Math.max(0,endAt-performance.now());setBtn();draw();}
+function toggle(){running?pause():start();}
+function reset(){running=false;clearInterval(timerId);stopAlarm();total=remaining=readInputs();setBtn();draw();}
+function addMin(){stopAlarm();if(running){endAt+=60000;total+=60000;remaining+=60000;}else{remaining+=60000;total=Math.max(total,remaining);}draw();setBtn();}
+function fs(){document.fullscreenElement?document.exitFullscreen():$('t-panel').requestFullscreen?.();}
+document.querySelectorAll('#view-t .chip').forEach(c=>c.onclick=()=>{setInputs(+c.dataset.s);reset();});
+['t-inH','t-inM','t-inS'].forEach(id=>$(id).addEventListener('input',()=>{if(!running)reset();}));
+$('t-start').onclick=toggle;$('t-reset').onclick=reset;$('t-add').onclick=addMin;$('t-full').onclick=fs;
+document.addEventListener('keydown',e=>{if(!active()||(e.target.tagName==='INPUT'&&e.code!=='Enter'))return;
+  if(e.code==='Space'){e.preventDefault();toggle();}else if(e.key==='r'||e.key==='R')reset();else if(e.key==='f'||e.key==='F')fs();});
+reset();
+})();
+</script>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+  const views={m:document.getElementById('view-menu'),c:document.getElementById('view-c'),t:document.getElementById('view-t')};
+  function show(k,push){Object.entries(views).forEach(([n,el])=>el.classList.toggle('hidden',n!==k));
+    window.scrollTo(0,0);if(push)history.replaceState(null,'',k==='m'?location.pathname:'#'+(k==='c'?'cronometro':'temporizador'));}
+  document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>show(b.dataset.go,true));
+  document.querySelectorAll('[data-back]').forEach(b=>b.onclick=()=>show('m',true));
+  show(location.hash==='#cronometro'?'c':location.hash==='#temporizador'?'t':'m',false);
+  window.lucide&&lucide.createIcons();
+})();
+document.addEventListener("DOMContentLoaded",()=>window.lucide&&lucide.createIcons());
+</script>
+</body></html>
