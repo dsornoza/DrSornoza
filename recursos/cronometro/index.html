@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronómetro - Sornoza.com</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root { --primary:#06B6D4; --primary-dark:#0E7490; --muted:#F1F5F9; --muted-foreground:#64748B; --border:#E2E8F0; --foreground:#0F172A; --card-foreground:#1E293B;
+            --shadow-soft:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06); }
+        body { font-family:'Inter',sans-serif; color:var(--foreground); background:var(--muted); }
+        .shadow-soft { box-shadow:var(--shadow-soft); }
+        .digits { font-variant-numeric:tabular-nums; font-weight:700; line-height:1; letter-spacing:-0.02em; }
+        .big { font-size:clamp(3rem,15vw,9rem); }
+        .btn { display:inline-flex; align-items:center; justify-content:center; gap:.5rem; font-weight:600; border-radius:.75rem; padding:.9rem 2rem; font-size:1.125rem; transition:all .15s; border:1px solid transparent; cursor:pointer; }
+        .btn:active { transform:scale(.97); }
+        .btn-primary { background:var(--primary); color:#fff; } .btn-primary:hover { background:var(--primary-dark); }
+        .btn-warn { background:#F59E0B; color:#fff; } .btn-warn:hover { background:#D97706; }
+        .btn-ghost { background:#fff; color:var(--card-foreground); border-color:var(--border); } .btn-ghost:hover { background:var(--muted); }
+        .chip { padding:.4rem .9rem; border-radius:9999px; border:1px solid var(--border); background:#fff; font-size:.875rem; font-weight:600; color:var(--card-foreground); cursor:pointer; }
+        .chip:hover { border-color:var(--primary); color:var(--primary-dark); }
+        .num { width:5rem; text-align:center; font-size:1.5rem; font-weight:700; padding:.5rem; border:1px solid var(--border); border-radius:.5rem; }
+        .num:focus { outline:2px solid var(--primary); }
+        @keyframes flash { 0%,100% { background:#fff; } 50% { background:#FEE2E2; } }
+        .flash { animation:flash 1s infinite; }
+        #panel:fullscreen { display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:0; }
+        #panel:fullscreen .big { font-size:clamp(4rem,22vw,22rem); }
+    </style>
+</head>
+<body class="min-h-screen antialiased">
+    <header class="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur" style="border-color:var(--border);">
+        <div class="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
+            <a href="/" class="flex items-center gap-2">
+                <img src="/assets/logo-mark.png" alt="Diego Sornoza Parrales" class="h-7 w-auto">
+                <span class="text-base font-semibold">sornoza.com</span>
+            </a>
+            <a href="/recursos/" class="text-sm font-medium transition-colors hover:text-cyan-500" style="color:var(--muted-foreground)">← Recursos</a>
+        </div>
+    </header>
+    <main class="container mx-auto max-w-4xl px-4 md:px-8 py-10">
+        <div class="mb-6">
+            <h1 class="text-3xl md:text-4xl font-bold mb-2">Cronómetro</h1>
+            <p class="text-lg" style="color:var(--muted-foreground)">Mide el tiempo con precisión de milésimas y registra vueltas. Atajos: <b>Espacio</b> inicia/pausa, <b>V</b> vuelta, <b>R</b> reinicia, <b>F</b> pantalla completa.</p>
+        </div>
+        <div id="panel" class="bg-white rounded-xl shadow-soft p-6 md:p-10 text-center" style="border:1px solid var(--border);">
+            <div class="digits big"><span id="main">00:00:00</span><span id="ms" class="text-3xl md:text-5xl" style="color:var(--muted-foreground)">.000</span></div>
+            <div class="flex flex-wrap justify-center gap-3 mt-8">
+                <button id="start" class="btn btn-primary"><i data-lucide="play" class="h-5 w-5"></i><span>Iniciar</span></button>
+                <button id="lap" class="btn btn-ghost" disabled><i data-lucide="flag" class="h-5 w-5"></i>Vuelta</button>
+                <button id="reset" class="btn btn-ghost"><i data-lucide="rotate-ccw" class="h-5 w-5"></i>Reiniciar</button>
+                <button id="full" class="btn btn-ghost"><i data-lucide="maximize" class="h-5 w-5"></i>Pantalla completa</button>
+            </div>
+        </div>
+        <div id="laps-card" class="bg-white rounded-xl shadow-soft p-6 mt-6 hidden" style="border:1px solid var(--border);">
+            <h2 class="font-bold mb-3">Vueltas</h2>
+            <table class="w-full text-sm font-mono"><thead style="color:var(--muted-foreground)"><tr><th class="text-left py-1">#</th><th class="text-right">Parcial</th><th class="text-right">Total</th></tr></thead><tbody id="laps"></tbody></table>
+        </div>
+    </main>
+<script>
+const $=id=>document.getElementById(id);
+let running=false, base=0, startedAt=0, lastLap=0, laps=[];
+const elapsed=()=>base+(running?performance.now()-startedAt:0);
+function fmt(t){const h=Math.floor(t/3600000),m=Math.floor(t/60000)%60,s=Math.floor(t/1000)%60,ms=Math.floor(t%1000);
+  const p=n=>String(n).padStart(2,'0');return{main:`${p(h)}:${p(m)}:${p(s)}`,ms:'.'+String(ms).padStart(3,'0')};}
+const full=t=>{const f=fmt(t);return f.main+f.ms;};
+function render(){const f=fmt(elapsed());$('main').textContent=f.main;$('ms').textContent=f.ms;document.title=(running?f.main+' · ':'')+'Cronómetro - Sornoza.com';if(running)requestAnimationFrame(render);}
+function setBtn(){const b=$('start');b.className='btn '+(running?'btn-warn':'btn-primary');
+  b.innerHTML=`<i data-lucide="${running?'pause':'play'}" class="h-5 w-5"></i><span>${running?'Pausar':(base>0?'Continuar':'Iniciar')}</span>`;
+  $('lap').disabled=!running;window.lucide&&lucide.createIcons();}
+function toggle(){if(running){base+=performance.now()-startedAt;running=false;}else{startedAt=performance.now();running=true;requestAnimationFrame(render);}setBtn();render();}
+function lap(){if(!running)return;const t=elapsed();laps.unshift({n:laps.length+1,split:t-lastLap,total:t});lastLap=t;drawLaps();}
+function drawLaps(){$('laps-card').classList.toggle('hidden',!laps.length);
+  $('laps').innerHTML=laps.map(l=>`<tr class="border-t" style="border-color:var(--border)"><td class="py-1.5">${l.n}</td><td class="text-right">${full(l.split)}</td><td class="text-right">${full(l.total)}</td></tr>`).join('');}
+function reset(){running=false;base=0;lastLap=0;laps=[];drawLaps();setBtn();render();}
+function fs(){document.fullscreenElement?document.exitFullscreen():$('panel').requestFullscreen?.();}
+$('start').onclick=toggle;$('lap').onclick=lap;$('reset').onclick=reset;$('full').onclick=fs;
+document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;
+  if(e.code==='Space'){e.preventDefault();toggle();}else if(e.key==='v'||e.key==='V')lap();else if(e.key==='r'||e.key==='R')reset();else if(e.key==='f'||e.key==='F')fs();});
+document.addEventListener('DOMContentLoaded',()=>{setBtn();render();});
+</script>
+<script>document.addEventListener("DOMContentLoaded",()=>lucide.createIcons());</script>
+</body></html>
