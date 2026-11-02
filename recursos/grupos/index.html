@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Armador de Grupos - Sornoza.com</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root { --primary:#06B6D4; --primary-dark:#0E7490; --muted:#F1F5F9; --muted-foreground:#64748B; --border:#E2E8F0; --foreground:#0F172A; --card-foreground:#1E293B;
+            --shadow-soft:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06); }
+        body { font-family:'Inter',sans-serif; color:var(--foreground); background:var(--muted); }
+        .shadow-soft { box-shadow:var(--shadow-soft); }
+        .btn { display:inline-flex; align-items:center; justify-content:center; gap:.5rem; font-weight:600; border-radius:.75rem; padding:.75rem 1.5rem; font-size:1rem; transition:all .15s; border:1px solid transparent; cursor:pointer; }
+        .btn:active:not(:disabled) { transform:scale(.97); } .btn:disabled { opacity:.5; cursor:not-allowed; }
+        .btn-primary { background:var(--primary); color:#fff; } .btn-primary:hover:not(:disabled) { background:var(--primary-dark); }
+        .btn-ghost { background:#fff; color:var(--card-foreground); border-color:var(--border); } .btn-ghost:hover:not(:disabled) { background:var(--muted); }
+        .field { width:100%; border:1px solid var(--border); border-radius:.5rem; padding:.5rem .75rem; font-size:.95rem; background:#fff; }
+        .field:focus { outline:2px solid var(--primary); }
+        .label { display:block; font-size:.8rem; font-weight:600; margin-bottom:.25rem; color:var(--muted-foreground); }
+        .hidden { display:none; }
+    </style>
+</head>
+<body class="min-h-screen antialiased">
+    <header class="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur" style="border-color:var(--border);">
+        <div class="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
+            <a href="/" class="flex items-center gap-2">
+                <img src="/assets/logo-mark.png" alt="Diego Sornoza Parrales" class="h-7 w-auto">
+                <span class="text-base font-semibold">sornoza.com</span>
+            </a>
+            <a href="/recursos/" class="text-sm font-medium transition-colors hover:text-cyan-500" style="color:var(--muted-foreground)">← Recursos</a>
+        </div>
+    </header>
+    <main class="container mx-auto max-w-6xl px-4 md:px-8 py-10">
+        <div class="mb-6">
+            <h1 class="text-3xl md:text-4xl font-bold mb-2">Armador de Grupos</h1>
+            <p class="text-lg" style="color:var(--muted-foreground)">Pega la lista de estudiantes y reparte al azar en grupos. Si no divide exacto, los grupos quedan lo más parejos posible.</p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="bg-white rounded-xl shadow-soft p-5 space-y-4 self-start" style="border:1px solid var(--border);">
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="label !mb-0" for="names">Estudiantes (uno por línea)</label>
+                        <span id="count" class="text-xs font-semibold" style="color:var(--primary-dark)"></span>
+                    </div>
+                    <textarea id="names" class="field" rows="10" placeholder="Ana Pérez&#10;Luis Mora&#10;..."></textarea>
+                </div>
+                <div>
+                    <label class="label" for="mode">Dividir por</label>
+                    <select id="mode" class="field"><option value="groups">Número de grupos</option><option value="size">Personas por grupo</option></select>
+                </div>
+                <div>
+                    <label class="label" for="qty" id="qty-label">Número de grupos</label>
+                    <input id="qty" class="field" type="number" min="1" value="4">
+                </div>
+                <div>
+                    <label class="label" for="gnames">Nombres de los grupos (opcional)</label>
+                    <textarea id="gnames" class="field" rows="3" placeholder="Separados por coma o por línea. Ej: Rojo, Azul, Verde"></textarea>
+                    <p class="text-xs mt-1" style="color:var(--muted-foreground)">Si dejas vacío o faltan, se usa "Grupo 1", "Grupo 2"…</p>
+                </div>
+                <p id="error" class="text-sm font-medium" style="color:#DC2626"></p>
+                <button id="make" class="btn btn-primary w-full"><i data-lucide="shuffle" class="h-5 w-5"></i>Formar grupos</button>
+            </div>
+            <div class="lg:col-span-2">
+                <div id="actions" class="flex flex-wrap gap-2 mb-4 hidden">
+                    <button id="again" class="btn btn-ghost !py-2 !px-4 !text-sm"><i data-lucide="refresh-cw" class="h-4 w-4"></i>Volver a mezclar</button>
+                    <button id="copy" class="btn btn-ghost !py-2 !px-4 !text-sm"><i data-lucide="copy" class="h-4 w-4"></i><span>Copiar</span></button>
+                    <button id="csv" class="btn btn-ghost !py-2 !px-4 !text-sm"><i data-lucide="download" class="h-4 w-4"></i>Descargar CSV</button>
+                </div>
+                <div id="out" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="sm:col-span-2 bg-white rounded-xl p-10 text-center" style="border:1px dashed var(--border);color:var(--muted-foreground)">Los grupos aparecerán aquí.</div>
+                </div>
+            </div>
+        </div>
+    </main>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const COLORS=['#06B6D4','#6366F1','#F59E0B','#10B981','#EC4899','#8B5CF6','#EF4444','#14B8A6','#F97316','#3B82F6'];
+let groups=[];
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const getNames=()=>$('names').value.split('\n').map(s=>s.trim()).filter(Boolean);
+const getGNames=()=>$('gnames').value.split(/[\n,;]/).map(s=>s.trim()).filter(Boolean);
+function updateCount(){const n=getNames().length;$('count').textContent=n+(n===1?' nombre':' nombres');}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function build(){const names=getNames(),n=names.length;$('error').textContent='';
+  const q=Math.floor(+$('qty').value);if(n<1){$('error').textContent='Agrega al menos un estudiante.';return false;}
+  if(!(q>=1)){$('error').textContent='Escribe un número válido (1 o más).';return false;}
+  let k=$('mode').value==='groups'?q:Math.ceil(n/q);
+  if(k>n){$('error').textContent=`Hay ${n} estudiantes: no se pueden formar ${k} grupos.`;return false;}
+  const sh=shuffle(names),gn=getGNames();groups=Array.from({length:k},(_,i)=>({name:gn[i]||'Grupo '+(i+1),members:[]}));
+  if($('mode').value==='groups'){sh.forEach((s,i)=>groups[i%k].members.push(s));}
+  else{const size=q;const base=Math.floor(n/k),extra=n%k;let p=0;groups.forEach((g,i)=>{const c=base+(i<extra?1:0);g.members=sh.slice(p,p+c);p+=c;});}
+  return true;}
+function render(){$('actions').classList.remove('hidden');
+  $('out').innerHTML=groups.map((g,i)=>`<div class="bg-white rounded-xl shadow-soft overflow-hidden" style="border:1px solid var(--border)">
+    <div class="px-4 py-2.5 flex items-center justify-between text-white" style="background:${COLORS[i%COLORS.length]}"><h3 class="font-bold">${esc(g.name)}</h3><span class="text-xs font-semibold opacity-90">${g.members.length} ${g.members.length===1?'persona':'personas'}</span></div>
+    <ul class="p-4 space-y-1 text-sm">${g.members.map(m=>`<li>${esc(m)}</li>`).join('')}</ul></div>`).join('');}
+function make(){if(build())render();}
+function asText(){return groups.map(g=>g.name+'\n'+g.members.map(m=>'  - '+m).join('\n')).join('\n\n');}
+function asCSV(){const q=v=>'"'+v.replace(/"/g,'""')+'"';return '﻿Grupo,Estudiante\n'+groups.flatMap(g=>g.members.map(m=>q(g.name)+','+q(m))).join('\n');}
+$('make').onclick=make;$('again').onclick=make;
+$('names').addEventListener('input',updateCount);
+$('mode').onchange=()=>{const g=$('mode').value==='groups';$('qty-label').textContent=g?'Número de grupos':'Personas por grupo';$('qty').value=g?4:5;};
+$('copy').onclick=async()=>{const sp=$('copy').querySelector('span');try{await navigator.clipboard.writeText(asText());sp.textContent='¡Copiado!';}catch(e){sp.textContent='No se pudo copiar';}setTimeout(()=>sp.textContent='Copiar',1800);};
+$('csv').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([asCSV()],{type:'text/csv;charset=utf-8'}));a.download='grupos.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
+$('names').value='Ana Pérez\nLuis Mora\nCarla Vera\nJosé Zambrano\nMaría Cedeño\nPedro Loor\nSofía Intriago\nDiego Macías\nLucía Delgado\nAndrés Pico\nValeria Mero';
+updateCount();window.lucide&&lucide.createIcons();
+})();
+document.addEventListener("DOMContentLoaded",()=>window.lucide&&lucide.createIcons());
+</script>
+</body></html>
